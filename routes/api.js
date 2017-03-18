@@ -1,7 +1,6 @@
-var express = require('express');
-var router = express.Router();
+const router = require('express').Router();
 
-router.get('', function(req, res, next) {
+router.get('', (req, res) => {
   res.json({foo: 'bar'});
 });
 
