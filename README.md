@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/jojanper/draal-jsapp.svg?branch=master)](https://travis-ci.org/jojanper/draal-jsapp)
+
 # draal-jsapp
 > Node.js web app
 
@@ -29,6 +31,9 @@ npm run lint
 ```
 npm run cibuild
 ```
+
+### Travis CI
+https://travis-ci.org/jojanper/draal-jsapp
 
 ## License
 

@@ -10,7 +10,6 @@
   },
   "scripts": {
     "cibuild": "npm run lint && npm test",
-    "coverage-text": "remap-istanbul -i coverage/coverage.json -o coverage/text.txt -t text",
     "lint": "eslint **/*.js bin/www",
     "start": "DEBUG=draal-jsapp:* nodemon ./bin/www -e .js --ignore node_modules",
     "start-prod": "NODE_ENV=production node ./bin/www",
@@ -34,7 +33,6 @@
     "istanbul": "^0.4.5",
     "mocha": "^3.1.2",
     "nodemon": "~1.11.0",
-    "remap-istanbul": "^0.9.1",
     "sinon": "^2.0.0",
     "supertest": "^3.0.0"
   },
