@@ -10,10 +10,10 @@
   },
   "scripts": {
     "cibuild": "npm run lint && npm test",
-    "lint": "eslint **/*.js bin/www",
-    "start": "DEBUG=draal-jsapp:* nodemon ./bin/www -e .js --ignore node_modules",
-    "start-prod": "NODE_ENV=production node ./bin/www",
-    "test": "NODE_ENV=test istanbul cover --report text node_modules/.bin/_mocha"
+    "lint": "eslint *.js **/*.js bin/www",
+    "start": "NODE_PATH=$NODE_PATH:. DEBUG=draal-jsapp:* nodemon ./bin/www -e .js --ignore node_modules",
+    "start-prod": "NODE_PATH=$NODE_PATH:. NODE_ENV=production node ./bin/www",
+    "test": "NODE_PATH=$NODE_PATH:. NODE_ENV=test istanbul cover --report text node_modules/.bin/_mocha"
   },
   "dependencies": {
     "body-parser": "~1.16.0",
@@ -27,7 +27,7 @@
   },
   "devDependencies": {
     "chai": "^3.5.0",
-    "eslint": "^3.9.1",
+    "eslint": "^3.18.0",
     "eslint-config-airbnb-base": "^11.0.0",
     "eslint-plugin-import": "^2.1.0",
     "istanbul": "^0.4.5",
@@ -47,7 +47,9 @@
       "no-console": 0,
       "no-plusplus": 0,
       "object-curly-spacing": 0,
-      "indent": ["error", 4]
+      "indent": ["error", 4],
+      "import/no-extraneous-dependencies": [0],
+      "import/no-unresolved": [0]
     },
     "env": {
       "node": true,
