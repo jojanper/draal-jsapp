@@ -1,7 +1,7 @@
 [![Build Status](https://travis-ci.org/jojanper/draal-jsapp.svg?branch=master)](https://travis-ci.org/jojanper/draal-jsapp)
 
 # draal-jsapp
-> Node.js web app
+> Node.js web backend. Project setup has been generated using [express-generator](https://expressjs.com/en/starter/generator.html).
 
 ## Quickstart
 
@@ -32,7 +32,12 @@ npm run lint
 npm run cibuild
 ```
 
-### Travis CI
+### Frontend support
+It is envisioned that project remains more or less as pure backend. There is currently only one
+[template](https://github.com/jojanper/draal-jsapp/blob/master/views/index.pug) in use that bootstraps
+Angular client. The client code is from https://github.com/jojanper/angular-app.
+
+## Travis CI
 https://travis-ci.org/jojanper/draal-jsapp
 
 ## License
