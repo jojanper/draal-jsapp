@@ -1,0 +1,13 @@
+version: "2"
+services:
+  node_modules:
+    build:
+      context: .
+      dockerfile: Dockerfile_nodemodules
+  web:
+    build: .
+    ports:
+      - "3008:3008"
+    volumes:
+      - .:/draaljs-app
+      - /draaljs-app/node_modules
