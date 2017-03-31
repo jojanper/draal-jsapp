@@ -1,5 +1,7 @@
 sudo: required
 language: node_js
+services:
+  - docker
 os:
   - linux
   - osx
@@ -8,5 +10,8 @@ node_js:
 before_install:
   - node --version
   - npm --version
+  - docker --version
+  - docker-compose --version
 script:
   - npm run cibuild
+  - npm run docker-build
