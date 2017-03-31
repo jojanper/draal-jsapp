@@ -10,8 +10,12 @@ node_js:
 before_install:
   - node --version
   - npm --version
-  - docker --version
-  - docker-compose --version
+  - if ["$TRAVIS_OS_NAME" == "linux"]; then
+    docker --version;
+    docker-compose --version;
+    fi
 script:
   - npm run cibuild
-  - npm run docker-build
+  - if ["$TRAVIS_OS_NAME" == "linux"]; then
+    npm run docker-build;
+    fi

@@ -2,3 +2,5 @@ Some thoughts for further development:
 --------------------------------------
 
 - MongoDB
+- Task runner
+  - RabbitMQ + node-celery (https://github.com/mher/node-celery)?
