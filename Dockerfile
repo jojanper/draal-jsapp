@@ -6,6 +6,6 @@ WORKDIR /draaljs-app
 
 RUN npm install
 
-CMD ["npm", "start-prod"]
+CMD ["npm", "run", "start-prod"]
 
 EXPOSE 3008

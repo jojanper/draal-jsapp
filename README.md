@@ -37,8 +37,48 @@ It is envisioned that project remains more or less as pure backend. There is cur
 [template](https://github.com/jojanper/draal-jsapp/blob/master/views/index.pug) in use that bootstraps
 Angular client. The client code is from https://github.com/jojanper/angular-app.
 
+---------
+
 ## Travis CI
 https://travis-ci.org/jojanper/draal-jsapp
+
+---------
+
+## Docker
+- Install [Docker](https://docs.docker.com/engine/installation/)
+- Linux users should install also [Docker compose](https://docs.docker.com/compose/install/)
+
+Docker Compose is used to run multi-container Docker applications. This project creates two
+separate containers: one for the nodejs application and the other for NGINX reverse proxy. The application
+is accessible at http://localhost:8008.
+
+To build the project
+```
+npm run docker-build
+```
+
+To start the application
+```
+npm run docker-run
+```
+
+To start the application in detached mode
+```
+npm run docker-rund
+```
+
+To stop application container
+```
+npm run docker-stop
+npm run docker-rm # (to remove the application container)
+```
+
+To debug container
+```
+docker exec -t -i <container-id> /bin/bash
+```
+
+---------
 
 ## License
 
