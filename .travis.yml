@@ -1,5 +1,7 @@
 sudo: required
 language: node_js
+services:
+  - docker
 os:
   - linux
   - osx
@@ -8,5 +10,12 @@ node_js:
 before_install:
   - node --version
   - npm --version
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
+    docker --version;
+    docker-compose --version;
+    fi
 script:
   - npm run cibuild
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
+    npm run docker-build;
+    fi

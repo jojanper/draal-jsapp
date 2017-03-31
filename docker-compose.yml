@@ -1,0 +1,25 @@
+version: "2"
+services:
+  web:
+    container_name: draaljs
+    build:
+      context: .
+      dockerfile: Dockerfile
+    expose:
+      - "3008"
+    volumes:
+      - .:/draaljs-app
+      - /draaljs-app/node_modules
+    environment:
+      - PORT=3008
+  nginx:
+    container_name: nginx
+    build:
+      context: ./config/nginx
+      dockerfile: Dockerfile
+    ports:
+      - "8008:80"
+    links:
+      - web
+    volumes_from:
+      - web

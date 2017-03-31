@@ -2,5 +2,5 @@ Some thoughts for further development:
 --------------------------------------
 
 - MongoDB
-- Docker example
-  - Nginx as proxy server
+- Task runner
+  - RabbitMQ + node-celery (https://github.com/mher/node-celery)?

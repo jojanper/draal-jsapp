@@ -1,0 +1,7 @@
+.git*
+.eslint*
+.travis*
+TODO
+coverage/
+node_modules/
+test/
