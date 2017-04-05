@@ -1,7 +1,11 @@
 .git*
 .eslint*
 .travis*
+angular-app/
 TODO
 coverage/
+config/
 node_modules/
+scripts/
 test/
+README.md

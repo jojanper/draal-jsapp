@@ -37,6 +37,28 @@ It is envisioned that project remains more or less as pure backend. There is cur
 [template](https://github.com/jojanper/draal-jsapp/blob/master/views/index.pug) in use that bootstraps
 Angular client. The client code is from https://github.com/jojanper/angular-app.
 
+#### Example workflow for developing both backend and client
+
+Get the code:
+```
+npm run client-install
+```
+
+This monitors any changes in client code and builds code (in development mode):
+```
+cd angular-app && npm run watch
+```
+
+This takes latest client code into use on backend side:
+```
+npm run client-watch
+```
+
+And obviously the backend server is running:
+```
+npm start
+```
+
 ---------
 
 ## Travis CI
