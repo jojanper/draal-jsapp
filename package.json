@@ -22,7 +22,7 @@
     "start": "NODE_PATH=$NODE_PATH:. DEBUG=draal-jsapp:* nodemon ./bin/www -e .js --ignore node_modules",
     "start-prod": "NODE_PATH=$NODE_PATH:. NODE_ENV=production node ./bin/www",
     "test": "NODE_PATH=$NODE_PATH:. NODE_ENV=test istanbul cover --report text node_modules/.bin/_mocha",
-    "postinstall": "git clone https://github.com/jojanper/angular-app.git && cd angular-app && npm i",
+    "client-install": "git clone https://github.com/jojanper/angular-app.git && cd angular-app && npm i",
     "client-build": "rimraf public && mkdir public && cd angular-app && cp -r dist/* ../public/ && cd .. && rm public/index.html && npm run client-template",
     "client-template": "node scripts/build_template",
     "client-watch": "nodemon --watch ./angular-app/dist --delay 250ms --exec 'npm run client-build'"

@@ -39,6 +39,11 @@ Angular client. The client code is from https://github.com/jojanper/angular-app.
 
 #### Example workflow for developing both backend and client
 
+Get the code:
+```
+npm run client-install
+```
+
 This monitors any changes in client code and builds code (in development mode):
 ```
 cd angular-app && npm run watch
