@@ -3,12 +3,16 @@ const path = require('path');
 const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
 
 const index = require('./routes/index');
 const api = require('./routes/api');
 const utilsLib = require('src/utils');
 
 const app = express();
+
+// Set up MongoDB
+require('./config/mongodb')(mongoose);
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
