@@ -4,47 +4,44 @@ const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
+const session = require('express-session');
+const passport = require('passport');
+const MongoStore = require('connect-mongo')(session);
+const dotenv = require('dotenv');
 
-const index = require('./routes/index');
-const api = require('./routes/api');
-const utilsLib = require('src/utils');
+const mongoLib = require('./config/mongodb');
 
 const app = express();
 
-// Set up MongoDB
-require('./config/mongodb')(mongoose);
+// Load environment variables (API keys etc).
+dotenv.load({path: process.env.SECRETS_PATH || '.env.secrets'});
 
-// view engine setup
+// Set up MongoDB
+mongoLib.config(mongoose);
+
+// View engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
 app.use(logger('dev'));
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({extended: false}));
 app.use(cookieParser());
+app.use(session({
+    resave: true,
+    saveUninitialized: true,
+    secret: process.env.SESSION_SECRET,
+    store: new MongoStore({
+        url: mongoLib.dbURI,
+        autoReconnect: true,
+        clear_interval: 3600
+    })
+}));
+app.use(passport.initialize());
+app.use(passport.session());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', index);
-app.use('/api', api);
-
-// catch 404 and forward to error handler
-app.use((req, res, next) => {
-    const err = new Error('Not Found');
-    err.status = 404;
-    next(err);
-});
-
-// error handler
-/* eslint-disable no-unused-vars */
-app.use((err, req, res, next) => {
-    // set locals, only providing error in development
-    res.locals.message = err.message;
-    res.locals.error = utilsLib.isDevelopment(req.app) ? err : {};
-
-    // render the error page
-    res.status(err.status || 500);
-    res.render('error');
-});
-/* eslint-enable no-unused-vars */
+// Prepare application business logic
+require('src/app')(app);
 
 module.exports = app;

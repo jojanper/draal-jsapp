@@ -4,6 +4,8 @@
 
 const chalk = require('chalk');
 
+const dbURI = process.env.MONGODB_URI || 'mongodb://localhost:27017/draaljs-app';
+
 function connect(mongoose, dbURI) {
     function connectWithRetry() {
         return mongoose.connect(dbURI, {server: {auto_reconnect: true}}, (err) => {
@@ -19,8 +21,6 @@ function connect(mongoose, dbURI) {
 }
 
 function mongodbSetup(mongoose) {
-    const dbURI = process.env.MONGODB_URI || 'mongodb://localhost:27017/draaljs-app';
-
     connect(mongoose, dbURI);
 
     // CONNECTION EVENTS
@@ -50,4 +50,7 @@ function mongodbSetup(mongoose) {
     });
 }
 
-module.exports = mongodbSetup;
+module.exports = {
+    dbURI,
+    config: mongodbSetup
+};
