@@ -5,6 +5,13 @@
 
 ## Quickstart
 
+### Prerequisites
+
+- [Node.js 6.0+](https://nodejs.org)
+- MongoDB
+  - [Linux installation](https://docs.mongodb.com/manual/administration/install-on-linux/)
+  - [OS X installation](https://docs.mongodb.com/manual/tutorial/install-mongodb-on-os-x/)
+
 ### Install dependencies
 ```
 npm install
