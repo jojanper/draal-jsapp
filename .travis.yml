@@ -15,6 +15,7 @@ before_install:
     docker --version;
     docker-compose --version;
     fi
+  - sleep 5
 script:
   - npm run cibuild
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
