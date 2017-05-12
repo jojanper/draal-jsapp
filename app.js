@@ -110,6 +110,9 @@ mongoLib.config(mongoose, () => {
             process.exit(1);
             break;
         default:
+            console.log('error');
+            console.log(error);
+            console.log(error.code);
             throw error;
         }
     }
