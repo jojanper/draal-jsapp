@@ -20,7 +20,7 @@ function connect(mongoose, dbURI) {
     connectWithRetry();
 }
 
-function mongodbSetup(mongoose) {
+function mongodbSetup(mongoose, done) {
     connect(mongoose, dbURI);
 
     // CONNECTION EVENTS
@@ -28,6 +28,7 @@ function mongodbSetup(mongoose) {
     // When successfully connected
     mongoose.connection.on('connected', () => {
         console.log('Mongoose default connection open to %s', dbURI);
+        done();
     });
 
     // If the connection throws an error
