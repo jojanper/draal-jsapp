@@ -69,7 +69,8 @@ app.set('port', port);
 require('src/app')(app);
 
 
-// Set up MongoDB, application starts to listen the desired port after a successful connection has been made
+// Set up MongoDB, application starts to listen the desired port after a successful
+// connection has been made
 mongoLib.config(mongoose, () => {
     /**
      * Listen on provided port, on all network interfaces.
