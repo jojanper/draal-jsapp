@@ -11,21 +11,15 @@ node_js:
 before_install:
   - node --version
   - npm --version
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
-    docker --version;
-    docker-compose --version;
-    fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then docker --version; docker-compose --version; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
     echo "Updating homebrew";
     brew update;
     echo "Installing and starting mongodb";
     brew install mongodb;
-    # Create a folder for mongodb to prevent an error on mac osx
     sudo mkdir -p /data/db;
     brew services start mongodb;
     fi
 script:
   - npm run cibuild
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
-    npm run docker-build;
-    fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then npm run docker-build; fi
