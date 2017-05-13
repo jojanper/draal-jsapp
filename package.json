@@ -9,6 +9,7 @@
     "url": "https://github.com/jojanper/draal-jsapp/issues"
   },
   "license": "MIT",
+  "main": "app.js",
   "scripts": {
     "cibuild": "npm run lint && npm test",
     "docker-build": "docker-compose build",
@@ -18,9 +19,9 @@
     "docker-rm": "docker rm draaljs",
     "docker-stop-webserver": "docker stop nginx",
     "docker-rm-webserver": "docker rm nginx",
-    "lint": "eslint *.js **/*.js bin/www",
-    "start": "NODE_PATH=$NODE_PATH:. DEBUG=draal-jsapp:* nodemon ./bin/www -e .js --ignore node_modules",
-    "start-prod": "NODE_PATH=$NODE_PATH:. NODE_ENV=production node ./bin/www",
+    "lint": "eslint *.js **/*.js",
+    "start": "NODE_PATH=$NODE_PATH:. DEBUG=draal-jsapp:* nodemon ./app.js -e .js --ignore node_modules",
+    "start-prod": "NODE_PATH=$NODE_PATH:. NODE_ENV=production node ./app.js",
     "test": "NODE_PATH=$NODE_PATH:. NODE_ENV=test istanbul cover --report text node_modules/.bin/_mocha",
     "client-install": "git clone https://github.com/jojanper/angular-app.git && cd angular-app && npm i",
     "client-build": "rimraf public && mkdir public && cd angular-app && cp -r dist/* ../public/ && cd .. && rm public/index.html && npm run client-template",
@@ -28,13 +29,19 @@
     "client-watch": "nodemon --watch ./angular-app/dist --delay 250ms --exec 'npm run client-build'"
   },
   "dependencies": {
+    "bcrypt-nodejs": "^0.0.3",
     "body-parser": "~1.16.0",
     "chalk": "^1.1.3",
+    "connect-mongo": "^1.3.2",
     "cookie-parser": "~1.4.3",
     "debug": "~2.6.0",
+    "dotenv": "^4.0.0",
     "express": "~4.14.1",
+    "express-session": "^1.15.2",
     "morgan": "~1.7.0",
     "mongoose": "^4.9.7",
+    "passport": "0.3.2",
+    "passport-local": "^1.0.0",
     "pug": "~2.0.0-beta10"
   },
   "devDependencies": {
