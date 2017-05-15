@@ -6,9 +6,26 @@ const index = require('./routes/index');
 const api = require('./routes/api');
 const utilsLib = require('./utils');
 
+const apiPrefix = '/api';
+
+// Middleware for handling application errors
+function apiMiddlewareErrorHandler(err, req, res, next) {
+    if (err.name === 'APIError') {
+        res.status(400);
+        res.json({errors: [err.message]});
+        return;
+    }
+
+    return next(err);
+}
+
 function appBusinessLogicSetup(app) {
     app.use('/', index);
-    app.use('/api', api);
+
+    app.use(apiPrefix, api);
+
+    // Catch and handle application errors
+    app.use(apiPrefix, apiMiddlewareErrorHandler);
 
     // Catch 404 and forward to error handler
     app.use((req, res, next) => {
