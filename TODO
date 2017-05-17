@@ -1,6 +1,10 @@
 Some thoughts for further development:
 --------------------------------------
 
-- MongoDB
+- Public API that lists all available APIs
+  - public vs non-public
+  - display name
+  - other useful information
+    - parameters, etc?
 - Task runner
   - RabbitMQ + node-celery (https://github.com/mher/node-celery)?
