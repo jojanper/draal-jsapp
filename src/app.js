@@ -1,10 +1,9 @@
 /**
  * Application business logic initialization.
  */
-
-const index = require('./routes/index');
-const api = require('./routes/api');
 const utilsLib = require('./utils');
+const index = require('./routes/index')();
+const api = require('./routes/api')();
 
 const apiPrefix = '/api';
 
@@ -13,6 +12,7 @@ function apiMiddlewareErrorHandler(err, req, res, next) {
     if (err.name === 'APIError') {
         res.status(400);
         res.json({errors: [err.message]});
+        res.end();
         return;
     }
 
@@ -20,12 +20,12 @@ function apiMiddlewareErrorHandler(err, req, res, next) {
 }
 
 function appBusinessLogicSetup(app) {
+    // Application API routes
     app.use('/', index);
-
     app.use(apiPrefix, api);
 
     // Catch and handle application errors
-    app.use(apiPrefix, apiMiddlewareErrorHandler);
+    app.use(`${apiPrefix}/*`, apiMiddlewareErrorHandler);
 
     // Catch 404 and forward to error handler
     app.use((req, res, next) => {

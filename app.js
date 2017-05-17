@@ -68,6 +68,9 @@ app.set('port', port);
 // Prepare application business logic
 require('src/app')(app);
 
+// Passport init
+require('./config/passport')(passport);
+
 
 // Set up MongoDB, application starts to listen the desired port after a successful
 // connection has been made

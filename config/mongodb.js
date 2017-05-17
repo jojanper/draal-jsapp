@@ -21,6 +21,8 @@ function connect(mongoose, dbURI) {
 }
 
 function mongodbSetup(mongoose, done) {
+    mongoose.Promise = global.Promise;
+
     connect(mongoose, dbURI);
 
     // CONNECTION EVENTS

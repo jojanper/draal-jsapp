@@ -1,17 +1,24 @@
 const router = require('express').Router();
 const APIError = require('../error');
+const utilsLib = require('../utils');
 
+// User registration and authentication APIs
+const userAPIs = require('../apps/user/ctrl');
 
-router.get('', (req, res) => {
-    res.json({foo: 'bar'});
-});
+module.exports = () => {
+    router.get('', (req, res) => {
+        res.json({foo: 'bar'});
+    });
 
-router.get('/error', () => {
-    throw new APIError('API error occured');
-});
+    router.get('/error', () => {
+        throw new APIError('API error occured');
+    });
 
-router.get('/unhandled-error', () => {
-    throw new Error('Application is not expected to handle this error');
-});
+    router.get('/unhandled-error', () => {
+        throw new Error('Application is not expected to handle this error');
+    });
 
-module.exports = router;
+    utilsLib.setRoutes(router, userAPIs);
+
+    return router;
+};
