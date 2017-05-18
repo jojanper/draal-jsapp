@@ -53,7 +53,7 @@ npm run client-install
 
 This monitors any changes in client code and builds code (in development mode):
 ```
-cd angular-app && npm run watch
+cd angular-app && rm -Rf dist/* && npm run watch (or npm run watch-prod)
 ```
 
 This takes latest client code into use on backend side:
