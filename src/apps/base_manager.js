@@ -7,6 +7,10 @@ class BaseManager {
         this.model = model;
     }
 
+    execute(method, params) {
+        return this.model[method](params).exec();
+    }
+
 }
 
 module.exports = BaseManager;

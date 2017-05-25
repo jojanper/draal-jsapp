@@ -49,7 +49,7 @@ class UserManager extends BaseManager {
     }
 
     createUser(user, success, error) {
-        this.model.findOne({email: user.email}).exec().then((existingUser) => {
+        this.execute('findOne', {email: user.email}).then((existingUser) => {
             if (existingUser) {
                 return error(new APIError(format('Account with %s email address already exists', user.email)));
             }
