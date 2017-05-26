@@ -1,29 +1,17 @@
-const format = require('util').format;
-
 const User = require('./models/user');
-const APIError = require('../../error');
+
+const UserModel = User.model;
 
 /**
  * Create a new local account.
  */
 function signUp(req, res, next) {
-    const user = new User({
+    const user = new UserModel({
         email: req.body.email,
         password: req.body.password
     });
 
-    User.findOne({email: req.body.email}, (err, existingUser) => {
-        if (existingUser) {
-            return next(new APIError(format('Account with %s email address already exists', user.email)));
-        }
-
-        if (err) { return next(err); }
-
-        user.save((err) => {
-            if (err) { return next(err); }
-            res.json();
-        });
-    });
+    User.manager.createUser(user, () => res.json(), err => next(err));
 }
 
 module.exports = [

@@ -1,5 +1,9 @@
 const bcrypt = require('bcrypt-nodejs');
 const mongoose = require('mongoose');
+const format = require('util').format;
+
+const APIError = require('../../../error');
+const BaseManager = require('../../base_manager');
 
 
 const userSchema = new mongoose.Schema({
@@ -37,4 +41,25 @@ userSchema.methods.comparePassword = function comparePassword(candidatePassword,
     });
 };
 
-module.exports = mongoose.model('User', userSchema);
+const User = mongoose.model('User', userSchema);
+
+class UserManager extends BaseManager {
+    constructor() {
+        super(User);
+    }
+
+    createUser(user, success, error) {
+        this.execute('findOne', {email: user.email}).then((existingUser) => {
+            if (existingUser) {
+                return error(new APIError(format('Account with %s email address already exists', user.email)));
+            }
+
+            user.save().then(() => success()).catch(err => error(err));
+        }).catch(err => error(err));
+    }
+}
+
+module.exports = {
+    model: User,
+    manager: new UserManager()
+};
