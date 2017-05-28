@@ -57,6 +57,25 @@ class UserManager extends BaseManager {
             user.save().then(() => success()).catch(err => error(err));
         }).catch(err => error(err));
     }
+
+    findLoginUser(email, password, success, error) {
+        this.execute('findOne', {email: email.toLowerCase()}).then((user) => {
+            if (!user) {
+                return error(new APIError(`Email ${email} not found`));
+            }
+
+            user.comparePassword(password, (err, isMatch) => {
+                if (err) {
+                    return error(err);
+                }
+                if (isMatch) {
+                    return success(user);
+                }
+
+                return error(new APIError('Invalid email or password'));
+            });
+        }).catch(err => error(err));
+    }
 }
 
 module.exports = {
