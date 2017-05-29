@@ -59,3 +59,32 @@ describe('User authentication', () => {
             });
     });
 });
+
+describe('User authentication', () => {
+    const api = '/api/auth/logout';
+
+    it('logout fails', (done) => {
+        testrunner(testapp)
+            .post(api)
+            .send()
+            .expect(401)
+            .end((err, res) => {
+                done(err);
+            });
+    });
+
+    it('logout succeeds', (done) => {
+        const app = testrunner.agent(testapp);
+
+        app.post('/api/auth/login').send(credentials).expect(200).end((err, res) => {
+            console.log(res.body);
+            console.log(res.headers['set-cookie']);
+            const cookie = res.headers['set-cookie'];
+            console.log(cookie);
+            app.post(api).send().expect(200).end((err, res) => {
+                console.log(res);
+                done(err);
+            });
+        });
+    });
+});

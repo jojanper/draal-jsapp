@@ -15,12 +15,21 @@ module.exports = {
      *
      * @param {object} router Router object
      * @param {array} routes List of routes to be included for application.
+     * @param {function} authFn Authentication middleware.
      *
      * @returns {object} Router object.
      */
-    setRoutes(router, routes) {
+    setRoutes(router, routes, authFn) {
         routes.forEach((route) => {
-            router[route.method](route.url, route.fn);
+            let args = [route.url];
+
+            if (route.authenticate) {
+                args.push(authFn);
+            }
+
+            args.push(route.fn);
+
+            router[route.method](...args);
         });
 
         return router;
