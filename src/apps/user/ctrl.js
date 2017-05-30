@@ -1,4 +1,5 @@
 const passport = require('passport');
+const format = require('util').format;
 
 const User = require('./models/user');
 const APIError = require('src/error');
@@ -44,21 +45,28 @@ function signOut(req, res) {
     res.json();
 }
 
+function apiFormat(postfix) {
+    return format('/auth/%s', postfix);
+}
+
 module.exports = [
     {
         fn: signUp,
         method: 'post',
-        url: '/auth/signup'
+        url: apiFormat('signup'),
+        info: 'User sign-up'
     },
     {
         fn: signIn,
         method: 'post',
-        url: '/auth/login'
+        url: apiFormat('login'),
+        info: 'User sign-in'
     },
     {
         fn: signOut,
         method: 'post',
-        url: '/auth/logout',
-        authenticate: true
+        url: apiFormat('logout'),
+        authenticate: true,
+        info: 'User sign-out'
     }
 ];
