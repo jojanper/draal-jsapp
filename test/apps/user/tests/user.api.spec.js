@@ -59,3 +59,33 @@ describe('User authentication', () => {
             });
     });
 });
+
+describe('User authentication', () => {
+    const api = '/api/auth/logout';
+
+    it('logout fails', (done) => {
+        // GIVEN user is not logged in
+        // WHEN logging out
+        // THEN it should fail
+        testrunner(testapp)
+            .post(api)
+            .send()
+            .expect(401)
+            .end((err, res) => {
+                done(err);
+            });
+    });
+
+    it('logout succeeds', (done) => {
+        const app = testrunner.agent(testapp);
+
+        // GIVEN user has logged in
+        app.post('/api/auth/login').send(credentials).expect(200).end((err, res) => {
+            // WHEN logging out
+            // THEN it should succeed
+            app.post(api).send().expect(200).end((err, res) => {
+                done(err);
+            });
+        });
+    });
+});

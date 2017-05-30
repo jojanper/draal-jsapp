@@ -17,6 +17,9 @@ function signUp(req, res, next) {
     User.manager.createUser(user, () => res.json(), err => next(err));
 }
 
+/**
+ * Login using local account.
+ */
 function signIn(req, res, next) {
     passport.authenticate('local', (err, user) => {
         if (err) {
@@ -33,6 +36,14 @@ function signIn(req, res, next) {
     })(req, res, next);
 }
 
+/**
+ * User logout.
+ */
+function signOut(req, res) {
+    req.logout();
+    res.json();
+}
+
 module.exports = [
     {
         fn: signUp,
@@ -43,5 +54,11 @@ module.exports = [
         fn: signIn,
         method: 'post',
         url: '/auth/login'
+    },
+    {
+        fn: signOut,
+        method: 'post',
+        url: '/auth/logout',
+        authenticate: true
     }
 ];
