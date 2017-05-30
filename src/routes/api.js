@@ -18,9 +18,11 @@ function isAuthenticated(req, res, next) {
     res.end();
 }
 
+const apiRoutes = [].concat(userAPIs);
+
 module.exports = () => {
     router.get('', (req, res) => {
-        res.json({foo: 'bar'});
+        res.json(utilsLib.serializeApiInfo(apiRoutes));
     });
 
     router.get('/error', () => {
@@ -31,7 +33,7 @@ module.exports = () => {
         throw new Error('Application is not expected to handle this error');
     });
 
-    utilsLib.setRoutes(router, userAPIs, isAuthenticated);
+    utilsLib.setRoutes(router, apiRoutes, isAuthenticated);
 
     return router;
 };

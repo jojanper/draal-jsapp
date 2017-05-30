@@ -33,5 +33,25 @@ module.exports = {
         });
 
         return router;
+    },
+
+    /**
+     * Serialize API routes.
+     *
+     * @param {array} routes List of API routes.
+     *
+     * @returns {object} Serialized API data.
+     */
+    serializeApiInfo(routes) {
+        return routes.map((item) => {
+            const data = {
+                url: item.url,
+                method: item.method,
+                info: item.info || '',
+                authenticate: item.authenticate || false
+            };
+
+            return data;
+        });
     }
 };
