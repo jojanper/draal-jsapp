@@ -9,16 +9,13 @@ const userAPIs = require('../apps/user/ctrl');
  * Login required middleware.
  */
 function isAuthenticated(req, res, next) {
-  if (req.isAuthenticated()) {
-      console.log('next');
-      return next();
-  }
+    if (req.isAuthenticated()) {
+        return next();
+    }
 
-  console.log('NOT LOGGED IN');
-
-  res.status(401);
-  res.json();
-  res.end();
+    res.status(401);
+    res.json();
+    res.end();
 }
 
 module.exports = () => {

@@ -21,7 +21,7 @@ module.exports = {
      */
     setRoutes(router, routes, authFn) {
         routes.forEach((route) => {
-            let args = [route.url];
+            const args = [route.url];
 
             if (route.authenticate) {
                 args.push(authFn);

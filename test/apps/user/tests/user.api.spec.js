@@ -64,6 +64,9 @@ describe('User authentication', () => {
     const api = '/api/auth/logout';
 
     it('logout fails', (done) => {
+        // GIVEN user is not logged in
+        // WHEN logging out
+        // THEN it should fail
         testrunner(testapp)
             .post(api)
             .send()
@@ -76,13 +79,11 @@ describe('User authentication', () => {
     it('logout succeeds', (done) => {
         const app = testrunner.agent(testapp);
 
+        // GIVEN user has logged in
         app.post('/api/auth/login').send(credentials).expect(200).end((err, res) => {
-            console.log(res.body);
-            console.log(res.headers['set-cookie']);
-            const cookie = res.headers['set-cookie'];
-            console.log(cookie);
+            // WHEN logging out
+            // THEN it should succeed
             app.post(api).send().expect(200).end((err, res) => {
-                console.log(res);
                 done(err);
             });
         });

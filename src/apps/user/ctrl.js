@@ -39,8 +39,7 @@ function signIn(req, res, next) {
 /**
  * User logout.
  */
-function signOut(req, res, next) {
-    console.log('logout');
+function signOut(req, res) {
     req.logout();
     res.json();
 }
