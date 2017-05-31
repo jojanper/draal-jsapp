@@ -4,7 +4,9 @@ describe('User registration', () => {
     const api = '/api/auth/signup';
 
     it('signup succeeds', (done) => {
-        testrunner(testapp).post(api).send(credentials).expect(200).end((err, res) => { done(err); });
+        testrunner(testapp).post(api).send(credentials).expect(200).end((err, res) => {
+            done(err);
+        });
     });
 
     it('signup email is already reservevd', (done) => {

@@ -7,9 +7,17 @@ const BaseManager = require('../../base_manager');
 
 
 const userSchema = new mongoose.Schema({
-    email: {type: String, unique: true},
+    email: {
+        type: String,
+        unique: true
+    },
+
     password: String,
-    active: {type: Boolean, default: false}
+
+    active: {
+        type: Boolean,
+        default: false
+    }
 
 }, {timestamps: true});
 
