@@ -19,17 +19,25 @@ describe('User authentication', () => {
     const api = '/api/auth/login';
     const errText = 'Invalid credentials';
 
+    beforeEach((done) => {
+        appTestHelper.activateUser(credentials.email, (user) => {
+            done();
+            this.user = user;
+        });
+    });
+
+    afterEach((done) => {
+        appTestHelper.deactivateUser(this.user, () => {
+            done();
+        });
+    });
+
     it('login succeeds', (done) => {
         // GIVEN active user
-        appTestHelper.activateUser(credentials.email, (user) => {
-            // WHEN user does login
-            // THEN it should succeed
-            testrunner(testapp).post(api).send(credentials).expect(200).end((err, res) => {
-                appTestHelper.deactivateUser(user, () => {
-                    console.log(user);
-                    done(err);
-                });
-            });
+        // WHEN user does login
+        // THEN it should succeed
+        testrunner(testapp).post(api).send(credentials).expect(200).end((err, res) => {
+            done(err);
         });
     });
 

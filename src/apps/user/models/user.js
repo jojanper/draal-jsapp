@@ -59,7 +59,7 @@ class UserManager extends BaseManager {
     }
 
     findLoginUser(email, password, success, error) {
-        this.execute('findOne', {email: email.toLowerCase()/*, active: true*/}).then((user) => {
+        this.execute('findOne', {email: email.toLowerCase(), active: true}).then((user) => {
             if (!user) {
                 return error(new APIError(`Email ${email} not found`));
             }
