@@ -20,8 +20,16 @@ describe('User authentication', () => {
     const errText = 'Invalid credentials';
 
     it('login succeeds', (done) => {
-        testrunner(testapp).post(api).send(credentials).expect(200).end((err, res) => {
-            done(err);
+        // GIVEN active user
+        appTestHelper.activateUser(credentials.email, (user) => {
+            // WHEN user does login
+            // THEN it should succeed
+            testrunner(testapp).post(api).send(credentials).expect(200).end((err, res) => {
+                appTestHelper.deactivateUser(user, () => {
+                    console.log(user);
+                    done(err);
+                });
+            });
         });
     });
 
@@ -60,11 +68,16 @@ describe('User authentication', () => {
         const app = testrunner.agent(testapp);
 
         // GIVEN user has logged in
-        app.post('/api/auth/login').send(credentials).expect(200).end((err, res) => {
-            // WHEN logging out
-            // THEN it should succeed
-            app.post(api).send().expect(200).end((err, res) => {
-                done(err);
+        // GIVEN active user
+        appTestHelper.activateUser(credentials.email, (user) => {
+            app.post('/api/auth/login').send(credentials).expect(200).end((err, res) => {
+                // WHEN logging out
+                // THEN it should succeed
+                app.post(api).send().expect(200).end((err, res) => {
+                    appTestHelper.deactivateUser(user, () => {
+                        done(err);
+                    });
+                });
             });
         });
     });

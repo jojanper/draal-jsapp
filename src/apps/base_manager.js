@@ -7,10 +7,21 @@ class BaseManager {
         this.model = model;
     }
 
-    execute(method, params) {
+    /**
+     * Execute query (promise and callback based).
+     *
+     * @param {string} method Query name.
+     * @param {*} params Query parameters.
+     * @param {function=} cb Callback function.
+     * @returns Promise to query, if no callback provided.
+     */
+    execute(method, params, cb) {
+        if (cb) {
+            return this.model[method](params, cb);
+        }
+
         return this.model[method](params).exec();
     }
-
 }
 
 module.exports = BaseManager;
