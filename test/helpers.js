@@ -5,6 +5,8 @@ global.testapp = require('../app.js');
 global.testrunner = require('supertest');
 
 global.appTestHelper = {
+    User: User,
+
     addUser: (details, cb, activate) => {
         const user = new User.model(details);
         if (activate) {

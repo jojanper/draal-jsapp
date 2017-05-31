@@ -1,11 +1,22 @@
+const AccountProfile = require('src/apps/user/models/accountprofile');
+
 const credentials = {email: 'test@test.com', password: '123456'};
 
 describe('User registration', () => {
     const api = '/api/auth/signup';
 
     it('signup succeeds', (done) => {
+        // GIVEN user
+        // WHEN user sign-up is performed
+        // THEN it should succeed
         testrunner(testapp).post(api).send(credentials).expect(200).end((err, res) => {
-            done(err);
+            // AND activation key exists for the user
+            appTestHelper.User.manager.execute('findOne', {email: credentials.email}).then((user) => {
+                AccountProfile.manager.execute('findOne', {user: user.id}).then((profile) => {
+                    chai.expect(profile.activation_key.length).to.be.equal(3);
+                    done(err);
+                });
+            });
         });
     });
 
