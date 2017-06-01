@@ -25,6 +25,16 @@ function signUp(req, res, next) {
 }
 
 /**
+ * Activate user account.
+ */
+function userActivation(req, res, next) {
+    AccountProfile.manager.activateUser(req.params.activationkey,
+        () => res.json(),
+        err => next(err)
+    );
+}
+
+/**
  * Login using local account.
  */
 function signIn(req, res, next) {
@@ -61,6 +71,12 @@ module.exports = [
         method: 'post',
         url: apiFormat('signup'),
         info: 'User sign-up'
+    },
+    {
+        fn: userActivation,
+        method: 'post',
+        url: apiFormat('activate/:activationkey'),
+        info: 'User account activation'
     },
     {
         fn: signIn,

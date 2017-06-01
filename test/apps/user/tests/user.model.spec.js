@@ -2,8 +2,9 @@ const sinon = require('sinon');
 require('mongoose');
 require('sinon-mongoose');
 
-const userCtrl = require('src/apps/user/ctrl');
 const User = require('src/apps/user/models/user');
+
+const UserModel = User.model;
 
 const userDetails = {
     email: 'test2@test.com',
@@ -14,13 +15,13 @@ function userMgrCreateUser() {
     describe('createUser', () => {
         it('save fails', (done) => {
             const errMsg = 'Error message';
-            let userMock = sinon.mock(new User.model(userDetails));
+            const userMock = sinon.mock(new UserModel(userDetails));
 
             // GIVEN user save fails
             userMock.expects('save').chain('exec').rejects(errMsg);
 
             // WHEN creating user
-            User.manager.createUser(userMock.object, null, err => {
+            User.manager.createUser(userMock.object, null, (err) => {
                 userMock.verify();
                 userMock.restore();
 
@@ -33,14 +34,14 @@ function userMgrCreateUser() {
 
         it('quering existing user fails', (done) => {
             const errMsg = 'Unable to query existing user';
-            const user = new User.model(userDetails);
-            let userMock = sinon.mock(User.model);
+            const user = new UserModel(userDetails);
+            const userMock = sinon.mock(UserModel);
 
             // GIVEN user query fails
             userMock.expects('findOne').chain('exec').rejects(errMsg);
 
             // WHEN creating user
-            User.manager.createUser(user, null, err => {
+            User.manager.createUser(user, null, (err) => {
                 userMock.restore();
 
                 // THEN it should return expected error
@@ -58,16 +59,16 @@ function userMgrFindLoginUser() {
             const errMsg = 'Failed to compare';
 
             // GIVEN user password comparison fails
-            let user = new User.model(userDetails);
+            const user = new UserModel(userDetails);
             user.comparePassword = (password, cb) => {
                 cb(errMsg, false);
             };
 
-            let userMock = sinon.mock(User.model);
+            const userMock = sinon.mock(User.model);
             userMock.expects('findOne').chain('exec').resolves(user);
 
             // WHEN querying login user
-            User.manager.findLoginUser(user.email, user.password, null, err => {
+            User.manager.findLoginUser(user.email, user.password, null, (err) => {
                 userMock.restore();
 
                 // THEN it should return expected error
@@ -79,14 +80,14 @@ function userMgrFindLoginUser() {
 
         it('login user query fails', (done) => {
             const errMsg = 'Failed to locate user';
-            let user = new User.model(userDetails);
+            const user = new UserModel(userDetails);
 
             // GIVEN user password comparison fails
-            let userMock = sinon.mock(User.model);
+            const userMock = sinon.mock(User.model);
             userMock.expects('findOne').chain('exec').rejects(errMsg);
 
             // WHEN querying login user
-            User.manager.findLoginUser(user.email, user.password, null, err => {
+            User.manager.findLoginUser(user.email, user.password, null, (err) => {
                 userMock.restore();
 
                 // THEN it should return expected error
@@ -106,7 +107,7 @@ describe('User manager', () => {
 describe('User model', () => {
     it('model is updated', (done) => {
         // GIVEN user model
-        let user = new User.model(userDetails);
+        const user = new UserModel(userDetails);
         user.save().then(() => {
             const pw = user.password;
 
@@ -123,7 +124,7 @@ describe('User model', () => {
 
     it('new password is saved', (done) => {
         // GIVEN user model
-        let user = new User.model({email: 'new-user@test.com', password: '123'});
+        const user = new UserModel({email: 'new-user@test.com', password: '123'});
         user.save().then(() => {
             const pw = user.password;
 

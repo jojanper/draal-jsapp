@@ -22,6 +22,17 @@ class BaseManager {
 
         return this.model[method](params).exec();
     }
+
+    /**
+     * Get query object.
+     *
+     * @param {string} method Query name.
+     * @param {*} params Query parameters.
+     * @returns Promise to query.
+     */
+    query(method, params) {
+        return this.model[method](params);
+    }
 }
 
 module.exports = BaseManager;
