@@ -1,3 +1,21 @@
+class DBQuery {
+    constructor(query) {
+        this.query = query;
+    }
+
+    get getQuery() {
+        return this.query;
+    }
+
+    set setQuery(query) {
+        this.query = query;
+    }
+
+    exec(error) {
+        return this.query.exec().catch(err => error(err));
+    }
+}
+
 /**
  * Model manager, that is, interface through which MongoDB database
  * query operations are provided to Mongoose models.
