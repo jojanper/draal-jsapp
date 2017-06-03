@@ -32,7 +32,7 @@ function userMgrCreateUser() {
             });
         });
 
-        it('quering existing user fails', (done) => {
+        it('quering existing user fails', () => {
             const errMsg = 'Unable to query existing user';
             const user = new UserModel(userDetails);
             const userMock = sinon.mock(UserModel);
@@ -40,22 +40,32 @@ function userMgrCreateUser() {
             // GIVEN user query fails
             userMock.expects('findOne').chain('exec').rejects(errMsg);
 
-            // WHEN creating user
-            User.manager.createUser(user, null, (err) => {
-                userMock.restore();
+            return new Promise((resolve, reject) => {
+                // WHEN creating user
+                User.manager.createUser(user, null, (err) => {
+                    userMock.verify();
+                    userMock.restore();
 
-                // THEN it should return expected error
+                    // THEN it should return expected error
+                    console.log(err.name);
+                    //chai.expect(err.name).to.be.equal(errMsg);
+
+                    //done();
+                    resolve(err);
+                });
+            })
+            .then((err) => {
+                console.log('RESOLVE -1');
                 chai.expect(err.name).to.be.equal(errMsg);
-
-                done();
-            });
+            })
+            .catch((err) => {});
         });
     });
 }
 
 function userMgrFindLoginUser() {
-    describe('findLoginUserUser', () => {
-        it('password comparison fails', (done) => {
+    describe('findLoginUser', () => {
+        it('password comparison fails', () => {
             const errMsg = 'Failed to compare';
 
             // GIVEN user password comparison fails
@@ -67,18 +77,28 @@ function userMgrFindLoginUser() {
             const userMock = sinon.mock(User.model);
             userMock.expects('findOne').chain('exec').resolves(user);
 
-            // WHEN querying login user
-            User.manager.findLoginUser(user.email, user.password, null, (err) => {
-                userMock.restore();
+            return new Promise((resolve, reject) => {
+                // WHEN querying login user
+                User.manager.findLoginUser(user.email, user.password, null, (err) => {
+                    userMock.verify();
+                    userMock.restore();
 
+                    // THEN it should return expected error
+                    //chai.expect(err).to.be.equal(errMsg);
+                    resolve(err);
+
+                    //done();
+                });
+            })
+            .then((err) => {
+                console.log('RESOLVE 0');
                 // THEN it should return expected error
                 chai.expect(err).to.be.equal(errMsg);
-
-                done();
-            });
+            })
+            .catch((err) => {});
         });
 
-        it('login user query fails', (done) => {
+        it('login user query fails', () => {
             const errMsg = 'Failed to locate user';
             const user = new UserModel(userDetails);
 
@@ -86,15 +106,23 @@ function userMgrFindLoginUser() {
             const userMock = sinon.mock(User.model);
             userMock.expects('findOne').chain('exec').rejects(errMsg);
 
-            // WHEN querying login user
-            User.manager.findLoginUser(user.email, user.password, null, (err) => {
-                userMock.restore();
+            return new Promise((resolve, reject) => {
+                // WHEN querying login user
+                User.manager.findLoginUser(user.email, user.password, null, (err) => {
+                    userMock.restore();
 
-                // THEN it should return expected error
+                    // THEN it should return expected error
+                    resolve(err);
+                    //chai.expect(err.name).to.be.equal(errMsg);
+
+                    //done();
+                });
+            })
+            .then((err) => {
+                console.log('RESOLVE 1');
                 chai.expect(err.name).to.be.equal(errMsg);
-
-                done();
-            });
+            })
+            .catch((err) => {});
         });
     });
 }
@@ -107,7 +135,7 @@ describe('User manager', () => {
 describe('User model', () => {
     it('model is updated', (done) => {
         // GIVEN user model
-        const user = new UserModel(userDetails);
+        const user = new UserModel({email: 'one@test.com', password: 'pw'});
         user.save().then(() => {
             const pw = user.password;
 
@@ -118,8 +146,8 @@ describe('User model', () => {
                 chai.expect(user.password).to.be.equal(pw);
 
                 done();
-            });
-        });
+            }).catch(err => done(err));
+        }).catch(err => done(err));
     });
 
     it('new password is saved', (done) => {

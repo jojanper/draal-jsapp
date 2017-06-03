@@ -3,12 +3,13 @@ class DBQuery {
         this.query = query;
     }
 
-    get getQuery() {
+    getQuery() {
         return this.query;
     }
 
-    set setQuery(query) {
+    setQuery(query) {
         this.query = query;
+        return this;
     }
 
     exec(error) {
@@ -31,14 +32,23 @@ class BaseManager {
      * @param {string} method Query name.
      * @param {*} params Query parameters.
      * @param {function=} cb Callback function.
-     * @returns Promise to query, if no callback provided.
+     * @param {function=} error Callback function for promise rejection.
+     * @returns {Query|Promise}.
      */
-    execute(method, params, cb) {
+    execute(method, params, cb, error) {
         if (cb) {
             return this.model[method](params, cb);
         }
 
-        return this.model[method](params).exec();
+/*
+        return this.model[method](params).exec()
+            .catch(err => {
+                //console.log(err.name);
+                //console.log('err 2');
+                //console.log(err.name);
+                error(err);
+            });*/
+        return new DBQuery(this.model[method](params)).exec(error);
     }
 
     /**
@@ -46,10 +56,10 @@ class BaseManager {
      *
      * @param {string} method Query name.
      * @param {*} params Query parameters.
-     * @returns Promise to query.
+     * @returns {DBQuery}.
      */
-    query(method, params) {
-        return this.model[method](params);
+    queryObj(method, params) {
+        return new DBQuery(this.model[method](params));
     }
 }
 

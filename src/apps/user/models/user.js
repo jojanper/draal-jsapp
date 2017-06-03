@@ -57,32 +57,63 @@ class UserManager extends BaseManager {
     }
 
     createUser(user, success, error) {
-        this.execute('findOne', {email: user.email}).then((existingUser) => {
+        this.execute('findOne', {email: user.email}, null, error)
+        /*
+        .catch(err => {
+                //console.log(err.name);
+                console.log('err 2');
+                console.log(err.name);
+                error(err);
+                //return null;
+            })
+            */
+        .then((existingUser) => {
             if (existingUser) {
                 return error(new APIError(format('Account with %s email address already exists', user.email)));
             }
 
-            user.save().then(() => success()).catch(err => error(err));
-        }).catch(err => error(err));
+            return user.save().then(() => success()).catch(err => error(err));
+        });
+        /*
+        .then(() => success())
+        .catch((err) => {
+            console.log('err 1');
+            console.log(err.name);
+            console.trace('HEP');
+            error(err);
+        });
+        */
     }
 
     findLoginUser(email, password, success, error) {
-        this.execute('findOne', {email: email.toLowerCase(), active: true}).then((user) => {
-            if (!user) {
-                return error(new APIError(`Email ${email} not found`));
-            }
-
-            user.comparePassword(password, (err, isMatch) => {
-                if (err) {
-                    return error(err);
+        this.execute('findOne', {email: email.toLowerCase(), active: true}, null, error)
+        /*
+            .catch(err => {
+                //console.log(err.name);
+                console.log('err 2');
+                console.log(err.name);
+                error(err);
+                //return null;
+            })
+            */
+            .then((user) => {
+                if (!user) {
+                    return error(new APIError(`Email ${email} not found`));
                 }
-                if (isMatch) {
-                    return success(user);
-                }
 
-                return error(new APIError('Invalid email or password'));
-            });
-        }).catch(err => error(err));
+                user.comparePassword(password, (err, isMatch) => {
+                    if (err) {
+                        console.log('failure');
+                        console.log(err);
+                        return error(err);
+                    }
+                    if (isMatch) {
+                        return success(user);
+                    }
+
+                    return error(new APIError('Invalid email or password'));
+                });
+            }); // .catch((err) => error(err));
     }
 }
 
