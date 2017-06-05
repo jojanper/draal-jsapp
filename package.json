@@ -19,7 +19,7 @@
     "docker-rm": "docker rm draaljs",
     "docker-stop-webserver": "docker stop nginx",
     "docker-rm-webserver": "docker rm nginx",
-    "lint": "eslint *.js ./config/*.js ./src/** ./test/**/*.js",
+    "lint": "eslint *.js ./config/*.js ./src/** ./test/**",
     "start": "NODE_PATH=$NODE_PATH:. DEBUG=draal-jsapp:* nodemon ./app.js -e .js --ignore node_modules",
     "start-prod": "NODE_PATH=$NODE_PATH:. NODE_ENV=production node ./app.js",
     "pretest": "mongo draaljs-test --eval \"db.dropDatabase()\"",

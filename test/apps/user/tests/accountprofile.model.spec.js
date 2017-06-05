@@ -18,7 +18,7 @@ describe('activateUser', () => {
     it('save fails', () => {
         const errMsg = 'Save failed';
         const user = new UserModel(userDetails);
-        const account = new AccountModel({user: user, activation_key: '123'})
+        const account = new AccountModel({user, activation_key: '123'});
         const userMock = sinon.mock(user);
 
         const accountMock = sinon.mock(AccountModel);
@@ -27,7 +27,7 @@ describe('activateUser', () => {
         // GIVEN user save fails
         userMock.expects('save').chain('exec').rejects(errMsg);
 
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
             // WHEN creating user
             AccountProfile.manager.activateUser('123', null, (err) => {
                 userMock.verify();
@@ -36,16 +36,13 @@ describe('activateUser', () => {
                 accountMock.verify();
                 accountMock.restore();
 
-                // THEN it should return expected error
                 resolve(err);
-                //chai.expect(err.name).to.be.equal(errMsg);
-
-                //done();
             });
         })
         .then((err) => {
+            // THEN it should return expected error
             chai.expect(err.name).to.be.equal(errMsg);
         })
-        .catch((err) => { console.log('ERROR ' + err); });
+        .catch((err) => { throw new Error(err); });
     });
 });

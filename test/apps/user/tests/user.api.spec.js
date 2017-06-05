@@ -10,30 +10,33 @@ describe('User registration', () => {
     const api = '/api/auth/signup';
     const activationApi = '/api/auth/activate/%s';
 
-    it('signup succeeds', (done) => {
+    it('signup succeeds', () =>
         // GIVEN user
         // WHEN user sign-up is performed
         // THEN it should succeed
-        testrunner(testapp).post(api).send(credentials).expect(200)
-            .end((err) => {
-                // AND activation key exists for the user
-                appTestHelper.getUserByEmail(credentials.email).then((user) => {
-                    AccountProfile.manager.execute('findOne', {user: user.id}).then((profile) => {
-                        chai.expect(profile.activation_key.length).to.be.equal(3);
-                        done(err);
-                    });
-                }).catch(err => done(err));
-            });
-    });
+        new Promise((resolve, reject) => {
+            testrunner(testapp).post(api).send(credentials).expect(200)
+                .end(() => {
+                    // AND activation key exists for the user
+                    appTestHelper.getUserByEmail(credentials.email).then((user) => {
+                        AccountProfile.manager.execute('findOne', {user: user.id}).then((profile) => {
+                            resolve(profile);
+                        });
+                    }).catch(err => reject(err));
+                });
+        })
+        .then((profile) => {
+            chai.expect(profile.activation_key.length).to.be.equal(3);
+        })
+        .catch((err) => { throw new Error(err); })
+    );
 
     it('signup email is already reserved', (done) => {
-        appTestHelper.createUser(credentials, () => {
-            testrunner(testapp).post(api).send(credentials).expect(400)
+        const credentials2 = {email: 'test-reserved@test.com', password: '123456'};
+        appTestHelper.createUser(credentials2, () => {
+            testrunner(testapp).post(api).send(credentials2).expect(400)
                 .end((err, res) => {
-                    console.trace('HEP');
-                    console.log(err.name);
-                    console.log(res);
-                    chai.expect(res.body.errors[0]).to.equal('Account with test@test.com email address already exists');
+                    chai.expect(res.body.errors[0]).to.equal('Account with test-reserved@test.com email address already exists');
                     done(err);
                 });
         });

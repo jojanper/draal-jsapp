@@ -40,7 +40,7 @@ function userMgrCreateUser() {
             // GIVEN user query fails
             userMock.expects('findOne').chain('exec').rejects(errMsg);
 
-            return new Promise((resolve, reject) => {
+            return new Promise((resolve) => {
                 // WHEN creating user
                 User.manager.createUser(user, null, (err) => {
                     userMock.verify();
@@ -48,9 +48,9 @@ function userMgrCreateUser() {
 
                     // THEN it should return expected error
                     console.log(err.name);
-                    //chai.expect(err.name).to.be.equal(errMsg);
+                    // chai.expect(err.name).to.be.equal(errMsg);
 
-                    //done();
+                    // done();
                     resolve(err);
                 });
             })
@@ -58,7 +58,7 @@ function userMgrCreateUser() {
                 console.log('RESOLVE -1');
                 chai.expect(err.name).to.be.equal(errMsg);
             })
-            .catch((err) => {});
+            .catch((err) => { throw new Error(err); });
         });
     });
 }
@@ -77,17 +77,17 @@ function userMgrFindLoginUser() {
             const userMock = sinon.mock(User.model);
             userMock.expects('findOne').chain('exec').resolves(user);
 
-            return new Promise((resolve, reject) => {
+            return new Promise((resolve) => {
                 // WHEN querying login user
                 User.manager.findLoginUser(user.email, user.password, null, (err) => {
                     userMock.verify();
                     userMock.restore();
 
                     // THEN it should return expected error
-                    //chai.expect(err).to.be.equal(errMsg);
+                    // chai.expect(err).to.be.equal(errMsg);
                     resolve(err);
 
-                    //done();
+                    // done();
                 });
             })
             .then((err) => {
@@ -95,7 +95,7 @@ function userMgrFindLoginUser() {
                 // THEN it should return expected error
                 chai.expect(err).to.be.equal(errMsg);
             })
-            .catch((err) => {});
+            .catch((err) => { throw new Error(err); });
         });
 
         it('login user query fails', () => {
@@ -106,23 +106,23 @@ function userMgrFindLoginUser() {
             const userMock = sinon.mock(User.model);
             userMock.expects('findOne').chain('exec').rejects(errMsg);
 
-            return new Promise((resolve, reject) => {
+            return new Promise((resolve) => {
                 // WHEN querying login user
                 User.manager.findLoginUser(user.email, user.password, null, (err) => {
                     userMock.restore();
 
                     // THEN it should return expected error
                     resolve(err);
-                    //chai.expect(err.name).to.be.equal(errMsg);
+                    // chai.expect(err.name).to.be.equal(errMsg);
 
-                    //done();
+                    // done();
                 });
             })
             .then((err) => {
                 console.log('RESOLVE 1');
                 chai.expect(err.name).to.be.equal(errMsg);
             })
-            .catch((err) => {});
+            .catch((err) => { throw new Error(err); });
         });
     });
 }
