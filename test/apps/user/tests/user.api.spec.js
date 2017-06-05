@@ -27,11 +27,13 @@ describe('User registration', () => {
     });
 
     it('signup email is already reserved', (done) => {
-        testrunner(testapp).post(api).send(credentials).expect(400)
-            .end((err, res) => {
-                chai.expect(res.body.errors[0]).to.equal('Account with test@test.com email address already exists');
-                done(err);
-            });
+        appTestHelper.createUser(credentials, () => {
+            testrunner(testapp).post(api).send(credentials).expect(400)
+                .end((err, res) => {
+                    chai.expect(res.body.errors[0]).to.equal('Account with test@test.com email address already exists');
+                    done(err);
+                });
+        });
     });
 
     it('invalid account activation key is used', (done) => {

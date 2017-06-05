@@ -21,6 +21,11 @@ global.appTestHelper = {
         user.save().then(() => cb(user)).catch((err) => { throw new Error(err); });
     },
 
+    createUser: (details, cb) => {
+        const user = new UserModel(details);
+        user.save().then(() => cb()).catch(() => cb());
+    },
+
     activateUser: (email, cb) => {
         User.manager.execute('findOne', {email}, (err, user) => {
             user.active = true;
