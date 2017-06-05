@@ -2,4 +2,4 @@
 --require test/helpers
 -u exports
 --recursive
---timeout 4000
+--timeout 2000

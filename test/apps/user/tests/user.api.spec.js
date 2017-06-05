@@ -31,17 +31,6 @@ describe('User registration', () => {
         .catch((err) => { throw new Error(err); })
     );
 
-    it('signup email is already reserved', (done) => {
-        const credentials2 = {email: 'test-reserved@test.com', password: '123456'};
-        appTestHelper.createUser(credentials2, () => {
-            testrunner(testapp).post(api).send(credentials2).expect(400)
-                .end((err, res) => {
-                    chai.expect(res.body.errors[0]).to.equal('Account with test-reserved@test.com email address already exists');
-                    done(err);
-                });
-        });
-    });
-
     it('invalid account activation key is used', (done) => {
         const url = format(activationApi, '1233');
         testrunner(testapp).post(url).send().expect(404)
@@ -49,6 +38,35 @@ describe('User registration', () => {
                 chai.expect(res.body.errors[0]).to.be.equal('Invalid account activation key');
                 done();
             });
+    });
+
+    it('signup email is already reserved', () => {
+        //const credentials2 = {email: 'test-reserved@test.com', password: '123456'};
+
+        return new Promise((resolve, reject) => {
+            //appTestHelper.createUser(credentials2, () => {
+                testrunner(testapp).post(api).send(credentials).expect(400)
+                    .end((err, res) => {
+                        if (err) {
+                            console.log('REJECT');
+                            console.trace('TRACE');
+                            reject(err);
+                        }
+                        else {
+                            console.log('HRP');
+                            resolve(res);
+                        }
+                    });
+            //});
+        })
+        .then((res) => {
+            const msg = 'Account with test@test.com email address already exists';
+            chai.expect(res.body.errors[0]).to.equal(msg);
+        })
+        .catch((err) => {
+            console.trace('');
+            throw new Error(err);
+        });
     });
 
     it('account is activated', (done) => {
