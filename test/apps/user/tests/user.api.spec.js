@@ -10,6 +10,30 @@ describe('User registration', () => {
     const api = '/api/auth/signup';
     const activationApi = '/api/auth/activate/%s';
 
+    it('signup email is already reserved', () => {
+        const account = {email: 'test-reserved@test.com', password: '123456'};
+
+        return new Promise((resolve, reject) => {
+            appTestHelper.createUser(account, () => {
+                testrunner(testapp).post(api).send(account).expect(400)
+                    .end((err, res) => {
+                        if (err) {
+                            console.log('REJECT');
+                            console.trace('TRACE');
+                            reject(err);
+                        } else {
+                            resolve(res);
+                        }
+                    });
+            });
+        })
+        .then((res) => {
+            const msg = 'Account with test-reserved@test.com email address already exists';
+            chai.expect(res.body.errors[0]).to.equal(msg);
+        })
+        .catch((err) => { throw new Error(err); });
+    });
+
     it('signup succeeds', () =>
         // GIVEN user
         // WHEN user sign-up is performed
@@ -39,26 +63,6 @@ describe('User registration', () => {
                 done();
             });
     });
-
-    it('signup email is already reserved', () =>
-        new Promise((resolve, reject) => {
-            testrunner(testapp).post(api).send(credentials).expect(400)
-                .end((err, res) => {
-                    if (err) {
-                        console.log('REJECT');
-                        console.trace('TRACE');
-                        reject(err);
-                    } else {
-                        resolve(res);
-                    }
-                });
-        })
-        .then((res) => {
-            const msg = 'Account with test@test.com email address already exists';
-            chai.expect(res.body.errors[0]).to.equal(msg);
-        })
-        .catch((err) => { throw new Error(err); })
-    );
 
     it('account is activated', (done) => {
         const url = format(activationApi, '123');
