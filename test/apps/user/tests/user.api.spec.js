@@ -40,34 +40,25 @@ describe('User registration', () => {
             });
     });
 
-    it('signup email is already reserved', () => {
-        //const credentials2 = {email: 'test-reserved@test.com', password: '123456'};
-
-        return new Promise((resolve, reject) => {
-            //appTestHelper.createUser(credentials2, () => {
-                testrunner(testapp).post(api).send(credentials).expect(400)
-                    .end((err, res) => {
-                        if (err) {
-                            console.log('REJECT');
-                            console.trace('TRACE');
-                            reject(err);
-                        }
-                        else {
-                            console.log('HRP');
-                            resolve(res);
-                        }
-                    });
-            //});
+    it('signup email is already reserved', () =>
+        new Promise((resolve, reject) => {
+            testrunner(testapp).post(api).send(credentials).expect(400)
+                .end((err, res) => {
+                    if (err) {
+                        console.log('REJECT');
+                        console.trace('TRACE');
+                        reject(err);
+                    } else {
+                        resolve(res);
+                    }
+                });
         })
         .then((res) => {
             const msg = 'Account with test@test.com email address already exists';
             chai.expect(res.body.errors[0]).to.equal(msg);
         })
-        .catch((err) => {
-            console.trace('');
-            throw new Error(err);
-        });
-    });
+        .catch((err) => { throw new Error(err); })
+    );
 
     it('account is activated', (done) => {
         const url = format(activationApi, '123');
