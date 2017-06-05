@@ -22,7 +22,7 @@ describe('User registration', () => {
                         chai.expect(profile.activation_key.length).to.be.equal(3);
                         done(err);
                     });
-                });
+                }).catch(err => done(err));
             });
     });
 

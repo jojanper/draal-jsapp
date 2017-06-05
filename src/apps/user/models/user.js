@@ -4,6 +4,7 @@ const format = require('util').format;
 
 const APIError = require('../../../error');
 const BaseManager = require('../../base_manager');
+const AccountProfile = require('./accountprofile');
 
 
 const userSchema = new mongoose.Schema({
@@ -72,8 +73,12 @@ class UserManager extends BaseManager {
                 return error(new APIError(format('Account with %s email address already exists', user.email)));
             }
 
-            return user.save().then(() => success()).catch(err => error(err));
-        });
+            // return user.save().then(() => success()).catch(err => error(err));
+            return user.save();
+        })
+        .then(savedUser => AccountProfile.manager.createProfile(savedUser))
+        .then(savedAccountProfile => success(savedAccountProfile))
+        .catch(err => error(err));
         /*
         .then(() => success())
         .catch((err) => {

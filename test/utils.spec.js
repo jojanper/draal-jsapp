@@ -26,6 +26,6 @@ describe('utilsLib', () => {
             method: 'post'
         }];
 
-        chai.expect(utilsLib.serializeApiInfo(routes)[0]).to.have.keys(['url', 'method', 'info', 'authenticate']);
+        chai.expect(utilsLib.serializeApiInfo('', routes)[0]).to.have.keys(['url', 'method', 'info', 'authenticate']);
     });
 });

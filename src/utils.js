@@ -13,7 +13,7 @@ module.exports = {
     /**
      * Set routes for application use.
      *
-     * @param {object} router Router object
+     * @param {object} router Router object.
      * @param {array} routes List of routes to be included for application.
      * @param {function} authFn Authentication middleware.
      *
@@ -38,14 +38,15 @@ module.exports = {
     /**
      * Serialize API routes.
      *
+     * @param {string} prefix Prefix URL for routes.
      * @param {array} routes List of API routes.
      *
      * @returns {object} Serialized API data.
      */
-    serializeApiInfo(routes) {
+    serializeApiInfo(prefix, routes) {
         return routes.map((item) => {
             const data = {
-                url: item.url,
+                url: prefix + item.url,
                 method: item.method,
                 info: item.info || '',
                 authenticate: item.authenticate || false
