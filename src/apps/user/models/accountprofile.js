@@ -22,6 +22,7 @@ class AccountProfileManager extends BaseManager {
     }
 
     createProfile(user) {
+        console.log(user);
         const Model = this.model;
         const profile = new Model({user: user.id, activation_key: '123'});
         return profile.save();
