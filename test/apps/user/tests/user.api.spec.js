@@ -30,6 +30,8 @@ describe('User registration', () => {
         appTestHelper.createUser(credentials, () => {
             testrunner(testapp).post(api).send(credentials).expect(400)
                 .end((err, res) => {
+                    console.log(err);
+                    console.log(res);
                     chai.expect(res.body.errors[0]).to.equal('Account with test@test.com email address already exists');
                     done(err);
                 });
