@@ -16,14 +16,6 @@ function signUp(req, res, next) {
         password: req.body.password
     });
 
-    /*
-    User.manager.createUser(user,
-        () => AccountProfile.manager.createProfile(user)
-            .then(() => res.json())
-            .catch(err => next(err)),
-        err => next(err)
-    );
-    */
     User.manager.createUser(user,
         () => res.json(),
         err => next(err)

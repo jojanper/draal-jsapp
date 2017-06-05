@@ -40,14 +40,6 @@ class BaseManager {
             return this.model[method](params, cb);
         }
 
-/*
-        return this.model[method](params).exec()
-            .catch(err => {
-                //console.log(err.name);
-                //console.log('err 2');
-                //console.log(err.name);
-                error(err);
-            });*/
         return new DBQuery(this.model[method](params)).exec(error);
     }
 

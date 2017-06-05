@@ -28,10 +28,6 @@ class AccountProfileManager extends BaseManager {
     }
 
     activateUser(activationKey, success, error) {
-        /*
-        this.query('findOne', {activation_key: activationKey})
-            .populate('user').exec()
-            */
         const obj = this.queryObj('findOne', {activation_key: activationKey});
         obj.setQuery(obj.getQuery().populate('user')).exec(error)
             .then((account) => {
@@ -44,7 +40,6 @@ class AccountProfileManager extends BaseManager {
                     .then(() => success())
                     .catch(err => error(err));
             });
-            // .catch(err => error(err));
     }
 }
 

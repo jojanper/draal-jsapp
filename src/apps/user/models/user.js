@@ -59,48 +59,20 @@ class UserManager extends BaseManager {
 
     createUser(user, success, error) {
         this.execute('findOne', {email: user.email}, null, error)
-        /*
-        .catch(err => {
-                //console.log(err.name);
-                console.log('err 2');
-                console.log(err.name);
-                error(err);
-                //return null;
-            })
-            */
-        .then((existingUser) => {
-            if (existingUser) {
-                return error(new APIError(format('Account with %s email address already exists', user.email)));
-            }
+            .then((existingUser) => {
+                if (existingUser) {
+                    return error(new APIError(format('Account with %s email address already exists', user.email)));
+                }
 
-            // return user.save().then(() => success()).catch(err => error(err));
-            return user.save();
-        })
-        .then(savedUser => AccountProfile.manager.createProfile(savedUser))
-        .then(savedAccountProfile => success(savedAccountProfile))
-        .catch(err => error(err));
-        /*
-        .then(() => success())
-        .catch((err) => {
-            console.log('err 1');
-            console.log(err.name);
-            console.trace('HEP');
-            error(err);
-        });
-        */
+                return user.save();
+            })
+            .then(savedUser => AccountProfile.manager.createProfile(savedUser))
+            .then(savedAccountProfile => success(savedAccountProfile))
+            .catch(err => error(err));
     }
 
     findLoginUser(email, password, success, error) {
         this.execute('findOne', {email: email.toLowerCase(), active: true}, null, error)
-        /*
-            .catch(err => {
-                //console.log(err.name);
-                console.log('err 2');
-                console.log(err.name);
-                error(err);
-                //return null;
-            })
-            */
             .then((user) => {
                 if (!user) {
                     return error(new APIError(`Email ${email} not found`));
@@ -118,7 +90,7 @@ class UserManager extends BaseManager {
 
                     return error(new APIError('Invalid email or password'));
                 });
-            }); // .catch((err) => error(err));
+            });
     }
 }
 

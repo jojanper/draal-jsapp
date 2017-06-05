@@ -45,17 +45,11 @@ function userMgrCreateUser() {
                 User.manager.createUser(user, null, (err) => {
                     userMock.verify();
                     userMock.restore();
-
-                    // THEN it should return expected error
-                    console.log(err.name);
-                    // chai.expect(err.name).to.be.equal(errMsg);
-
-                    // done();
                     resolve(err);
                 });
             })
             .then((err) => {
-                console.log('RESOLVE -1');
+                // THEN it should return expected error
                 chai.expect(err.name).to.be.equal(errMsg);
             })
             .catch((err) => { throw new Error(err); });
@@ -82,16 +76,10 @@ function userMgrFindLoginUser() {
                 User.manager.findLoginUser(user.email, user.password, null, (err) => {
                     userMock.verify();
                     userMock.restore();
-
-                    // THEN it should return expected error
-                    // chai.expect(err).to.be.equal(errMsg);
                     resolve(err);
-
-                    // done();
                 });
             })
             .then((err) => {
-                console.log('RESOLVE 0');
                 // THEN it should return expected error
                 chai.expect(err).to.be.equal(errMsg);
             })
@@ -109,17 +97,13 @@ function userMgrFindLoginUser() {
             return new Promise((resolve) => {
                 // WHEN querying login user
                 User.manager.findLoginUser(user.email, user.password, null, (err) => {
+                    userMock.verify();
                     userMock.restore();
-
-                    // THEN it should return expected error
                     resolve(err);
-                    // chai.expect(err.name).to.be.equal(errMsg);
-
-                    // done();
                 });
             })
             .then((err) => {
-                console.log('RESOLVE 1');
+                // THEN it should return expected error
                 chai.expect(err.name).to.be.equal(errMsg);
             })
             .catch((err) => { throw new Error(err); });
