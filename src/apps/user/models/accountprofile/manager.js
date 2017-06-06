@@ -1,3 +1,5 @@
+const crypto = require('crypto');
+
 const AccountProfile = require('./model');
 const APIError = require('../../../../error');
 const BaseManager = require('../../../base_manager');
@@ -8,7 +10,8 @@ class AccountProfileManager extends BaseManager {
     }
 
     createProfile(user) {
-        return this.getNewModel({user: user.id, activation_key: '123'}).save();
+        let key = crypto.createHash('sha256').update(user.email).digest('hex');
+        return this.getNewModel({user: user.id, activation_key: key}).save();
     }
 
     activateUser(activationKey, success, error) {

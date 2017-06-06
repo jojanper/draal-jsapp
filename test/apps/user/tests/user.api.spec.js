@@ -48,7 +48,7 @@ describe('User registration', () => {
                 });
         })
         .then((profile) => {
-            chai.expect(profile.activation_key.length).to.be.equal(3);
+            chai.expect(profile.activation_key.length).to.be.equal(64);
         })
         .catch((err) => { throw new Error(err); })
     );
@@ -63,14 +63,22 @@ describe('User registration', () => {
     });
 
     it('account is activated', (done) => {
-        const url = format(activationApi, '123');
-        testrunner(testapp).post(url).send().expect(200)
-            .end((err) => {
-                appTestHelper.getUserByEmail(credentials.email).then((user) => {
-                    chai.expect(user.active).to.be.true;
-                    done(err);
-                });
-            });
+        // GIVEN activation key for registered user
+        appTestHelper.getUserByEmail(credentials.email)
+            .then(user => appTestHelper.getUserAccount(user))
+            .then((account) => {
+                // WHEN account is activated
+                const url = format(activationApi, account.activation_key);
+                testrunner(testapp).post(url).send().expect(200)
+                    .end((err) => {
+                        appTestHelper.getUserByEmail(credentials.email).then((user) => {
+                            // THEN user status should be active
+                            chai.expect(user.active).to.be.true;
+                            done(err);
+                        });
+                    });
+            })
+            .catch((err) => { throw new Error(err); });
     });
 });
 
