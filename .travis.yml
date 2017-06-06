@@ -9,7 +9,6 @@ os:
 node_js:
   - "6"
 before_install:
-  - npm install -g npm
   - node --version
   - npm --version
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then docker --version; docker-compose --version; fi
