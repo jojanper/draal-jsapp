@@ -27,6 +27,17 @@ class BaseManager {
     }
 
     /**
+     * Create new model instance.
+     *
+     * @param {object} params Model parameters.
+     * @returns {Model}.
+     */
+    getNewModel(params) {
+        const Model = this.model;
+        return new Model(params);
+    }
+
+    /**
      * Execute query (promise and callback based).
      *
      * @param {string} method Query name.

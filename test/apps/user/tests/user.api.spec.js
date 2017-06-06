@@ -18,8 +18,6 @@ describe('User registration', () => {
                 testrunner(testapp).post(api).send(account).expect(400)
                     .end((err, res) => {
                         if (err) {
-                            console.log('REJECT');
-                            console.trace('TRACE');
                             reject(err);
                         } else {
                             resolve(res);

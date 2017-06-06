@@ -22,15 +22,13 @@ class AccountProfileManager extends BaseManager {
     }
 
     createProfile(user) {
-        console.log(user);
-        const Model = this.model;
-        const profile = new Model({user: user.id, activation_key: '123'});
-        return profile.save();
+        return this.getNewModel({user: user.id, activation_key: '123'}).save();
     }
 
     activateUser(activationKey, success, error) {
-        const obj = this.queryObj('findOne', {activation_key: activationKey});
-        obj.setQuery(obj.getQuery().populate('user')).exec(error)
+        const dbObj = this.queryObj('findOne', {activation_key: activationKey});
+        const query = dbObj.getQuery().populate('user');
+        dbObj.setQuery(query).exec(error)
             .then((account) => {
                 if (!account) {
                     return error(new APIError('Invalid account activation key'));

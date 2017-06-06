@@ -71,9 +71,6 @@ class UserManager extends BaseManager {
                 })
                 .catch(err => error(err));
             });
-            // .then(savedUser => AccountProfile.manager.createProfile(savedUser))
-            // .then(savedAccountProfile => success(savedAccountProfile))
-            // .catch(err => error(err));
     }
 
     findLoginUser(email, password, success, error) {
@@ -85,11 +82,8 @@ class UserManager extends BaseManager {
 
                 user.comparePassword(password, (err, isMatch) => {
                     if (err) {
-                        console.log('failure');
-                        console.log(err);
                         return error(err);
-                    }
-                    if (isMatch) {
+                    } else if (isMatch) {
                         return success(user);
                     }
 
