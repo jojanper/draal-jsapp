@@ -1,6 +1,7 @@
 const bcrypt = require('bcrypt-nodejs');
 const mongoose = require('mongoose');
 
+const APIError = require('../../../../error');
 
 const userSchema = new mongoose.Schema({
     email: {
@@ -39,9 +40,17 @@ userSchema.pre('save', function save(next) {
 /**
  * Helper method for validating user's password.
  */
-userSchema.methods.comparePassword = function comparePassword(candidatePassword, cb) {
-    bcrypt.compare(candidatePassword, this.password, (err, isMatch) => {
-        cb(err, isMatch);
+userSchema.methods.comparePassword = function comparePassword(candidatePassword) {
+    return new Promise((resolve, reject) => {
+        bcrypt.compare(candidatePassword, this.password, (err, isMatch) => {
+            if (err) {
+                reject(err);
+            } else if (!isMatch) {
+                reject(new APIError('Invalid password'));
+            } else {
+                resolve(this);
+            }
+        });
     });
 };
 

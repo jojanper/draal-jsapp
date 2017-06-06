@@ -1,3 +1,4 @@
+const bcrypt = require('bcrypt-nodejs');
 const sinon = require('sinon');
 require('mongoose');
 require('sinon-mongoose');
@@ -64,9 +65,10 @@ function userMgrFindLoginUser() {
 
             // GIVEN user password comparison fails
             const user = new UserModel(userDetails);
-            user.comparePassword = (password, cb) => {
-                cb(errMsg, false);
-            };
+            user.comparePassword = () =>
+                new Promise((resolve, reject) => {
+                    reject(errMsg);
+                });
 
             const userMock = sinon.mock(User.model);
             userMock.expects('findOne').chain('exec').resolves(user);
@@ -148,6 +150,24 @@ describe('User model', () => {
 
                 done();
             });
+        });
+    });
+
+    it('password comparison fails', (done) => {
+        const msg = 'Error';
+
+        // GIVEN password comparison fails
+        sinon.stub(bcrypt, 'compare').callsFake((pw1, pw2, cb) => {
+            cb(msg, false);
+        });
+
+        // WHEN user passwords are compared
+        const user = new UserModel({email: 'one@test.com', password: 'pw'});
+        user.comparePassword('ab', 'ba').catch((err) => {
+            // THEN it should return expect error
+            chai.expect(err).to.be.equal(msg);
+            bcrypt.compare.restore();
+            done();
         });
     });
 });

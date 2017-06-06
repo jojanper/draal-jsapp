@@ -32,16 +32,9 @@ class UserManager extends BaseManager {
                     throw new APIError(`Email ${email} not found`);
                 }
 
-                user.comparePassword(password, (err, isMatch) => {
-                    if (err) {
-                        return error(err);
-                    } else if (isMatch) {
-                        return success(user);
-                    }
-
-                    return error(new APIError('Invalid email or password'));
-                });
+                return user.comparePassword(password);
             })
+            .then(user => success(user))
             .catch(err => error(err));
     }
 }
