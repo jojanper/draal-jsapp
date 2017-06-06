@@ -20,9 +20,9 @@ function isAuthenticated(req, res, next) {
 
 const apiRoutes = [].concat(userAPIs);
 
-module.exports = () => {
+module.exports = (prefix) => {
     router.get('', (req, res) => {
-        res.json(utilsLib.serializeApiInfo(apiRoutes));
+        res.json(utilsLib.serializeApiInfo(prefix, apiRoutes));
     });
 
     router.get('/error', () => {

@@ -19,7 +19,7 @@
     "docker-rm": "docker rm draaljs",
     "docker-stop-webserver": "docker stop nginx",
     "docker-rm-webserver": "docker rm nginx",
-    "lint": "eslint *.js ./config/*.js ./src/**",
+    "lint": "eslint *.js ./config/*.js ./src/** ./test/**",
     "start": "NODE_PATH=$NODE_PATH:. DEBUG=draal-jsapp:* nodemon ./app.js -e .js --ignore node_modules",
     "start-prod": "NODE_PATH=$NODE_PATH:. NODE_ENV=production node ./app.js",
     "pretest": "mongo draaljs-test --eval \"db.dropDatabase()\"",
@@ -39,11 +39,11 @@
     "dotenv": "^4.0.0",
     "express": "~4.14.1",
     "express-session": "^1.15.2",
+    "mongoose": "^4.10.4",
     "morgan": "~1.7.0",
-    "mongoose": "^4.9.7",
     "passport": "0.3.2",
     "passport-local": "^1.0.0",
-    "pug": "~2.0.0-beta10"
+    "pug": "^2.0.0-rc.2"
   },
   "devDependencies": {
     "chai": "^3.5.0",
@@ -54,7 +54,7 @@
     "mocha": "^3.1.2",
     "nodemon": "~1.11.0",
     "rimraf": "^2.5.1",
-    "sinon": "^2.0.0",
+    "sinon": "^2.3.2",
     "sinon-mongoose": "^2.0.2",
     "supertest": "^3.0.0"
   },
@@ -69,9 +69,16 @@
       "no-console": 0,
       "no-plusplus": 0,
       "object-curly-spacing": 0,
-      "indent": ["error", 4],
-      "import/no-extraneous-dependencies": [0],
-      "import/no-unresolved": [0]
+      "indent": [
+        "error",
+        4
+      ],
+      "import/no-extraneous-dependencies": [
+        0
+      ],
+      "import/no-unresolved": [
+        0
+      ]
     },
     "env": {
       "node": true,
@@ -80,7 +87,8 @@
     "globals": {
       "chai": true,
       "testapp": true,
-      "testrunner": true
+      "testrunner": true,
+      "appTestHelper": true
     }
   }
 }

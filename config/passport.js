@@ -13,7 +13,7 @@ function passportInit(passport) {
     });
 
     passport.deserializeUser((id, done) => {
-        User.model.findById(id, (err, user) => {
+        User.manager.execute('findById', id, (err, user) => {
             done(err, user);
         });
     });

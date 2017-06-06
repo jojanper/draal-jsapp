@@ -3,9 +3,9 @@
  */
 const utilsLib = require('./utils');
 const index = require('./routes/index')();
-const api = require('./routes/api')();
 
 const apiPrefix = '/api';
+const api = require('./routes/api')(apiPrefix);
 
 // Middleware for handling application errors
 function apiMiddlewareErrorHandler(err, req, res, next) {

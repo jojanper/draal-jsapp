@@ -2,6 +2,7 @@ const passport = require('passport');
 const format = require('util').format;
 
 const User = require('./models/user');
+const AccountProfile = require('./models/accountprofile');
 const APIError = require('src/error');
 
 const UserModel = User.model;
@@ -15,7 +16,20 @@ function signUp(req, res, next) {
         password: req.body.password
     });
 
-    User.manager.createUser(user, () => res.json(), err => next(err));
+    User.manager.createUser(user,
+        () => res.json(),
+        err => next(err)
+    );
+}
+
+/**
+ * Activate user account.
+ */
+function userActivation(req, res, next) {
+    AccountProfile.manager.activateUser(req.params.activationkey,
+        () => res.json(),
+        err => next(err)
+    );
 }
 
 /**
@@ -55,6 +69,12 @@ module.exports = [
         method: 'post',
         url: apiFormat('signup'),
         info: 'User sign-up'
+    },
+    {
+        fn: userActivation,
+        method: 'post',
+        url: apiFormat('activate/:activationkey'),
+        info: 'User account activation'
     },
     {
         fn: signIn,
