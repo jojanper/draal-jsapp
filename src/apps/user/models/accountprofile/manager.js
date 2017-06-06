@@ -17,6 +17,7 @@ class AccountProfileManager extends BaseManager {
     activateUser(activationKey, success, error) {
         const dbObj = this.queryObj('findOne', {activation_key: activationKey});
         const query = dbObj.getQuery().populate('user');
+        /*
         dbObj.setQuery(query).exec(error)
             .then((account) => {
                 if (!account) {
@@ -28,6 +29,22 @@ class AccountProfileManager extends BaseManager {
                     .then(() => success())
                     .catch(err => error(err));
             });
+            */
+        dbObj.setQuery(query).exec(error)
+            .then((account) => {
+                if (!account) {
+                    throw new APIError('Invalid account activation key');
+                }
+
+                account.user.active = true;
+                return account.user.save();
+                /*
+                    .then(() => success())
+                    .catch(err => error(err));
+                    */
+            })
+            .then(account => success(account))
+            .catch(err => error(err));
     }
 }
 
