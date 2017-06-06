@@ -1,20 +1,6 @@
-const mongoose = require('mongoose');
-
-const APIError = require('../../../error');
-const BaseManager = require('../../base_manager');
-
-
-const profileSchema = new mongoose.Schema({
-    user: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        unique: true
-    },
-
-    activation_key: String
-});
-
-const AccountProfile = mongoose.model('AccountProfile', profileSchema);
+const AccountProfile = require('./model');
+const APIError = require('../../../../error');
+const BaseManager = require('../../../base_manager');
 
 class AccountProfileManager extends BaseManager {
     constructor() {
@@ -42,7 +28,4 @@ class AccountProfileManager extends BaseManager {
     }
 }
 
-module.exports = {
-    model: AccountProfile,
-    manager: new AccountProfileManager()
-};
+module.exports = new AccountProfileManager();
