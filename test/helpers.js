@@ -2,7 +2,6 @@ const User = require('src/apps/user/models/user');
 const UserAccount = require('src/apps/user/models/accountprofile');
 
 const UserModel = User.model;
-const UserAccountModel = UserAccount.model;
 
 global.chai = require('chai');
 global.testapp = require('../app.js');
@@ -43,7 +42,5 @@ global.appTestHelper = {
         user.save().then(() => cb(user));
     },
 
-    getUserAccount: (user) => {
-        return UserAccount.manager.execute('findOne', {user: user.id});
-    }
+    getUserAccount: user => UserAccount.manager.execute('findOne', {user: user.id})
 };

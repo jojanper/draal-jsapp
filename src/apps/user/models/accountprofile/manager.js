@@ -10,7 +10,7 @@ class AccountProfileManager extends BaseManager {
     }
 
     createProfile(user) {
-        let key = crypto.createHash('sha256').update(user.email).digest('hex');
+        const key = crypto.createHash('sha256').update(user.email).digest('hex');
         return this.getNewModel({user: user.id, activation_key: key}).save();
     }
 
