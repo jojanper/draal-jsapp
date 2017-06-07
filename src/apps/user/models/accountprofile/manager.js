@@ -15,6 +15,7 @@ class AccountProfileManager extends BaseManager {
     }
 
     activateUser(activationKey, success, error) {
+        let currentAccount;
         const dbObj = this.queryObj('findOne', {activation_key: activationKey});
         const query = dbObj.getQuery().populate('user');
 
@@ -24,8 +25,17 @@ class AccountProfileManager extends BaseManager {
                     throw new APIError('Invalid account activation key');
                 }
 
+                if (account.isActivated()) {
+                    throw new APIError('Account already activated');
+                }
+
+                currentAccount = account;
                 account.user.active = true;
                 return account.user.save();
+            })
+            .then(() => {
+                currentAccount.setActivated();
+                return currentAccount.save();
             })
             .then(account => success(account))
             .catch(err => error(err));

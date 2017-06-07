@@ -42,5 +42,12 @@ global.appTestHelper = {
         user.save().then(() => cb(user));
     },
 
-    getUserAccount: user => UserAccount.manager.execute('findOne', {user: user.id})
+    getUserAccount: (user) => {
+        const dbObj = UserAccount.manager.queryObj('findOne', {user: user.id});
+        const query = dbObj.getQuery().populate('user');
+        return dbObj.setQuery(query).exec();
+    },
+
+    getAccount: email => appTestHelper.getUserByEmail(email)
+        .then(user => appTestHelper.getUserAccount(user))
 };
