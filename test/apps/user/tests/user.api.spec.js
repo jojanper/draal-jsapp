@@ -107,7 +107,10 @@ describe('User registration', () => {
         // THEN it should fail
         appTestHelper.getAccount(credentials.email)
             .then(account => account.setExpired().save())
-            .then(() => {
+            .then((account) => {
+                console.log(new Date(account.user.createdAt).getTime());
+                console.log(new Date().getTime() + 1e6 * 7);
+                console.log(1e6 * 7);
                 activate(credentials.email, 400, (err, res) => {
                     // AND error message is available
                     chai.expect(res.body.errors[0]).to.equal('Activation expired, please re-register');
