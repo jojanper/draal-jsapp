@@ -16,6 +16,7 @@ services:
     environment:
       - PORT=3008
       - MONGODB_URI=mongodb://mongodb:27017/test
+      - ACCOUNT_ACTIVATION_DAYS=7
     depends_on:
       - mongodb
   nginx:

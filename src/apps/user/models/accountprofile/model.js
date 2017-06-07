@@ -43,8 +43,9 @@ profileSchema.methods.isExpired = function isExpired() {
     const now = new Date().getTime();
     const start = new Date(this.user.createdAt).getTime();
 
-    // Activation key is valid 7 days from registration day
-    const delta = 1e3 * 24 * 3600 * 7;
+    // Activation key is valid x days from registration day
+    const validDays = process.env.ACCOUNT_ACTIVATION_DAYS || 7;
+    const delta = 1e3 * 24 * 3600 * validDays;
     if (now > start + delta) {
         return true;
     }

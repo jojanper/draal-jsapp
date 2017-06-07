@@ -1,3 +1,11 @@
+const pause = duration => new Promise(res => setTimeout(res, duration));
+
+const retry = (retries, fn, delay = 500) =>
+  fn().catch(err => ((retries > 1) ?
+    pause(delay).then(() => retry(retries - 1, fn, delay * 2))
+    : Promise.reject(err)));
+
+
 module.exports = {
     /**
      * Check application development mode status.
@@ -54,5 +62,16 @@ module.exports = {
 
             return data;
         });
-    }
+    },
+
+    /**
+     * Graceful re-try in the event of Promise failure.
+     *
+     * @param {number} retries Number of re-try attempts.
+     * @param {function} fn Function that returns promise when called.
+     * @param {number} [delay=500] Delay between re-try attemps in milliseconds.
+     *
+     * @returns {object} Promise.
+     */
+    retryPromise: retry
 };

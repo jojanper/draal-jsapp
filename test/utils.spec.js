@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-expressions */
-const utilsLib = require('src/utils');
+const UtilsLib = require('src/utils');
 
 class MockApp {
     constructor(mode) {
@@ -14,10 +14,10 @@ class MockApp {
 describe('utilsLib', () => {
     it('supports isDevelopment', () => {
         let app = new MockApp('development');
-        chai.expect(utilsLib.isDevelopment(app)).to.be.true;
+        chai.expect(UtilsLib.isDevelopment(app)).to.be.true;
 
         app = new MockApp('production');
-        chai.expect(utilsLib.isDevelopment(app)).to.be.false;
+        chai.expect(UtilsLib.isDevelopment(app)).to.be.false;
     });
 
     it('supports serializeApiInfo', () => {
@@ -26,6 +26,22 @@ describe('utilsLib', () => {
             method: 'post'
         }];
 
-        chai.expect(utilsLib.serializeApiInfo('', routes)[0]).to.have.keys(['url', 'method', 'info', 'authenticate']);
+        chai.expect(UtilsLib.serializeApiInfo('', routes)[0]).to.have.keys(['url', 'method', 'info', 'authenticate']);
+    });
+
+    it('supports retryPromise', (done) => {
+        let retries = 0;
+
+        UtilsLib.retryPromise(2, () =>
+            new Promise((resolve, reject) => {
+                retries++;
+                reject('a');
+            })
+        )
+        .catch((err) => {
+            chai.expect(retries).to.equal(2);
+            chai.expect(err).to.equal('a');
+            done();
+        });
     });
 });

@@ -2,7 +2,9 @@ const crypto = require('crypto');
 
 const AccountProfile = require('./model');
 const APIError = require('../../../../error');
+const UtilsLib = require('../../../../utils');
 const BaseManager = require('../../../base_manager');
+
 
 class AccountProfileManager extends BaseManager {
     constructor() {
@@ -39,7 +41,7 @@ class AccountProfileManager extends BaseManager {
             })
             .then(() => {
                 currentAccount.setActivated();
-                return currentAccount.save();
+                return UtilsLib.retryPromise(2, () => currentAccount.save());
             })
             .then(account => success(account))
             .catch(err => error(err));
