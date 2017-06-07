@@ -46,3 +46,9 @@ describe('activateUser', () => {
         .catch((err) => { throw new Error(err); });
     });
 });
+
+describe('AccountProfile model', () => {
+    it('supports getStatuses method', () => {
+        chai.expect(AccountModel.getStatuses()).to.have.keys(['active', 'activated', 'expired']);
+    });
+});

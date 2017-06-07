@@ -62,23 +62,80 @@ describe('User registration', () => {
             });
     });
 
+    function activate(userEmail, statusCode, cb) {
+        appTestHelper.getAccount(userEmail).then((account) => {
+            const url = format(activationApi, account.activation_key);
+            testrunner(testapp).post(url).send().expect(statusCode)
+                .end((err, res) => {
+                    cb(err, res);
+                });
+        }).catch((err) => { throw new Error(err); });
+    }
+
     it('account is activated', (done) => {
-        // GIVEN activation key for registered user
-        appTestHelper.getUserByEmail(credentials.email)
-            .then(user => appTestHelper.getUserAccount(user))
-            .then((account) => {
+        // GIVEN registered user
+        // WHEN account is activated
+        // THEN it should succeed
+        activate(credentials.email, 200, (err) => {
+            appTestHelper.getAccount(credentials.email)
+                .then((account) => {
+                    // THEN user status should be active
+                    chai.expect(account.user.active).to.be.true;
+
+                    // AND account status should be activated
+                    chai.expect(account.isActivated()).to.be.true;
+
+                    done(err);
+                });
+        });
+    });
+
+    it('account activated multiple times', (done) => {
+        // GIVEN already activated user
+        // WHEN account is again activated
+        // THEN it should fail
+        activate(credentials.email, 400, (err, res) => {
+            // AND error message is available
+            chai.expect(res.body.errors[0]).to.equal('Account already activated');
+            done(err);
+        });
+    });
+
+    it('account activation expired', (done) => {
+        appTestHelper.getAccount(credentials.email)
+            // GIVEN expired activation key
+            .then(account => account.setExpired().save())
+            .then(() => {
                 // WHEN account is activated
-                const url = format(activationApi, account.activation_key);
-                testrunner(testapp).post(url).send().expect(200)
-                    .end((err) => {
-                        appTestHelper.getUserByEmail(credentials.email).then((user) => {
-                            // THEN user status should be active
-                            chai.expect(user.active).to.be.true;
-                            done(err);
-                        });
-                    });
+                // THEN it should fail
+                activate(credentials.email, 400, (err, res) => {
+                    // AND error message is available
+                    chai.expect(res.body.errors[0]).to.equal('Activation expired, please re-register');
+                    done(err);
+                });
+            });
+    });
+
+    it('late account activation', (done) => {
+        appTestHelper.getAccount(credentials.email)
+            .then(account => account.setExpired().save())
+            .then((account) => {
+                // GIVEN too much time has passed since account creation
+                const date = new Date(account.user.createdAt);
+                const delta = 1e3 * 24 * 3600 * 8;
+                date.setTime(date.getTime() - delta); // Account created 8 days ago
+                account.user.createdAt = date.toISOString();
+                return account.user.save();
             })
-            .catch((err) => { throw new Error(err); });
+            .then(() => {
+                // WHEN account is activated
+                // THEN it should fail
+                activate(credentials.email, 400, (err, res) => {
+                    // AND error message is available
+                    chai.expect(res.body.errors[0]).to.equal('Activation expired, please re-register');
+                    done(err);
+                });
+            });
     });
 });
 
