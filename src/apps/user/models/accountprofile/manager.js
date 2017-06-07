@@ -29,6 +29,10 @@ class AccountProfileManager extends BaseManager {
                     throw new APIError('Account already activated');
                 }
 
+                if (account.isExpired()) {
+                    throw new APIError('Activation expired, please re-register');
+                }
+
                 currentAccount = account;
                 account.user.active = true;
                 return account.user.save();

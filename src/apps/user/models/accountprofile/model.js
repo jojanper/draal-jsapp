@@ -30,8 +30,17 @@ profileSchema.methods.setActivated = function setActivated() {
     return this;
 };
 
+profileSchema.methods.setExpired = function setExpired() {
+    this.status = ProfileStatuses.expired;
+    return this;
+};
+
 profileSchema.methods.isActivated = function isActivated() {
     return this.status === ProfileStatuses.activated;
+};
+
+profileSchema.methods.isExpired = function isExpired() {
+    return this.status === ProfileStatuses.expired;
 };
 
 const AccountProfile = mongoose.model('AccountProfile', profileSchema);

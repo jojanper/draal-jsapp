@@ -100,6 +100,21 @@ describe('User registration', () => {
             done(err);
         });
     });
+
+    it('account activation expired', (done) => {
+        // GIVEN expired activation key
+        // WHEN account is activated
+        // THEN it should fail
+        appTestHelper.getAccount(credentials.email)
+            .then(account => account.setExpired().save())
+            .then(() => {
+                activate(credentials.email, 400, (err, res) => {
+                    // AND error message is available
+                    chai.expect(res.body.errors[0]).to.equal('Activation expired, please re-register');
+                    done(err);
+                });
+            });
+    });
 });
 
 describe('User authentication', () => {
