@@ -13,7 +13,7 @@ const profileSchema = new mongoose.Schema({
         unique: true
     },
 
-    activation_key: String,
+    activationKey: String,
 
     status: {
         type: String,

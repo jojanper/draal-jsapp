@@ -18,7 +18,7 @@ describe('activateUser', () => {
     it('save fails', () => {
         const errMsg = 'Save failed';
         const user = new UserModel(userDetails);
-        const account = new AccountModel({user, activation_key: '123'});
+        const account = new AccountModel({user, activationKey: '123'});
         const userMock = sinon.mock(user);
 
         const accountMock = sinon.mock(AccountModel);

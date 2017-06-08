@@ -38,7 +38,7 @@ describe('User registration', () => {
         // THEN it should succeed
         new Promise((resolve, reject) => {
             testrunner(testapp).post(api).send(credentials).expect(200)
-                .end(() => {
+                .end((err, res) => {
                     // AND activation key exists for the user
                     appTestHelper.getUserByEmail(credentials.email).then((user) => {
                         AccountProfile.manager.execute('findOne', {user: user.id}).then((profile) => {
@@ -48,7 +48,7 @@ describe('User registration', () => {
                 });
         })
         .then((profile) => {
-            chai.expect(profile.activation_key.length).to.be.equal(64);
+            chai.expect(profile.activationKey.length).to.be.equal(64);
         })
         .catch((err) => { throw new Error(err); })
     );
@@ -64,7 +64,7 @@ describe('User registration', () => {
 
     function activate(userEmail, statusCode, cb) {
         appTestHelper.getAccount(userEmail).then((account) => {
-            const url = format(activationApi, account.activation_key);
+            const url = format(activationApi, account.activationKey);
             testrunner(testapp).post(url).send().expect(statusCode)
                 .end((err, res) => {
                     cb(err, res);

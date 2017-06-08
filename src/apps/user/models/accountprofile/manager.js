@@ -13,12 +13,12 @@ class AccountProfileManager extends BaseManager {
 
     createProfile(user) {
         const key = crypto.createHash('sha256').update(user.email).digest('hex');
-        return this.getNewModel({user: user.id, activation_key: key}).save();
+        return this.getNewModel({user: user.id, activationKey: key}).save();
     }
 
     activateUser(activationKey, success, error) {
         let currentAccount;
-        const dbObj = this.queryObj('findOne', {activation_key: activationKey});
+        const dbObj = this.queryObj('findOne', {activationKey: activationKey});
         const query = dbObj.getQuery().populate('user');
 
         dbObj.setQuery(query).exec(error)
