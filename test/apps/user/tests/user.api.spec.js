@@ -38,7 +38,7 @@ describe('User registration', () => {
         // THEN it should succeed
         new Promise((resolve, reject) => {
             testrunner(testapp).post(api).send(credentials).expect(200)
-                .end((err, res) => {
+                .end(() => {
                     // AND activation key exists for the user
                     appTestHelper.getUserByEmail(credentials.email).then((user) => {
                         AccountProfile.manager.execute('findOne', {user: user.id}).then((profile) => {

@@ -18,7 +18,7 @@ class AccountProfileManager extends BaseManager {
 
     activateUser(activationKey, success, error) {
         let currentAccount;
-        const dbObj = this.queryObj('findOne', {activationKey: activationKey});
+        const dbObj = this.queryObj('findOne', {activationKey});
         const query = dbObj.getQuery().populate('user');
 
         dbObj.setQuery(query).exec(error)

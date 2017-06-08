@@ -17,7 +17,7 @@ function signUp(req, res, next) {
     });
 
     User.manager.createUser(user,
-        (account) => res.json(`${account.activationKey}`),
+        account => res.json(`${account.activationKey}`),
         err => next(err)
     );
 }
