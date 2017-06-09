@@ -1,7 +1,9 @@
-const taskClient = require('../config/celery').client;
+const celery = require('../config/celery');
 
 function executeTask() {
-    taskClient.call('tasks.echo', ['Hello World!']);
+    celery.callTask(['tasks.echo', ['Hello World!']]);
 }
 
-module.exports = executeTask;
+module.exports = {
+    executeTask
+};

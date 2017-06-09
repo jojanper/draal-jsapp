@@ -12,7 +12,7 @@ const chalk = require('chalk');
 const debug = require('debug')('draal-jsapp:server');
 
 const mongoLib = require('./config/mongodb');
-const celeryLib = require('./config/celery');
+const celeryClient = require('./config/celery');
 
 /**
  * Normalize a port into a number, string, or false.
@@ -77,7 +77,7 @@ require('./config/passport')(passport);
 // connection has been made
 mongoLib.config(mongoose, () => {
     // Setup up tasks handler
-    celeryLib(() => {
+    celeryClient.connect(() => {
         /**
          * Listen on provided port, on all network interfaces.
          */
@@ -129,7 +129,7 @@ mongoLib.config(mongoose, () => {
 // If the Node process ends, close open connections
 process.on('SIGINT', () => {
     mongoLib.close(mongoose)
-        .then(() => celeryLib.close())
+        .then(() => celeryClient.close())
         .then(() => process.exit(0));
 });
 
