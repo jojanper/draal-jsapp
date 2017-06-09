@@ -43,17 +43,19 @@ function mongodbSetup(mongoose, done) {
     mongoose.connection.on('disconnected', () => {
         console.log('Mongoose default connection disconnected');
     });
+}
 
-    // If the Node process ends, close the Mongoose connection
-    process.on('SIGINT', () => {
+function mongoDbClose(mongoose) {
+    return new Promise((resolve) => {
         mongoose.connection.close(() => {
             console.log('Mongoose default connection disconnected through app termination');
-            process.exit(0);
+            resolve();
         });
     });
 }
 
 module.exports = {
     dbURI,
-    config: mongodbSetup
+    config: mongodbSetup,
+    close: mongoDbClose
 };
