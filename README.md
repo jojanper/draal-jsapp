@@ -96,7 +96,7 @@ npm run pylint
 celery -A pytasks worker -l info
 ```
 
-The RabbitMQ broker need to be running obviously. To see RabbitMQ status
+The RabbitMQ broker need to be running, to see RabbitMQ status
 
 ```
 sudo service rabbitmq-server status
@@ -121,7 +121,8 @@ https://travis-ci.org/jojanper/draal-jsapp
 
 Docker Compose is used to run multi-container Docker applications. This project creates two
 separate containers: one for the nodejs application and the other for NGINX reverse proxy. The application
-is accessible at http://localhost:8008.
+is accessible at http://localhost:8008. Currently, the Docker configuration does not include Celery tasks
+runner (will change is near future).
 
 To build the project
 ```
