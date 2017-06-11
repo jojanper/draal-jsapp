@@ -39,7 +39,7 @@ class CeleryClient {
     }
 
     callTask(args) {
-        return this.client.call(...args);
+        return (this.client) ? this.client.call(...args) : null;
     }
 }
 

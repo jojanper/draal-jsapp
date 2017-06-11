@@ -8,6 +8,8 @@ os:
   - osx
 node_js:
   - "6"
+python:
+  - "2.7"
 before_install:
   - node --version
   - npm --version
@@ -20,6 +22,10 @@ before_install:
     sudo mkdir -p /data/db;
     brew services start mongodb;
     fi
+  - sudo apt-get install python
+  - python --version
+  - npm run pip-install
 script:
   - npm run cibuild
+  - npm run pylint
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then npm run docker-build; fi
