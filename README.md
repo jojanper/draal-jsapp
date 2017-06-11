@@ -81,7 +81,7 @@ prerequisites for backend tasks development have been installed, the installatio
 
 ```
 npm run virtualenv-install
-source virtualenv2.7/draalcore/bin/activate
+source virtualenv2.7/draal/bin/activate
 ```
 
 This will install python dependencies as virtualenv under current folder.
