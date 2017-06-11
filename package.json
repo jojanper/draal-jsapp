@@ -27,7 +27,10 @@
     "client-install": "git clone https://github.com/jojanper/angular-app.git && cd angular-app && npm i",
     "client-build": "rimraf public && mkdir public && cd angular-app && cp -r dist/* ../public/ && cd .. && rm public/index.html && npm run client-template",
     "client-template": "node scripts/build_template",
-    "client-watch": "nodemon --watch ./angular-app/dist --delay 250ms --exec 'npm run client-build'"
+    "client-watch": "nodemon --watch ./angular-app/dist --delay 250ms --exec 'npm run client-build'",
+    "virtualenv-install": "node scripts/virtualenv",
+    "pip-install": "pip install -U pip setuptools && pip install -r requirements.txt",
+    "pylint": "flake8 --config=flake8 -v pytasks"
   },
   "dependencies": {
     "bcrypt-nodejs": "0.0.3",
@@ -52,9 +55,11 @@
     "eslint-config-airbnb-base": "^11.0.0",
     "eslint-plugin-import": "^2.1.0",
     "istanbul": "^0.4.5",
+    "minimist": "latest",
     "mocha": "^3.1.2",
     "nodemon": "~1.11.0",
     "rimraf": "^2.5.1",
+    "shelljs": "^0.5.3",
     "sinon": "^2.3.2",
     "sinon-mongoose": "^2.0.2",
     "supertest": "^3.0.0"

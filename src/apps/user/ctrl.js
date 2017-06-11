@@ -4,6 +4,7 @@ const format = require('util').format;
 const User = require('./models/user');
 const AccountProfile = require('./models/accountprofile');
 const APIError = require('src/error');
+const TasksLib = require('src/tasks');
 
 const UserModel = User.model;
 
@@ -17,7 +18,10 @@ function signUp(req, res, next) {
     });
 
     User.manager.createUser(user,
-        account => res.json(`${account.activationKey}`),
+        (account) => {
+            TasksLib.executeTask();
+            res.json(`${account.activationKey}`);
+        },
         err => next(err)
     );
 }

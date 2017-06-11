@@ -8,10 +8,16 @@ os:
   - osx
 node_js:
   - "6"
+python:
+  - "2.7"
 before_install:
   - node --version
   - npm --version
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then docker --version; docker-compose --version; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
+    docker --version;
+    docker-compose --version;
+    sudo apt-get install python;
+    fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
     echo "Updating homebrew";
     brew update;
@@ -20,6 +26,9 @@ before_install:
     sudo mkdir -p /data/db;
     brew services start mongodb;
     fi
+  - python --version
+  - npm run pip-install
 script:
   - npm run cibuild
+  - npm run pylint
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then npm run docker-build; fi
