@@ -13,7 +13,11 @@ python:
 before_install:
   - node --version
   - npm --version
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then docker --version; docker-compose --version; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
+    docker --version;
+    docker-compose --version;
+    sudo apt-get install python
+    fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
     echo "Updating homebrew";
     brew update;
@@ -21,8 +25,9 @@ before_install:
     brew install mongodb;
     sudo mkdir -p /data/db;
     brew services start mongodb;
+    echo "Installing python";
+    brew install python;
     fi
-  - sudo apt-get install python
   - python --version
   - npm run pip-install
 script:
