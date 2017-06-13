@@ -4,3 +4,4 @@ coverage
 nose2
 
 celery==4.0.2
+django==1.11.2

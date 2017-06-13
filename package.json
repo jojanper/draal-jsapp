@@ -30,8 +30,8 @@
     "client-watch": "nodemon --watch ./angular-app/dist --delay 250ms --exec 'npm run client-build'",
     "virtualenv-install": "node scripts/virtualenv",
     "pip-install": "pip install -U pip setuptools && pip install -r requirements.txt",
-    "pylint": "flake8 --config=flake8 -v pytasks",
-    "pytests": "nose2 -s pytasks -v --with-coverage --coverage-report term-missing --coverage pytasks"
+    "pylint": "flake8 --config=.flake8 -v pytasks",
+    "pytests": "nose2 -s . -v --with-coverage --coverage-report term-missing --coverage pytasks"
   },
   "dependencies": {
     "bcrypt-nodejs": "0.0.3",

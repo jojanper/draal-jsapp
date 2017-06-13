@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import unittest
-from pytasks.celeryapp import app
+from pytasks.celery import app
 
 
 class CeleryBaseTest(unittest.TestCase):
