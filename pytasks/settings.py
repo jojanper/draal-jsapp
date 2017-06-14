@@ -11,6 +11,6 @@ DEFAULT_FROM_EMAIL = 'webmaster@draalmedia.com'
 
 EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_HOST_USER = 'draalmedia.web@gmail.com'
-EMAIL_HOST_PASSWORD = 'joueec52'
+EMAIL_HOST_USER = ''
+EMAIL_HOST_PASSWORD = ''
 EMAIL_PORT = 587
