@@ -2,27 +2,32 @@
 # -*- coding: utf-8 -*-
 
 import unittest
+from mock import patch
+
 from pytasks.celery import app
+from pytasks.tasks import registration_email
 
 
 class CeleryBaseTest(unittest.TestCase):
-
     def setUp(self):
         app.conf.update(CELERY_ALWAYS_EAGER=True)
 
 
-class TestStringMethods(unittest.TestCase):
+class RegisterTestcase(CeleryBaseTest):
 
-    def test_upper(self):
-        self.assertEqual('foo'.upper(), 'FOO')
+    @patch('pytasks.tasks.send_mail')
+    def test_send_registration_mail(self, mailer_mock):
+        """Registration email is send"""
+        mailer_mock.return_value = True
 
-    def test_isupper(self):
-        self.assertTrue('FOO'.isupper())
-        self.assertFalse('Foo'.isupper())
+        # GIVEN registration details
+        kwargs = {
+            'email': 'test@test.com',
+            'activation_key': '123'
+        }
 
-    def test_split(self):
-        s = 'hello world'
-        self.assertEqual(s.split(), ['hello', 'world'])
-        # check that s.split fails when the separator is not a string
-        with self.assertRaises(TypeError):
-            s.split(2)
+        # WHEN registration mailer is called
+        registration_email(**kwargs)
+
+        # THEN mail is sent
+        self.assertEqual(mailer_mock.call_count, 1)
