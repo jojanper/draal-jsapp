@@ -31,4 +31,5 @@ before_install:
 script:
   - npm run cibuild
   - npm run pylint
+  - npm run pytests
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then npm run docker-build; fi

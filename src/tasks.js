@@ -1,9 +1,7 @@
 const celery = require('../config/celery');
 
-function executeTask() {
-    celery.callTask(['pytasks.tasks.echo', ['Hello World!']]);
-}
-
 module.exports = {
-    executeTask
+    sendRegistrationEmail: (email, key) => {
+        celery.callTask(['pytasks.tasks.registration_email', [email, key]]);
+    }
 };

@@ -86,6 +86,11 @@ source virtualenv2.7/draal/bin/activate
 
 This will install python dependencies as virtualenv under current folder.
 
+### Run Python unit tests
+```
+npm run pytests
+```
+
 ### Run Python code styling
 ```
 npm run pylint

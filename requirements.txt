@@ -1,3 +1,8 @@
 flake8==3.2.1
+cov-core
+coverage
+nose2
+mock
 
 celery==4.0.2
+django==1.11.2
