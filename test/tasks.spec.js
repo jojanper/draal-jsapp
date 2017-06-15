@@ -29,7 +29,7 @@ class MockCeleryClient {
 }
 
 describe('Celery tasks', () => {
-    it('supports executeTask', (done) => {
+    it('supports sendRegistrationEmail', (done) => {
         const client = new MockCeleryClient();
         sinon.stub(celery, 'createClient').callsFake(() => client);
 
@@ -39,13 +39,18 @@ describe('Celery tasks', () => {
             const call = sinon.spy(client, 'call');
 
             // WHEN task is executed
-            TasksLib.executeTask();
+            TasksLib.sendRegistrationEmail('test@test.com', 'abc');
 
             // THEN call to task scheduler is made
             sinon.assert.calledOnce(call);
 
             // AND Celery client receives task data
             chai.expect(client.calls).to.be.equal(1);
+
+            // AND Celery task data arguments are correct
+            const args = call.getCalls()[0].args[1];
+            chai.expect(args[0]).to.be.equal('test@test.com');
+            chai.expect(args[1]).to.be.equal('abc');
 
             call.restore();
             celery.createClient.restore();

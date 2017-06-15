@@ -19,7 +19,7 @@ function signUp(req, res, next) {
 
     User.manager.createUser(user,
         (account) => {
-            TasksLib.executeTask();
+            TasksLib.sendRegistrationEmail(user.email, account.activationKey);
             res.json(`${account.activationKey}`);
         },
         err => next(err)

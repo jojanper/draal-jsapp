@@ -1,10 +1,8 @@
 Some thoughts for further development:
 --------------------------------------
 
-- Public API that lists all available APIs
-  - public vs non-public
-  - display name
-  - other useful information
-    - parameters, etc?
-- Task runner
-  - RabbitMQ + node-celery (https://github.com/mher/node-celery)?
+- Add celery to Docker configuration
+- Missing user account funtionality
+  - Password reset (forgot password)
+  - Password change
+- File upload
