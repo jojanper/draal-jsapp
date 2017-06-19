@@ -27,6 +27,18 @@ function signUp(req, res, next) {
 }
 
 /**
+ * Request user password reset.
+ */
+function pwReset(req, res, next) {
+    User.manager.resetPassword(req.body.email,
+        (user) => {
+            res.json(`${user.pwResetToken}`);
+        },
+        err => next(err)
+    );
+}
+
+/**
  * Activate user account.
  */
 function userActivation(req, res, next) {
@@ -92,5 +104,11 @@ module.exports = [
         url: apiFormat('logout'),
         authenticate: true,
         info: 'User sign-out'
+    },
+    {
+        fn: pwReset,
+        method: 'post',
+        url: apiFormat('password-reset'),
+        info: 'User password reset'
     }
 ];

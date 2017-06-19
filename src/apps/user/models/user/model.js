@@ -10,6 +10,8 @@ const userSchema = new mongoose.Schema({
     },
 
     password: String,
+    pwResetToken: String,
+    pwResetExpires: Date,
 
     active: {
         type: Boolean,
