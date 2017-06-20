@@ -3,6 +3,7 @@ const format = require('util').format;
 
 const User = require('./model');
 const APIError = require('../../../../error');
+const UtilsLib = require('../../../../utils');
 const BaseManager = require('../../../base_manager');
 const AccountProfile = require('../accountprofile');
 
@@ -27,7 +28,11 @@ class UserManager extends BaseManager {
     }
 
     findUser(email, error, active = true) {
-        return this.execute('findOne', {email: email.toLowerCase(), active}, null, error);
+        const data = {email: email.toLowerCase()};
+        if (active !== null) {
+            data.active = active;
+        }
+        return this.execute('findOne', data, null, error);
     }
 
     findLoginUser(email, password, success, error) {
@@ -44,19 +49,17 @@ class UserManager extends BaseManager {
     }
 
     resetPassword(email, success, error) {
-        this.findUser(email, error, false)
+        this.findUser(email, error, null)
             .then((user) => {
                 if (!user) {
                     throw new APIError(`Email ${email} not found`);
                 }
 
-                if (user.active) {
+                if (!user.active) {
                     throw new APIError('Password reset can be requested only for active user');
                 }
 
-                const validDays = process.env.ACCOUNT_ACTIVATION_DAYS || 7;
-                const delta = 24 * 3600000 * validDays;
-                user.pwResetExpires = Date.now() + delta;
+                user.pwResetExpires = Date.now() + UtilsLib.getActivationThreshold();
                 user.pwResetToken = crypto.createHash('sha256').digest('hex');
                 return user.save();
             })

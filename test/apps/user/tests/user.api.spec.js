@@ -185,7 +185,7 @@ describe('User authentication', () => {
     });
 });
 
-describe('User authentication', () => {
+describe('User logout', () => {
     const api = '/api/auth/logout';
 
     it('logout fails', (done) => {

@@ -73,5 +73,16 @@ module.exports = {
      *
      * @returns {object} Promise.
      */
-    retryPromise: retry
+    retryPromise: retry,
+
+    /**
+     * Determine time threshold that can be used for user related activities
+     * requiring, for example, expiration time.
+     *
+     * @returns {number} Time threshold, in milliseconds.
+     */
+    getActivationThreshold() {
+        const validDays = process.env.ACCOUNT_ACTIVATION_DAYS || 7;
+        return 24 * 3600000 * validDays;
+    }
 };

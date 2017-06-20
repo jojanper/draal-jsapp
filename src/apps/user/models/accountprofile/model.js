@@ -1,5 +1,8 @@
 const mongoose = require('mongoose');
 
+const UtilsLib = require('../../../../utils');
+
+
 const ProfileStatuses = {
     active: 'Active',
     activated: 'Activated',
@@ -40,13 +43,10 @@ profileSchema.methods.isActivated = function isActivated() {
 };
 
 profileSchema.methods.isExpired = function isExpired() {
-    const now = new Date().getTime();
     const start = new Date(this.user.createdAt).getTime();
 
-    // Activation key is valid x days from registration day
-    const validDays = process.env.ACCOUNT_ACTIVATION_DAYS || 7;
-    const delta = 1e3 * 24 * 3600 * validDays;
-    if (now > start + delta) {
+    // Activation key is valid x days (in milliseconds) from registration day
+    if (Date.now() > start + UtilsLib.getActivationThreshold()) {
         return true;
     }
 

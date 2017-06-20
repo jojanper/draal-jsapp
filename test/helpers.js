@@ -24,7 +24,7 @@ global.appTestHelper = {
 
     createUser: (details, cb) => {
         const user = new UserModel(details);
-        user.save().then(() => cb()).catch(() => cb());
+        user.save().then(user => cb(user)).catch(() => cb());
     },
 
     activateUser: (email, cb) => {
