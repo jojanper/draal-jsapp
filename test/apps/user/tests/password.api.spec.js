@@ -1,7 +1,7 @@
 const credentials = {email: 'test-123456@test.com', password: '123456'};
 
 describe('Password reset request', () => {
-    const api = '/api/auth/password-reset';
+    const api = '/api/auth/password-reset-request';
 
     it('fails for unknown email', (done) => {
         const email = 'unknown@test.com';

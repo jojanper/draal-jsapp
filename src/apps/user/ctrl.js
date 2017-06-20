@@ -29,11 +29,19 @@ function signUp(req, res, next) {
 /**
  * Request user password reset.
  */
-function pwReset(req, res, next) {
-    User.manager.resetPassword(req.body.email,
-        (user) => {
-            res.json(`${user.pwResetToken}`);
-        },
+function pwResetRequest(req, res, next) {
+    User.manager.passwordResetToken(req.body.email,
+        user => res.json(`${user.pwResetToken}`),
+        err => next(err)
+    );
+}
+
+/**
+ * Change user password using token identifier.
+ */
+function pwResetActivation(req, res, next) {
+    User.manager.resetPassword(req.body,
+        () => res.json(),
         err => next(err)
     );
 }
@@ -106,9 +114,15 @@ module.exports = [
         info: 'User sign-out'
     },
     {
-        fn: pwReset,
+        fn: pwResetRequest,
+        method: 'post',
+        url: apiFormat('password-reset-request'),
+        info: 'User password reset request'
+    },
+    {
+        fn: pwResetActivation,
         method: 'post',
         url: apiFormat('password-reset'),
-        info: 'User password reset'
+        info: 'User password change using token'
     }
 ];

@@ -65,6 +65,19 @@ userSchema.methods.createPwResetToken = function createResetToken() {
     return this.save();
 };
 
+userSchema.methods.changePasswordWithToken = function changePasswordWithToken(token, password) {
+    if (this.pwResetToken !== token) {
+        throw new APIError('Invalid token');
+    }
+
+    if (Date.now() > this.pwResetExpires) {
+        throw new APIError('Password reset expired, please re-reset the password');
+    }
+
+    this.password = password;
+    return this.save();
+};
+
 const User = mongoose.model('User', userSchema);
 
 module.exports = User;
