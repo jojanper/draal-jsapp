@@ -1,6 +1,7 @@
 Some thoughts for further development:
 --------------------------------------
 
+- API post data validation
 - Add celery to Docker configuration
 - Missing user account funtionality
   - Password reset (forgot password)

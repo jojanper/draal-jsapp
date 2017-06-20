@@ -123,6 +123,6 @@ module.exports = [
         fn: pwResetActivation,
         method: 'post',
         url: apiFormat('password-reset'),
-        info: 'User password change using token'
+        info: 'User password change using reset token'
     }
 ];
