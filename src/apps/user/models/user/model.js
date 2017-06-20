@@ -1,7 +1,10 @@
 const bcrypt = require('bcrypt-nodejs');
 const mongoose = require('mongoose');
+const crypto = require('crypto');
 
 const APIError = require('../../../../error');
+const UtilsLib = require('../../../../utils');
+
 
 const userSchema = new mongoose.Schema({
     email: {
@@ -54,6 +57,12 @@ userSchema.methods.comparePassword = function comparePassword(candidatePassword)
             }
         });
     });
+};
+
+userSchema.methods.createPwResetToken = function createResetToken() {
+    this.pwResetExpires = Date.now() + UtilsLib.getActivationThreshold();
+    this.pwResetToken = crypto.createHash('sha256').digest('hex');
+    return this.save();
 };
 
 const User = mongoose.model('User', userSchema);

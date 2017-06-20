@@ -1,9 +1,7 @@
-const crypto = require('crypto');
 const format = require('util').format;
 
 const User = require('./model');
 const APIError = require('../../../../error');
-const UtilsLib = require('../../../../utils');
 const BaseManager = require('../../../base_manager');
 const AccountProfile = require('../accountprofile');
 
@@ -59,9 +57,7 @@ class UserManager extends BaseManager {
                     throw new APIError('Password reset can be requested only for active user');
                 }
 
-                user.pwResetExpires = Date.now() + UtilsLib.getActivationThreshold();
-                user.pwResetToken = crypto.createHash('sha256').digest('hex');
-                return user.save();
+                return user.createPwResetToken();
             })
             .then(user => success(user))
             .catch(err => error(err));
