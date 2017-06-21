@@ -43,7 +43,7 @@
     "dotenv": "^4.0.0",
     "express": "^4.15.3",
     "express-session": "^1.15.3",
-    "mongoose": "^4.10.5",
+    "mongoose": "^4.10.7",
     "morgan": "^1.8.2",
     "node-celery": "^0.2.8",
     "passport": "^0.3.2",
@@ -61,7 +61,7 @@
     "nodemon": "~1.11.0",
     "rimraf": "^2.5.1",
     "shelljs": "^0.5.3",
-    "sinon": "^2.3.2",
+    "sinon": "^2.3.5",
     "sinon-mongoose": "^2.0.2",
     "supertest": "^3.0.0"
   },
@@ -93,6 +93,7 @@
     },
     "globals": {
       "chai": true,
+      "expect": true,
       "testapp": true,
       "testrunner": true,
       "appTestHelper": true
