@@ -19,3 +19,11 @@ def registration_email(email, activation_key):
     message = 'Your activation key is {}'.format(activation_key)
     logger.debug('{}, {}'.format(email, activation_key))
     send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [email], fail_silently=True)
+
+
+@app.task(ignore_result=True)
+def passwordreset_email(email, reset_key):
+    subject = 'Draal password reset'
+    message = 'Your reset key is {}'.format(reset_key)
+    logger.debug('{}, {}'.format(email, reset_key))
+    send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [email], fail_silently=True)

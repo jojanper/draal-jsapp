@@ -27,7 +27,7 @@ describe('User registration', () => {
         })
         .then((res) => {
             const msg = 'Account with test-reserved@test.com email address already exists';
-            chai.expect(res.body.errors[0]).to.equal(msg);
+            expect(res.body.errors[0]).to.equal(msg);
         })
         .catch((err) => { throw new Error(err); });
     });
@@ -48,7 +48,7 @@ describe('User registration', () => {
                 });
         })
         .then((profile) => {
-            chai.expect(profile.activationKey.length).to.be.equal(64);
+            expect(profile.activationKey.length).to.be.equal(64);
         })
         .catch((err) => { throw new Error(err); })
     );
@@ -57,7 +57,7 @@ describe('User registration', () => {
         const url = format(activationApi, '1233');
         testrunner(testapp).post(url).send().expect(404)
             .end((err, res) => {
-                chai.expect(res.body.errors[0]).to.be.equal('Invalid account activation key');
+                expect(res.body.errors[0]).to.be.equal('Invalid account activation key');
                 done();
             });
     });
@@ -80,10 +80,10 @@ describe('User registration', () => {
             appTestHelper.getAccount(credentials.email)
                 .then((account) => {
                     // THEN user status should be active
-                    chai.expect(account.user.active).to.be.true;
+                    expect(account.user.active).to.be.true;
 
                     // AND account status should be activated
-                    chai.expect(account.isActivated()).to.be.true;
+                    expect(account.isActivated()).to.be.true;
 
                     done(err);
                 });
@@ -96,7 +96,7 @@ describe('User registration', () => {
         // THEN it should fail
         activate(credentials.email, 400, (err, res) => {
             // AND error message is available
-            chai.expect(res.body.errors[0]).to.equal('Account already activated');
+            expect(res.body.errors[0]).to.equal('Account already activated');
             done(err);
         });
     });
@@ -110,7 +110,7 @@ describe('User registration', () => {
                 // THEN it should fail
                 activate(credentials.email, 400, (err, res) => {
                     // AND error message is available
-                    chai.expect(res.body.errors[0]).to.equal('Activation expired, please re-register');
+                    expect(res.body.errors[0]).to.equal('Activation expired, please re-register');
                     done(err);
                 });
             });
@@ -132,7 +132,7 @@ describe('User registration', () => {
                 // THEN it should fail
                 activate(credentials.email, 400, (err, res) => {
                     // AND error message is available
-                    chai.expect(res.body.errors[0]).to.equal('Activation expired, please re-register');
+                    expect(res.body.errors[0]).to.equal('Activation expired, please re-register');
                     done(err);
                 });
             });
@@ -160,17 +160,14 @@ describe('User authentication', () => {
         // GIVEN active user
         // WHEN user does login
         // THEN it should succeed
-        testrunner(testapp).post(api).send(credentials).expect(200)
-            .end((err) => {
-                done(err);
-            });
+        testrunner(testapp).post(api).send(credentials).expect(200, done);
     });
 
     it('invalid email is entered', (done) => {
         testrunner(testapp).post(api).send({email: 'test_@test.com', password: '123456'})
            .expect(400)
            .end((err, res) => {
-               chai.expect(res.body.errors[0]).to.equal(errText);
+               expect(res.body.errors[0]).to.equal(errText);
                done(err);
            });
     });
@@ -179,23 +176,20 @@ describe('User authentication', () => {
         testrunner(testapp).post(api).send({email: 'test@test.com', password: '12345d6'})
            .expect(400)
            .end((err, res) => {
-               chai.expect(res.body.errors[0]).to.equal(errText);
+               expect(res.body.errors[0]).to.equal(errText);
                done(err);
            });
     });
 });
 
-describe('User authentication', () => {
+describe('User logout', () => {
     const api = '/api/auth/logout';
 
     it('logout fails', (done) => {
         // GIVEN user is not logged in
         // WHEN logging out
         // THEN it should fail
-        testrunner(testapp).post(api).send().expect(401)
-            .end((err) => {
-                done(err);
-            });
+        testrunner(testapp).post(api).send().expect(401, done);
     });
 
     it('logout succeeds', (done) => {

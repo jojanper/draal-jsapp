@@ -41,7 +41,7 @@ describe('activateUser', () => {
         })
         .then((err) => {
             // THEN it should return expected error
-            chai.expect(err.name).to.be.equal(errMsg);
+            expect(err.name).to.be.equal(errMsg);
         })
         .catch((err) => { throw new Error(err); });
     });
@@ -49,6 +49,6 @@ describe('activateUser', () => {
 
 describe('AccountProfile model', () => {
     it('supports getStatuses method', () => {
-        chai.expect(AccountModel.getStatuses()).to.have.keys(['active', 'activated', 'expired']);
+        expect(AccountModel.getStatuses()).to.have.keys(['active', 'activated', 'expired']);
     });
 });

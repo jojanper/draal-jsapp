@@ -7,6 +7,8 @@ global.chai = require('chai');
 global.testapp = require('../app.js');
 global.testrunner = require('supertest');
 
+global.expect = chai.expect;
+
 global.appTestHelper = {
     User,
 
@@ -24,7 +26,7 @@ global.appTestHelper = {
 
     createUser: (details, cb) => {
         const user = new UserModel(details);
-        user.save().then(() => cb()).catch(() => cb());
+        user.save().then(user => cb(user)).catch(() => cb());
     },
 
     activateUser: (email, cb) => {

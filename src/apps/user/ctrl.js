@@ -27,6 +27,29 @@ function signUp(req, res, next) {
 }
 
 /**
+ * Request user password reset.
+ */
+function pwResetRequest(req, res, next) {
+    User.manager.passwordResetToken(req.body.email,
+        (user) => {
+            TasksLib.sendRegistrationEmail(user.email, user.pwResetToken);
+            res.json(`${user.pwResetToken}`);
+        },
+        err => next(err)
+    );
+}
+
+/**
+ * Change user password using token identifier.
+ */
+function pwResetActivation(req, res, next) {
+    User.manager.resetPassword(req.body,
+        () => res.json(),
+        err => next(err)
+    );
+}
+
+/**
  * Activate user account.
  */
 function userActivation(req, res, next) {
@@ -92,5 +115,17 @@ module.exports = [
         url: apiFormat('logout'),
         authenticate: true,
         info: 'User sign-out'
+    },
+    {
+        fn: pwResetRequest,
+        method: 'post',
+        url: apiFormat('password-reset-request'),
+        info: 'User password reset request'
+    },
+    {
+        fn: pwResetActivation,
+        method: 'post',
+        url: apiFormat('password-reset'),
+        info: 'User password change using reset token'
     }
 ];

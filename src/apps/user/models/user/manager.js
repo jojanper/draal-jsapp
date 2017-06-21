@@ -25,8 +25,16 @@ class UserManager extends BaseManager {
             .catch(err => error(err));
     }
 
+    findUser(email, error, active = true) {
+        const data = {email: email.toLowerCase()};
+        if (active !== null) {
+            data.active = active;
+        }
+        return this.execute('findOne', data, null, error);
+    }
+
     findLoginUser(email, password, success, error) {
-        this.execute('findOne', {email: email.toLowerCase(), active: true}, null, error)
+        this.findUser(email, error)
             .then((user) => {
                 if (!user) {
                     throw new APIError(`Email ${email} not found`);
@@ -34,6 +42,38 @@ class UserManager extends BaseManager {
 
                 return user.comparePassword(password);
             })
+            .then(user => success(user))
+            .catch(err => error(err));
+    }
+
+    _getUser(email, error) {
+        return new Promise((resolve, reject) => {
+            this.findUser(email, error, null)
+                .then((user) => {
+                    if (!user) {
+                        throw new APIError(`Email ${email} not found`);
+                    }
+
+                    if (!user.active) {
+                        throw new APIError('Password reset can be requested only for active user');
+                    }
+
+                    resolve(user);
+                })
+                .catch(err => reject(err));
+        });
+    }
+
+    passwordResetToken(email, success, error) {
+        this._getUser(email, error)
+            .then(user => user.createPwResetToken())
+            .then(user => success(user))
+            .catch(err => error(err));
+    }
+
+    resetPassword(data, success, error) {
+        this._getUser(data.email, error)
+            .then(user => user.changePasswordWithToken(data.token, data.password))
             .then(user => success(user))
             .catch(err => error(err));
     }

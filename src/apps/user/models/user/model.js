@@ -1,7 +1,10 @@
 const bcrypt = require('bcrypt-nodejs');
 const mongoose = require('mongoose');
+const crypto = require('crypto');
 
 const APIError = require('../../../../error');
+const UtilsLib = require('../../../../utils');
+
 
 const userSchema = new mongoose.Schema({
     email: {
@@ -10,6 +13,8 @@ const userSchema = new mongoose.Schema({
     },
 
     password: String,
+    pwResetToken: String,
+    pwResetExpires: Date,
 
     active: {
         type: Boolean,
@@ -52,6 +57,25 @@ userSchema.methods.comparePassword = function comparePassword(candidatePassword)
             }
         });
     });
+};
+
+userSchema.methods.createPwResetToken = function createResetToken() {
+    this.pwResetExpires = Date.now() + UtilsLib.getActivationThreshold();
+    this.pwResetToken = crypto.createHash('sha256').digest('hex');
+    return this.save();
+};
+
+userSchema.methods.changePasswordWithToken = function changePasswordWithToken(token, password) {
+    if (this.pwResetToken !== token) {
+        throw new APIError('Invalid token');
+    }
+
+    if (Date.now() > this.pwResetExpires) {
+        throw new APIError('Password reset expired, please re-reset the password');
+    }
+
+    this.password = password;
+    return this.save();
 };
 
 const User = mongoose.model('User', userSchema);

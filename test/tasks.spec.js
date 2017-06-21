@@ -29,13 +29,36 @@ class MockCeleryClient {
 }
 
 describe('Celery tasks', () => {
-    it('supports sendRegistrationEmail', (done) => {
-        const client = new MockCeleryClient();
-        sinon.stub(celery, 'createClient').callsFake(() => client);
+    const mockClient = new MockCeleryClient();
 
-        // GIVEN Celery tasks execution is available
+    beforeEach((done) => {
         process.env.CELERY_ON = true;
-        CeleryClient.connect((client) => {
+        sinon.stub(celery, 'createClient').callsFake(() => mockClient);
+        done();
+    });
+
+    afterEach((done) => {
+        celery.createClient.restore();
+        delete process.env.CELERY_ON;
+        done();
+    });
+
+    function connect() {
+        return new Promise((resolve) => {
+            CeleryClient.connect((client) => {
+                resolve(client);
+            });
+        });
+    }
+
+    function close(mockCall, done) {
+        mockCall.restore();
+        CeleryClient.close().then(() => done());
+    }
+
+    it('supports sendRegistrationEmail', (done) => {
+        // GIVEN Celery tasks execution is available
+        connect().then((client) => {
             const call = sinon.spy(client, 'call');
 
             // WHEN task is executed
@@ -45,19 +68,37 @@ describe('Celery tasks', () => {
             sinon.assert.calledOnce(call);
 
             // AND Celery client receives task data
-            chai.expect(client.calls).to.be.equal(1);
+            expect(client.calls).to.be.equal(1);
 
             // AND Celery task data arguments are correct
             const args = call.getCalls()[0].args[1];
-            chai.expect(args[0]).to.be.equal('test@test.com');
-            chai.expect(args[1]).to.be.equal('abc');
+            expect(args[0]).to.be.equal('test@test.com');
+            expect(args[1]).to.be.equal('abc');
 
-            call.restore();
-            celery.createClient.restore();
+            close(call, done);
+        });
+    }).timeout(3000);
 
-            delete process.env.CELERY_ON;
+    it('supports sendPasswordResetEmail', (done) => {
+        // GIVEN Celery tasks execution is available
+        connect().then((client) => {
+            const call = sinon.spy(client, 'call');
 
-            CeleryClient.close().then(() => done());
+            // WHEN task is executed
+            TasksLib.sendPasswordResetEmail('test@test.com', 'abc');
+
+            // THEN call to task scheduler is made
+            sinon.assert.calledOnce(call);
+
+            // AND Celery client receives task data
+            expect(client.calls).to.be.equal(1);
+
+            // AND Celery task data arguments are correct
+            const args = call.getCalls()[0].args[1];
+            expect(args[0]).to.be.equal('test@test.com');
+            expect(args[1]).to.be.equal('abc');
+
+            close(call, done);
         });
     }).timeout(3000);
 });
