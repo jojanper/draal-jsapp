@@ -20,7 +20,7 @@ describe('User login', () => {
             // WHEN user logs in
             signIn(req, null, (err) => {
                 // THEN expected error should be returned
-                chai.expect(err).to.be.equal('Failure');
+                expect(err).to.be.equal('Failure');
                 done();
             });
         }, true);

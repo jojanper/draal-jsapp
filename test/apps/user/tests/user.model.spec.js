@@ -27,7 +27,7 @@ function userMgrCreateUser() {
                 userMock.restore();
 
                 // THEN it should return expected error
-                chai.expect(err.name).to.be.equal(errMsg);
+                expect(err.name).to.be.equal(errMsg);
 
                 done();
             });
@@ -51,7 +51,7 @@ function userMgrCreateUser() {
             })
             .then((err) => {
                 // THEN it should return expected error
-                chai.expect(err.name).to.be.equal(errMsg);
+                expect(err.name).to.be.equal(errMsg);
             })
             .catch((err) => { throw new Error(err); });
         });
@@ -83,7 +83,7 @@ function userMgrFindLoginUser() {
             })
             .then((err) => {
                 // THEN it should return expected error
-                chai.expect(err).to.be.equal(errMsg);
+                expect(err).to.be.equal(errMsg);
             })
             .catch((err) => { throw new Error(err); });
         });
@@ -106,7 +106,7 @@ function userMgrFindLoginUser() {
             })
             .then((err) => {
                 // THEN it should return expected error
-                chai.expect(err.name).to.be.equal(errMsg);
+                expect(err.name).to.be.equal(errMsg);
             })
             .catch((err) => { throw new Error(err); });
         });
@@ -129,7 +129,7 @@ describe('User model', () => {
             user.active = true;
             user.save().then(() => {
                 // THEN model password should remain the same
-                chai.expect(user.password).to.be.equal(pw);
+                expect(user.password).to.be.equal(pw);
 
                 done();
             }).catch(err => done(err));
@@ -146,7 +146,7 @@ describe('User model', () => {
             user.password = 'pwd';
             user.save().then(() => {
                 // THEN model password should change
-                chai.expect(user.password).not.to.be.equal(pw);
+                expect(user.password).not.to.be.equal(pw);
 
                 done();
             });
@@ -165,7 +165,7 @@ describe('User model', () => {
         const user = new UserModel({email: 'one@test.com', password: 'pw'});
         user.comparePassword('ab', 'ba').catch((err) => {
             // THEN it should return expect error
-            chai.expect(err).to.be.equal(msg);
+            expect(err).to.be.equal(msg);
             bcrypt.compare.restore();
             done();
         });

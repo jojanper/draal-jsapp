@@ -14,10 +14,10 @@ class MockApp {
 describe('utilsLib', () => {
     it('supports isDevelopment', () => {
         let app = new MockApp('development');
-        chai.expect(UtilsLib.isDevelopment(app)).to.be.true;
+        expect(UtilsLib.isDevelopment(app)).to.be.true;
 
         app = new MockApp('production');
-        chai.expect(UtilsLib.isDevelopment(app)).to.be.false;
+        expect(UtilsLib.isDevelopment(app)).to.be.false;
     });
 
     it('supports serializeApiInfo', () => {
@@ -26,7 +26,7 @@ describe('utilsLib', () => {
             method: 'post'
         }];
 
-        chai.expect(UtilsLib.serializeApiInfo('', routes)[0]).to.have.keys(['url', 'method', 'info', 'authenticate']);
+        expect(UtilsLib.serializeApiInfo('', routes)[0]).to.have.keys(['url', 'method', 'info', 'authenticate']);
     });
 
     it('supports retryPromise', (done) => {
@@ -39,8 +39,8 @@ describe('utilsLib', () => {
             })
         )
         .catch((err) => {
-            chai.expect(retries).to.equal(2);
-            chai.expect(err).to.equal('a');
+            expect(retries).to.equal(2);
+            expect(err).to.equal('a');
             done();
         });
     });

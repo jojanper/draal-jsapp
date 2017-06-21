@@ -45,12 +45,12 @@ describe('Celery tasks', () => {
             sinon.assert.calledOnce(call);
 
             // AND Celery client receives task data
-            chai.expect(client.calls).to.be.equal(1);
+            expect(client.calls).to.be.equal(1);
 
             // AND Celery task data arguments are correct
             const args = call.getCalls()[0].args[1];
-            chai.expect(args[0]).to.be.equal('test@test.com');
-            chai.expect(args[1]).to.be.equal('abc');
+            expect(args[0]).to.be.equal('test@test.com');
+            expect(args[1]).to.be.equal('abc');
 
             call.restore();
             celery.createClient.restore();
