@@ -31,7 +31,10 @@ function signUp(req, res, next) {
  */
 function pwResetRequest(req, res, next) {
     User.manager.passwordResetToken(req.body.email,
-        user => res.json(`${user.pwResetToken}`),
+        (user) => {
+            TasksLib.sendRegistrationEmail(user.email, user.pwResetToken);
+            res.json(`${user.pwResetToken}`);
+        },
         err => next(err)
     );
 }
