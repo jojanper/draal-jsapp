@@ -4,3 +4,5 @@ angular-app
 virtualenv*
 .coverage
 *.pyc
+.gitignore
+.vscode

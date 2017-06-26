@@ -1,5 +1,10 @@
 version: "2"
 services:
+  rabbitmq:
+    container_name: rabbitmq
+    image: rabbitmq
+    ports:
+      - "5672:5672"
   mongodb:
     container_name: mongodb
     image: mongo:3.4
@@ -17,8 +22,11 @@ services:
       - PORT=3008
       - MONGODB_URI=mongodb://mongodb:27017/test
       - ACCOUNT_ACTIVATION_DAYS=7
+      - CELERY_BROKER_URL=amqp://guest:guest@rabbitmq:5672//
+      - CELERY_ON=1
     depends_on:
       - mongodb
+      - rabbitmq
   nginx:
     container_name: nginx
     build:
