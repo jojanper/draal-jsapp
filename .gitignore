@@ -3,3 +3,4 @@ coverage
 angular-app
 virtualenv*
 .coverage
+*.pyc
