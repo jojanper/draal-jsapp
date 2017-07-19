@@ -9,6 +9,7 @@ class CeleryClient {
 
     connect(done) {
         if (!process.env.CELERY_ON) {
+            done();
             return;
         }
 
