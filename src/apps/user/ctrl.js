@@ -18,7 +18,7 @@ function signUp(req, res, next) {
         password: req.body.password
     });
 
-    this.task = (done, error) => {
+    this.action = (done, error) => {
         User.manager.createUser(user,
             (account) => {
                 TasksLib.sendRegistrationEmail(user.email, account.activationKey);
@@ -35,7 +35,7 @@ function signUp(req, res, next) {
  * Request user password reset.
  */
 function pwResetRequest(req, res, next) {
-    this.task = (done, error) => {
+    this.action = (done, error) => {
         User.manager.passwordResetToken(req.body.email,
             (user) => {
                 TasksLib.sendPasswordResetEmail(user.email, user.pwResetToken);
@@ -52,7 +52,7 @@ function pwResetRequest(req, res, next) {
  * Change user password using token identifier.
  */
 function pwResetActivation(req, res, next) {
-    this.task = (done, error) => {
+    this.action = (done, error) => {
         User.manager.resetPassword(req.body, () => done(), error);
     };
 
@@ -63,7 +63,7 @@ function pwResetActivation(req, res, next) {
  * Activate user account.
  */
 function userActivation(req, res, next) {
-    this.task = (done, error) => {
+    this.action = (done, error) => {
         AccountProfile.manager.activateUser(req.params.activationkey, () => done(), error);
     };
 

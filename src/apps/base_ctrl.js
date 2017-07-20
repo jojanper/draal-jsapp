@@ -6,7 +6,7 @@ class BaseCtrl {
 
     execute(res, next) {
         const obj = new Promise((resolve, reject) => {
-            this.parent.task(resolve, (err) => {
+            this.parent.action(resolve, (err) => {
                 reject(err);
             });
         });
