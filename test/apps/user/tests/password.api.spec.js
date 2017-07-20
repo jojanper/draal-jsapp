@@ -1,5 +1,7 @@
-const UtilsLib = require('src/utils');
+const sinon = require('sinon');
 
+const UtilsLib = require('src/utils');
+const TasksLib = require('src/tasks');
 
 const credentials = {email: 'test-123456@test.com', password: '123456'};
 
@@ -27,7 +29,13 @@ describe('Password reset request', () => {
 
     it('succeeds for active user', (done) => {
         appTestHelper.activateUser(credentials.email, (user) => {
-            testrunner(testapp).post(api).send({email: user.email}).expect(200, done);
+            const spyCall = sinon.spy(TasksLib, 'sendPasswordResetEmail');
+
+            testrunner(testapp).post(api).send({email: user.email}).expect(200)
+            .then(() => {
+                expect(spyCall.getCalls().length).to.be.equal(1);
+                done();
+            });
         });
     });
 });

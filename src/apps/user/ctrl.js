@@ -5,6 +5,7 @@ const User = require('./models/user');
 const AccountProfile = require('./models/accountprofile');
 const APIError = require('src/error');
 const TasksLib = require('src/tasks');
+const BaseCtrl = require('../base_ctrl');
 
 const UserModel = User.model;
 
@@ -17,46 +18,56 @@ function signUp(req, res, next) {
         password: req.body.password
     });
 
-    User.manager.createUser(user,
-        (account) => {
-            TasksLib.sendRegistrationEmail(user.email, account.activationKey);
-            res.json(`${account.activationKey}`);
-        },
-        err => next(err)
-    );
+    this.action = (done, error) => {
+        User.manager.createUser(user,
+            (account) => {
+                TasksLib.sendRegistrationEmail(user.email, account.activationKey);
+                done(`${account.activationKey}`);
+            },
+            error
+        );
+    };
+
+    return BaseCtrl.create(this, res, next);
 }
 
 /**
  * Request user password reset.
  */
 function pwResetRequest(req, res, next) {
-    User.manager.passwordResetToken(req.body.email,
-        (user) => {
-            TasksLib.sendRegistrationEmail(user.email, user.pwResetToken);
-            res.json(`${user.pwResetToken}`);
-        },
-        err => next(err)
-    );
+    this.action = (done, error) => {
+        User.manager.passwordResetToken(req.body.email,
+            (user) => {
+                TasksLib.sendPasswordResetEmail(user.email, user.pwResetToken);
+                done(`${user.pwResetToken}`);
+            },
+            error
+        );
+    };
+
+    return BaseCtrl.create(this, res, next);
 }
 
 /**
  * Change user password using token identifier.
  */
 function pwResetActivation(req, res, next) {
-    User.manager.resetPassword(req.body,
-        () => res.json(),
-        err => next(err)
-    );
+    this.action = (done, error) => {
+        User.manager.resetPassword(req.body, () => done(), error);
+    };
+
+    return BaseCtrl.create(this, res, next);
 }
 
 /**
  * Activate user account.
  */
 function userActivation(req, res, next) {
-    AccountProfile.manager.activateUser(req.params.activationkey,
-        () => res.json(),
-        err => next(err)
-    );
+    this.action = (done, error) => {
+        AccountProfile.manager.activateUser(req.params.activationkey, () => done(), error);
+    };
+
+    return BaseCtrl.create(this, res, next);
 }
 
 /**

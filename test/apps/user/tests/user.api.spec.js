@@ -1,7 +1,8 @@
 /* eslint-disable no-unused-expressions */
-
+const sinon = require('sinon');
 const format = require('util').format;
 
+const TasksLib = require('src/tasks');
 const AccountProfile = require('src/apps/user/models/accountprofile');
 
 const credentials = {email: 'test@test.com', password: '123456'};
@@ -32,11 +33,13 @@ describe('User registration', () => {
         .catch((err) => { throw new Error(err); });
     });
 
-    it('signup succeeds', () =>
+    it('signup succeeds', () => {
+        const spyCall = sinon.spy(TasksLib, 'sendRegistrationEmail');
+
         // GIVEN user
         // WHEN user sign-up is performed
         // THEN it should succeed
-        new Promise((resolve, reject) => {
+        return new Promise((resolve, reject) => {
             testrunner(testapp).post(api).send(credentials).expect(200)
                 .end(() => {
                     // AND activation key exists for the user
@@ -49,9 +52,10 @@ describe('User registration', () => {
         })
         .then((profile) => {
             expect(profile.activationKey.length).to.be.equal(64);
+            expect(spyCall.getCalls().length).to.be.equal(1);
         })
-        .catch((err) => { throw new Error(err); })
-    );
+        .catch((err) => { throw new Error(err); });
+    });
 
     it('invalid account activation key is used', (done) => {
         const url = format(activationApi, '1233');
