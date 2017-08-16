@@ -1,6 +1,8 @@
 Some thoughts for further development:
 --------------------------------------
 
+- API listing to include name field
+  - For resolving APIs in client side
 - API post data validation
 - Add celery to Docker configuration
 - Missing user account funtionality
