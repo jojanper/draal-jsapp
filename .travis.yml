@@ -28,6 +28,7 @@ before_install:
     brew services start mongodb;
     fi
   - python --version
+  - which easy_install && easy_install --version
   - npm run pip-install
 script:
   - npm run cibuild
