@@ -58,6 +58,45 @@ function userMgrCreateUser() {
     });
 }
 
+function userMgrCreatePasswordResetToken() {
+    describe('createPwResetToken', () => {
+        it('save fails', () => {
+            const errMsg = new Error('Error message');
+            const userMock = sinon.mock(new UserModel(userDetails));
+
+            // GIVEN user save fails
+            userMock.expects('save').chain('exec').rejects(errMsg);
+
+            // WHEN creating user
+            return userMock.object.createPwResetToken().catch((err) => {
+                userMock.verify();
+                userMock.restore();
+
+                // THEN it should return expected error
+                expect(err.name).to.be.equal(errMsg.name);
+            });
+        });
+
+        it('salt creation fails', () => {
+            const errMsg = new Error('Error message');
+            const user = new UserModel(userDetails);
+
+            // GIVEN hash function fails
+            sinon.stub(bcrypt, 'hash').callsFake((p1, p2, p3, cb) => {
+                cb(errMsg, null);
+            });
+
+            // WHEN creating user
+            return user.createPwResetToken().catch((err) => {
+                bcrypt.hash.restore();
+
+                // THEN it should return expected error
+                expect(err.name).to.be.equal(errMsg.name);
+            });
+        });
+    });
+}
+
 function userMgrFindLoginUser() {
     describe('findLoginUser', () => {
         it('password comparison fails', () => {
@@ -116,6 +155,7 @@ function userMgrFindLoginUser() {
 describe('User manager', () => {
     userMgrCreateUser();
     userMgrFindLoginUser();
+    userMgrCreatePasswordResetToken();
 });
 
 describe('User model', () => {

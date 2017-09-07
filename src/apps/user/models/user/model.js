@@ -23,6 +23,16 @@ const userSchema = new mongoose.Schema({
 
 }, {timestamps: true});
 
+async function hashUserPassword(user, next) {
+    const [err, pwHash] = await UtilsLib.promiseExecution(UtilsLib.hashify(user.password));
+    if (err) {
+        return next(err);
+    }
+
+    user.password = pwHash;
+    next();
+}
+
 /**
  * Password hash middleware.
  */
@@ -32,37 +42,39 @@ userSchema.pre('save', function save(next) {
         return next();
     }
 
-    bcrypt.genSalt(10, (err, salt) => {
-        if (err) { return next(err); }
-        bcrypt.hash(user.password, salt, null, (err, hash) => {
-            if (err) { return next(err); }
-            user.password = hash;
-            next();
+    hashUserPassword(user, next);
+});
+
+function tokenComparison(value, reference, resolveValue, errorMessage) {
+    return new Promise((resolve, reject) => {
+        bcrypt.compare(value, reference, (err, isMatch) => {
+            if (err) {
+                reject(err);
+            } else if (!isMatch) {
+                reject(new APIError(errorMessage));
+            } else {
+                resolve(resolveValue);
+            }
         });
     });
-});
+}
 
 /**
  * Helper method for validating user's password.
  */
 userSchema.methods.comparePassword = function comparePassword(candidatePassword) {
-    return new Promise((resolve, reject) => {
-        bcrypt.compare(candidatePassword, this.password, (err, isMatch) => {
-            if (err) {
-                reject(err);
-            } else if (!isMatch) {
-                reject(new APIError('Invalid password'));
-            } else {
-                resolve(this);
-            }
-        });
-    });
+    return tokenComparison(candidatePassword, this.password, this, 'Invalid password');
 };
 
 userSchema.methods.createPwResetToken = function createResetToken() {
     this.pwResetExpires = Date.now() + UtilsLib.getActivationThreshold();
-    this.pwResetToken = crypto.createHash('sha256').digest('hex');
-    return this.save();
+    const token = crypto.createHash('sha256').digest('hex');
+    this.pwResetToken = token;
+    return new Promise((resolve, reject) => {
+        this.save()
+            .then(user => resolve([user, token]))
+            .catch(err => reject(err));
+    });
 };
 
 userSchema.methods.changePasswordWithToken = function changePasswordWithToken(token, password) {

@@ -1,3 +1,7 @@
+const bcrypt = require('bcrypt-nodejs');
+const util = require('util');
+
+
 const pause = duration => new Promise(res => setTimeout(res, duration));
 
 const retry = (retries, fn, delay = 500) =>
@@ -84,5 +88,41 @@ module.exports = {
     getActivationThreshold() {
         const validDays = process.env.ACCOUNT_ACTIVATION_DAYS || 7;
         return 24 * 3600000 * validDays;
+    },
+
+    /**
+     * Hash input string (password, etc).
+     *
+     * @param {string} text String to be encrypted.
+     *
+     * @returns {object} Promise.
+     */
+    hashify(text) {
+        return new Promise((resolve, reject) => {
+            const genSaltFn = util.promisify(bcrypt.genSalt);
+            const hashFn = util.promisify(bcrypt.hash);
+
+            genSaltFn(10)
+                .then(salt => hashFn(text, salt, null))
+                .then(hash => resolve(hash))
+                .catch(err => reject(err));
+        });
+    },
+
+    /**
+     * Utility function that receives a promise and then resolves the success
+     * response to an array with the return data as second item. The error
+     * received from catch response appears as the first item.
+     *
+     * Example usage (to be used in async function):
+     *
+     * [err, data] = await promiseExecution(promise);
+     *
+     * @param {object} promise Promise.
+     *
+     * @returns {array} Error data as first item, success data as second item.
+     */
+    promiseExecution(promise) {
+        return promise.then(data => [null, data]).catch(err => [err]);
     }
 };
