@@ -17,7 +17,7 @@ before_install:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
     docker --version;
     docker-compose --version;
-    sudo apt-get install python;
+    #sudo apt-get install python;
     fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
     echo "Updating homebrew";
@@ -29,7 +29,8 @@ before_install:
     fi
   - python --version
   - which easy_install && easy_install --version
-  - npm run pypackages-install
+  - pip --version
+  - npm run pip-install
 script:
   - npm run cibuild
   - npm run pylint
