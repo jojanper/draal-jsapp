@@ -1,4 +1,5 @@
 sudo: required
+group: deprecated-2017Q2
 language: node_js
 services:
   - docker
@@ -17,7 +18,7 @@ before_install:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
     docker --version;
     docker-compose --version;
-    #sudo apt-get install python;
+    sudo apt-get install python;
     fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
     echo "Updating homebrew";
