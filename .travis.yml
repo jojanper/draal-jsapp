@@ -1,6 +1,6 @@
 sudo: required
 #group: deprecated-2017Q2
-group: edge
+#group: edge
 #language: node_js
 language: python
 services:
