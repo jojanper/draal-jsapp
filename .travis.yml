@@ -1,5 +1,5 @@
 sudo: required
-group: deprecated-2017Q2
+#group: deprecated-2017Q2
 language: node_js
 services:
   - docker
