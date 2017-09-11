@@ -1,4 +1,4 @@
-const bcrypt = require('bcrypt-nodejs');
+const bcrypt = require('bcrypt');
 const util = require('util');
 
 
@@ -103,7 +103,7 @@ module.exports = {
             const hashFn = util.promisify(bcrypt.hash);
 
             genSaltFn(10)
-                .then(salt => hashFn(text, salt, null))
+                .then(salt => hashFn(text, salt))
                 .then(hash => resolve(hash))
                 .catch(err => reject(err));
         });

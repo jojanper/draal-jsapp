@@ -1,4 +1,4 @@
-const bcrypt = require('bcrypt-nodejs');
+const bcrypt = require('bcrypt');
 const sinon = require('sinon');
 require('mongoose');
 require('sinon-mongoose');
@@ -82,7 +82,7 @@ function userMgrCreatePasswordResetToken() {
             const user = new UserModel(userDetails);
 
             // GIVEN hash function fails
-            sinon.stub(bcrypt, 'hash').callsFake((p1, p2, p3, cb) => {
+            sinon.stub(bcrypt, 'hash').callsFake((p1, p2, cb) => {
                 cb(errMsg, null);
             });
 

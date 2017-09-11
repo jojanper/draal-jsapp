@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-expressions */
 const UtilsLib = require('src/utils');
-const bcrypt = require('bcrypt-nodejs');
+const bcrypt = require('bcrypt');
 const sinon = require('sinon');
 
 
@@ -52,7 +52,7 @@ describe('utilsLib', () => {
         const errMsg = new Error('Error message');
 
         // Hash for given string is set to fail
-        sinon.stub(bcrypt, 'hash').callsFake((p1, p2, p3, cb) => {
+        sinon.stub(bcrypt, 'hash').callsFake((p1, p2, cb) => {
             cb(errMsg, null);
         });
 
