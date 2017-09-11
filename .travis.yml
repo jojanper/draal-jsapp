@@ -1,7 +1,4 @@
 sudo: required
-#group: deprecated-2017Q2
-#group: edge
-#language: node_js
 language: python
 services:
   - docker
@@ -10,8 +7,6 @@ services:
 os:
   - linux
   - osx
-#node_js:
-#  - "8"
 python:
   - 2.7
 env:
@@ -19,7 +14,7 @@ env:
 before_install:
   # Clear out whatever version of NVM Travis has.
   # Grab NVM and Checkout the latest stable tag.
-   # Install the desired version of Node
+  # Install the desired version of Node
   - rm -rf ~/.nvm && git clone https://github.com/creationix/nvm.git ~/.nvm && (cd ~/.nvm && git checkout `git describe --abbrev=0 --tags`) && source ~/.nvm/nvm.sh && nvm install $TRAVIS_NODE_VERSION
   - node --version
   - npm --version
@@ -37,8 +32,6 @@ before_install:
     brew services start mongodb;
     fi
   - python --version
-  #- which easy_install && easy_install --version
-  #- pip --version
   - npm run pip-install
 script:
   - npm run cibuild
