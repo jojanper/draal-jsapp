@@ -1,4 +1,3 @@
-#sudo: required
 language: python
 services:
   - docker
@@ -22,11 +21,6 @@ matrix:
         - brew install mongodb
         - sudo mkdir -p /data/db
         - brew services start mongodb
-#os:
-#  - linux
-#  - osx
-#python:
-#  - 2.7
 env:
   - TRAVIS_NODE_VERSION="8.4.0"
 install:
@@ -37,16 +31,6 @@ install:
   - node --version
   - npm --version
   - npm install
-#  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
-#    docker --version;
-#    docker-compose --version;
-#    fi
-#  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
-#    echo "Installing and starting mongodb";
-#    brew install mongodb;
-#    sudo mkdir -p /data/db;
-#    brew services start mongodb;
-#    fi
   - python --version
   - npm run pip-install
 script:
