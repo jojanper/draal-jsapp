@@ -24,7 +24,7 @@ matrix:
 #  - 2.7
 env:
   - TRAVIS_NODE_VERSION="8.4.0"
-before_install:
+install:
   # Clear out whatever version of NVM Travis has.
   # Grab NVM and checkout the latest stable tag.
   # Install the desired version of Node
