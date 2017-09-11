@@ -1,6 +1,8 @@
 const bcrypt = require('bcrypt');
 const util = require('util');
 
+const APIError = require('./error');
+
 
 const pause = duration => new Promise(res => setTimeout(res, duration));
 
@@ -106,6 +108,30 @@ module.exports = {
                 .then(salt => hashFn(text, salt))
                 .then(hash => resolve(hash))
                 .catch(err => reject(err));
+        });
+    },
+
+    /**
+     * Compare input to reference hash.
+     *
+     * @param {string} value Input for comparison (password etc).
+     * @param {string} hashRef Hash reference.
+     * @param {string|object|array} resolveValue Promise resolve value.
+     * @param {string} errorMessage Promise rejection value.
+     *
+     * @returns {object} Promise.
+     */
+    hashComparison(value, hashRef, resolveValue, errorMessage) {
+        return new Promise((resolve, reject) => {
+            bcrypt.compare(value, hashRef, (err, isMatch) => {
+                if (err) {
+                    reject(err);
+                } else if (!isMatch) {
+                    reject(new APIError(errorMessage));
+                } else {
+                    resolve(resolveValue);
+                }
+            });
         });
     },
 

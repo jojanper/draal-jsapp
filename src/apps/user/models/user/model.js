@@ -45,25 +45,11 @@ userSchema.pre('save', function save(next) {
     hashUserPassword(user, next);
 });
 
-function tokenComparison(value, reference, resolveValue, errorMessage) {
-    return new Promise((resolve, reject) => {
-        bcrypt.compare(value, reference, (err, isMatch) => {
-            if (err) {
-                reject(err);
-            } else if (!isMatch) {
-                reject(new APIError(errorMessage));
-            } else {
-                resolve(resolveValue);
-            }
-        });
-    });
-}
-
 /**
  * Helper method for validating user's password.
  */
 userSchema.methods.comparePassword = function comparePassword(candidatePassword) {
-    return tokenComparison(candidatePassword, this.password, this, 'Invalid password');
+    return UtilsLib.hashComparison(candidatePassword, this.password, this, 'Invalid password');
 };
 
 userSchema.methods.createPwResetToken = function createResetToken() {
