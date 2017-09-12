@@ -51,15 +51,22 @@ userSchema.methods.comparePassword = function comparePassword(candidatePassword)
     return UtilsLib.hashComparison(candidatePassword, this.password, this, 'Invalid password');
 };
 
-userSchema.methods.createPwResetToken = function createResetToken() {
+userSchema.methods.createPwResetToken = async function createResetToken() {
+
+    // Create reset token with expiration data
     this.pwResetExpires = Date.now() + UtilsLib.getActivationThreshold();
     const token = crypto.createHash('sha256').digest('hex');
     this.pwResetToken = token;
-    return new Promise((resolve, reject) => {
-        this.save()
-            .then(user => resolve([user, token]))
-            .catch(err => reject(err));
-    });
+
+    // Save token
+    const [err, user] = await UtilsLib.promiseExecution(this.save());
+    if (err) {
+        // Error, return rejected promise
+        return Promise.reject(err);
+    }
+
+    // Success, return resolved promise with user and token details
+    return Promise.resolve([user, token]);
 };
 
 userSchema.methods.changePasswordWithToken = function changePasswordWithToken(token, password) {
