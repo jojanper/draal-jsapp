@@ -33,6 +33,28 @@ function userMgrCreateUser() {
             });
         });
 
+        it('password hashify fails', (done) => {
+            const error = new Error('Error');
+            const userMock = sinon.mock(new UserModel(userDetails));
+
+            // GIVEN password encryption fails
+            sinon.stub(bcrypt, 'hash').callsFake((p1, p2, cb) => {
+                cb(error, null);
+            });
+
+            // WHEN creating new user
+            User.manager.createUser(userMock.object, null, (err) => {
+                userMock.verify();
+                userMock.restore();
+                bcrypt.hash.restore();
+
+                // THEN it should return expected error
+                expect(err.name).to.be.equal(error.name);
+
+                done();
+            });
+        });
+
         it('quering existing user fails', () => {
             const errMsg = 'Unable to query existing user';
             const user = new UserModel(userDetails);

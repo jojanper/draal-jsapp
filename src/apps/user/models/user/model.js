@@ -22,26 +22,23 @@ const userSchema = new mongoose.Schema({
 
 }, {timestamps: true});
 
-async function hashUserPassword(user, next) {
-    const [err, pwHash] = await UtilsLib.promiseExecution(UtilsLib.hashify(user.password));
+/**
+ * Password hash middleware.
+ */
+userSchema.pre('save', async function save(next) {
+    const user = this;
+    if (!user.isModified('password')) {
+        return next();
+    }
+
+    const promise = UtilsLib.hashify(user.password);
+    const [err, pwHash] = await UtilsLib.promiseExecution(promise);
     if (err) {
         return next(err);
     }
 
     user.password = pwHash;
     next();
-}
-
-/**
- * Password hash middleware.
- */
-userSchema.pre('save', function save(next) {
-    const user = this;
-    if (!user.isModified('password')) {
-        return next();
-    }
-
-    hashUserPassword(user, next);
 });
 
 /**
@@ -52,13 +49,19 @@ userSchema.methods.comparePassword = function comparePassword(candidatePassword)
 };
 
 userSchema.methods.createPwResetToken = async function createResetToken() {
-
     // Create reset token with expiration data
     this.pwResetExpires = Date.now() + UtilsLib.getActivationThreshold();
     const token = crypto.createHash('sha256').digest('hex');
-    this.pwResetToken = token;
 
-    // Save token
+    // Encrypt token
+    const response = await UtilsLib.promiseExecution(UtilsLib.hashify(token));
+    if (response[0]) {
+        // Error, return rejected promise
+        return Promise.reject(response[0]);
+    }
+
+    // Save encrypted token
+    this.pwResetToken = response[1];
     const [err, user] = await UtilsLib.promiseExecution(this.save());
     if (err) {
         // Error, return rejected promise
@@ -69,15 +72,20 @@ userSchema.methods.createPwResetToken = async function createResetToken() {
     return Promise.resolve([user, token]);
 };
 
-userSchema.methods.changePasswordWithToken = function changePasswordWithToken(token, password) {
-    if (this.pwResetToken !== token) {
+userSchema.methods.changePasswordWithToken = async function changePwWithToken(token, password) {
+    // Validate reset token
+    const promise = UtilsLib.hashComparison(token, this.pwResetToken, this, true);
+    const response = await UtilsLib.promiseExecution(promise);
+    if (response[0]) {
         throw new APIError('Invalid token');
     }
 
+    // Validate expiration time for the token
     if (Date.now() > this.pwResetExpires) {
         throw new APIError('Password reset expired, please re-reset the password');
     }
 
+    // Save new password
     this.password = password;
     return this.save();
 };

@@ -5,6 +5,9 @@ const TasksLib = require('src/tasks');
 
 const credentials = {email: 'test-123456@test.com', password: '123456'};
 
+const resetApi = '/api/auth/password-reset';
+
+
 describe('Password reset request', () => {
     const api = '/api/auth/password-reset-request';
 
@@ -29,48 +32,48 @@ describe('Password reset request', () => {
 
     it('succeeds for active user', (done) => {
         appTestHelper.activateUser(credentials.email, (user) => {
+            let resetToken;
             const spyCall = sinon.spy(TasksLib, 'sendPasswordResetEmail');
 
+            // Password reset request must succeed
             testrunner(testapp).post(api).send({email: user.email}).expect(200)
             .then(() => {
                 expect(spyCall.getCalls().length).to.be.equal(1);
-                done();
+
+                // Get the token from spy as user token that is saved to DB is encrypted
+                resetToken = spyCall.getCall(0).args[1];
+                const data = {email: credentials.email, token: resetToken, password: 'pw'};
+
+                // Password reset using requested token must succeed
+                return testrunner(testapp).post(resetApi).send(data).expect(200);
+            })
+            .then(() => appTestHelper.getUserByEmail(credentials.email))
+            .then((user) => {
+                // Set token to expired timestamp
+                user.pwResetExpires -= 2 * UtilsLib.getActivationThreshold();
+                return user.save();
+            })
+            .then(() => {
+                // Password reset must fail for expired token
+                const data = {email: credentials.email, token: resetToken, password: 'pw'};
+                return testrunner(testapp).post(resetApi).send(data).expect(400);
+            })
+            .then((res) => {
+                expect(res.body.errors[0]).to.equal('Password reset expired, please re-reset the password');
+                user.pwResetExpires = Date.now() + UtilsLib.getActivationThreshold();
+                user.save().then(() => done());
             });
         });
     });
 });
 
 describe('Password change using token', () => {
-    const api = '/api/auth/password-reset';
-
     it('fails for invalid token', (done) => {
         const data = {email: credentials.email, token: '123', password: 'pw'};
-        testrunner(testapp).post(api).send(data).expect(400)
+        testrunner(testapp).post(resetApi).send(data).expect(400)
             .then((res) => {
                 expect(res.body.errors[0]).to.equal('Invalid token');
                 done();
             });
-    });
-
-    it('fails for expired token', (done) => {
-        appTestHelper.getUserByEmail(credentials.email).then((user) => {
-            user.pwResetExpires -= 2 * UtilsLib.getActivationThreshold();
-            user.save().then((user) => {
-                const data = {email: credentials.email, token: user.pwResetToken, password: 'pw'};
-                testrunner(testapp).post(api).send(data).expect(400)
-                    .then((res) => {
-                        expect(res.body.errors[0].length).to.equal(52);
-                        user.pwResetExpires = Date.now() + UtilsLib.getActivationThreshold();
-                        user.save().then(() => done());
-                    });
-            });
-        });
-    });
-
-    it('succeeds with valid data', (done) => {
-        appTestHelper.getUserByEmail(credentials.email).then((user) => {
-            const data = {email: credentials.email, token: user.pwResetToken, password: 'pw'};
-            testrunner(testapp).post(api).send(data).expect(200, done);
-        });
     });
 });
