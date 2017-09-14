@@ -116,12 +116,12 @@ module.exports = {
      *
      * @param {string} value Input for comparison (password etc).
      * @param {string} hashRef Hash reference.
-     * @param {string|object|array} resolveValue Promise resolve value.
+     * @param {*} success Promise resolve value.
      * @param {string} error Promise rejection value.
      *
      * @returns {object} Promise.
      */
-    hashComparison(value, hashRef, resolveValue, error) {
+    hashComparison(value, hashRef, success, error) {
         return new Promise((resolve, reject) => {
             bcrypt.compare(value, hashRef, (err, isMatch) => {
                 if (err) {
@@ -129,7 +129,7 @@ module.exports = {
                 } else if (!isMatch) {
                     reject(new APIError(error));
                 } else {
-                    resolve(resolveValue);
+                    resolve(success);
                 }
             });
         });
