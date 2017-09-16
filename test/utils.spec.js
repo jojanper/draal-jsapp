@@ -1,5 +1,8 @@
 /* eslint-disable no-unused-expressions */
 const UtilsLib = require('src/utils');
+const bcrypt = require('bcrypt');
+const sinon = require('sinon');
+
 
 class MockApp {
     constructor(mode) {
@@ -43,5 +46,21 @@ describe('utilsLib', () => {
             expect(err).to.equal('a');
             done();
         });
+    });
+
+    it('hash creation fails', () => {
+        const errMsg = new Error('Error message');
+
+        // Hash for given string is set to fail
+        sinon.stub(bcrypt, 'hash').callsFake((p1, p2, cb) => {
+            cb(errMsg, null);
+        });
+
+        // Error must be present when hashing string
+        return UtilsLib.hashify('test')
+            .catch((err) => {
+                bcrypt.hash.restore();
+                expect(err.name).to.be.equal(errMsg.name);
+            });
     });
 });

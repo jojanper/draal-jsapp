@@ -2,7 +2,7 @@ class APIError extends Error {
     /**
      * API error class.
      *
-     * @param {String} message Error message
+     * @param {string} message Error message
      * @constructor
      */
     constructor(message) {

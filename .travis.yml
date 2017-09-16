@@ -1,32 +1,36 @@
-sudo: required
-language: node_js
+language: python
 services:
   - docker
   - mongodb
   - rabbitmq
-os:
-  - linux
-  - osx
-node_js:
-  - "6"
-python:
-  - "2.7"
-before_install:
+matrix:
+  include:
+    - os: linux
+      sudo: required
+      python: 2.7
+      before_install:
+        - docker --version;
+        - docker-compose --version;
+    - os: osx
+      sudo: required
+      language: generic
+      before_install:
+        - brew update
+        - virtualenv env -p python
+        - source env/bin/activate
+        - brew install mongodb
+        - sudo mkdir -p /data/db
+        - brew services start mongodb
+env:
+  - TRAVIS_NODE_VERSION="8.4.0"
+install:
+  # Clear out whatever version of NVM Travis has.
+  # Grab NVM and checkout the latest stable tag.
+  # Install the desired version of Node
+  - rm -rf ~/.nvm && git clone https://github.com/creationix/nvm.git ~/.nvm && (cd ~/.nvm && git checkout `git describe --abbrev=0 --tags`) && source ~/.nvm/nvm.sh && nvm install $TRAVIS_NODE_VERSION
   - node --version
   - npm --version
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
-    docker --version;
-    docker-compose --version;
-    sudo apt-get install python;
-    fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
-    echo "Updating homebrew";
-    brew update;
-    echo "Installing and starting mongodb";
-    brew install mongodb;
-    sudo mkdir -p /data/db;
-    brew services start mongodb;
-    fi
+  - npm install
   - python --version
   - npm run pip-install
 script:

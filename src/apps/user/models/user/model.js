@@ -1,4 +1,3 @@
-const bcrypt = require('bcrypt-nodejs');
 const mongoose = require('mongoose');
 const crypto = require('crypto');
 
@@ -26,54 +25,67 @@ const userSchema = new mongoose.Schema({
 /**
  * Password hash middleware.
  */
-userSchema.pre('save', function save(next) {
+userSchema.pre('save', async function save(next) {
     const user = this;
     if (!user.isModified('password')) {
         return next();
     }
 
-    bcrypt.genSalt(10, (err, salt) => {
-        if (err) { return next(err); }
-        bcrypt.hash(user.password, salt, null, (err, hash) => {
-            if (err) { return next(err); }
-            user.password = hash;
-            next();
-        });
-    });
+    const promise = UtilsLib.hashify(user.password);
+    const [err, pwHash] = await UtilsLib.promiseExecution(promise);
+    if (err) {
+        return next(err);
+    }
+
+    user.password = pwHash;
+    next();
 });
 
 /**
  * Helper method for validating user's password.
  */
 userSchema.methods.comparePassword = function comparePassword(candidatePassword) {
-    return new Promise((resolve, reject) => {
-        bcrypt.compare(candidatePassword, this.password, (err, isMatch) => {
-            if (err) {
-                reject(err);
-            } else if (!isMatch) {
-                reject(new APIError('Invalid password'));
-            } else {
-                resolve(this);
-            }
-        });
-    });
+    return UtilsLib.hashComparison(candidatePassword, this.password, this, 'Invalid password');
 };
 
-userSchema.methods.createPwResetToken = function createResetToken() {
+userSchema.methods.createPwResetToken = async function createResetToken() {
+    // Create reset token with expiration data
     this.pwResetExpires = Date.now() + UtilsLib.getActivationThreshold();
-    this.pwResetToken = crypto.createHash('sha256').digest('hex');
-    return this.save();
+    const token = crypto.createHash('sha256').digest('hex');
+
+    // Encrypt token
+    const response = await UtilsLib.promiseExecution(UtilsLib.hashify(token));
+    if (response[0]) {
+        // Error, return rejected promise
+        return Promise.reject(response[0]);
+    }
+
+    // Save encrypted token
+    this.pwResetToken = response[1];
+    const [err, user] = await UtilsLib.promiseExecution(this.save());
+    if (err) {
+        // Error, return rejected promise
+        return Promise.reject(err);
+    }
+
+    // Success, return resolved promise with user and token details
+    return Promise.resolve([user, token]);
 };
 
-userSchema.methods.changePasswordWithToken = function changePasswordWithToken(token, password) {
-    if (this.pwResetToken !== token) {
+userSchema.methods.changePasswordWithToken = async function changePwWithToken(token, password) {
+    // Validate reset token
+    const promise = UtilsLib.hashComparison(token, this.pwResetToken, this, true);
+    const response = await UtilsLib.promiseExecution(promise);
+    if (response[0]) {
         throw new APIError('Invalid token');
     }
 
+    // Validate expiration time for the token
     if (Date.now() > this.pwResetExpires) {
         throw new APIError('Password reset expired, please re-reset the password');
     }
 
+    // Save new password
     this.password = password;
     return this.save();
 };

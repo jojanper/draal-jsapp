@@ -37,8 +37,8 @@ function signUp(req, res, next) {
 function pwResetRequest(req, res, next) {
     this.action = (done, error) => {
         User.manager.passwordResetToken(req.body.email,
-            (user) => {
-                TasksLib.sendPasswordResetEmail(user.email, user.pwResetToken);
+            (user, token) => {
+                TasksLib.sendPasswordResetEmail(user.email, token);
                 done(`${user.pwResetToken}`);
             },
             error

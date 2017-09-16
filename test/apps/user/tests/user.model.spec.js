@@ -1,4 +1,4 @@
-const bcrypt = require('bcrypt-nodejs');
+const bcrypt = require('bcrypt');
 const sinon = require('sinon');
 require('mongoose');
 require('sinon-mongoose');
@@ -33,6 +33,28 @@ function userMgrCreateUser() {
             });
         });
 
+        it('password hashify fails', (done) => {
+            const error = new Error('Error');
+            const userMock = sinon.mock(new UserModel(userDetails));
+
+            // GIVEN password encryption fails
+            sinon.stub(bcrypt, 'hash').callsFake((p1, p2, cb) => {
+                cb(error, null);
+            });
+
+            // WHEN creating new user
+            User.manager.createUser(userMock.object, null, (err) => {
+                userMock.verify();
+                userMock.restore();
+                bcrypt.hash.restore();
+
+                // THEN it should return expected error
+                expect(err.name).to.be.equal(error.name);
+
+                done();
+            });
+        });
+
         it('quering existing user fails', () => {
             const errMsg = 'Unable to query existing user';
             const user = new UserModel(userDetails);
@@ -54,6 +76,45 @@ function userMgrCreateUser() {
                 expect(err.name).to.be.equal(errMsg);
             })
             .catch((err) => { throw new Error(err); });
+        });
+    });
+}
+
+function userMgrCreatePasswordResetToken() {
+    describe('createPwResetToken', () => {
+        it('save fails', () => {
+            const errMsg = new Error('Error message');
+            const userMock = sinon.mock(new UserModel(userDetails));
+
+            // GIVEN user save fails
+            userMock.expects('save').chain('exec').rejects(errMsg);
+
+            // WHEN creating user
+            return userMock.object.createPwResetToken().catch((err) => {
+                userMock.verify();
+                userMock.restore();
+
+                // THEN it should return expected error
+                expect(err.name).to.be.equal(errMsg.name);
+            });
+        });
+
+        it('salt creation fails', () => {
+            const errMsg = new Error('Error message');
+            const user = new UserModel(userDetails);
+
+            // GIVEN hash function fails
+            sinon.stub(bcrypt, 'hash').callsFake((p1, p2, cb) => {
+                cb(errMsg, null);
+            });
+
+            // WHEN creating user
+            return user.createPwResetToken().catch((err) => {
+                bcrypt.hash.restore();
+
+                // THEN it should return expected error
+                expect(err.name).to.be.equal(errMsg.name);
+            });
         });
     });
 }
@@ -116,6 +177,7 @@ function userMgrFindLoginUser() {
 describe('User manager', () => {
     userMgrCreateUser();
     userMgrFindLoginUser();
+    userMgrCreatePasswordResetToken();
 });
 
 describe('User model', () => {
