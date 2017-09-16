@@ -101,5 +101,8 @@
       "testrunner": true,
       "appTestHelper": true
     }
+  },
+  "engines": {
+    "node" : ">= 7.6.0"
   }
 }
