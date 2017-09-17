@@ -29,7 +29,9 @@ describe('utilsLib', () => {
             method: 'post'
         }];
 
-        expect(UtilsLib.serializeApiInfo('', routes)[0]).to.have.keys(['url', 'method', 'info', 'authenticate']);
+        expect(UtilsLib.serializeApiInfo('', routes)[0]).to.have.keys([
+            'url', 'method', 'info', 'authenticate', 'version', 'name'
+        ]);
     });
 
     it('supports retryPromise', (done) => {

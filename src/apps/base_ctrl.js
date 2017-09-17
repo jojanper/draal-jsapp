@@ -18,8 +18,8 @@ class BaseCtrl {
         return this;
     }
 
-    static create(parent, res, next) {
-        return new BaseCtrl(parent).execute(res, next);
+    static create(parent) {
+        return new BaseCtrl(parent);
     }
 }
 

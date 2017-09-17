@@ -1,11 +1,11 @@
 const passport = require('passport');
 const format = require('util').format;
 
-const User = require('./models/user');
-const AccountProfile = require('./models/accountprofile');
+const User = require('../../models/user');
+const AccountProfile = require('../../models/accountprofile');
 const APIError = require('src/error');
 const TasksLib = require('src/tasks');
-const BaseCtrl = require('../base_ctrl');
+const BaseCtrl = require('../../../base_ctrl');
 
 const UserModel = User.model;
 
@@ -28,7 +28,7 @@ function signUp(req, res, next) {
         );
     };
 
-    return BaseCtrl.create(this, res, next);
+    return BaseCtrl.create(this).execute(res, next);
 }
 
 /**
@@ -39,13 +39,13 @@ function pwResetRequest(req, res, next) {
         User.manager.passwordResetToken(req.body.email,
             (user, token) => {
                 TasksLib.sendPasswordResetEmail(user.email, token);
-                done(`${user.pwResetToken}`);
+                done(`${token}`);
             },
             error
         );
     };
 
-    return BaseCtrl.create(this, res, next);
+    return BaseCtrl.create(this).execute(res, next);
 }
 
 /**
@@ -56,7 +56,7 @@ function pwResetActivation(req, res, next) {
         User.manager.resetPassword(req.body, () => done(), error);
     };
 
-    return BaseCtrl.create(this, res, next);
+    return BaseCtrl.create(this).execute(res, next);
 }
 
 /**
@@ -67,7 +67,7 @@ function userActivation(req, res, next) {
         AccountProfile.manager.activateUser(req.params.activationkey, () => done(), error);
     };
 
-    return BaseCtrl.create(this, res, next);
+    return BaseCtrl.create(this).execute(res, next);
 }
 
 /**
@@ -101,42 +101,57 @@ function apiFormat(postfix) {
     return format('/auth/%s', postfix);
 }
 
+// API version 1
+const version = 1;
+
 module.exports = [
     {
         fn: signUp,
         method: 'post',
         url: apiFormat('signup'),
-        info: 'User sign-up'
+        info: 'User sign-up',
+        version,
+        name: 'register'
     },
     {
         fn: userActivation,
         method: 'post',
         url: apiFormat('activate/:activationkey'),
-        info: 'User account activation'
+        info: 'User account activation',
+        version,
+        name: 'account-activation'
     },
     {
         fn: signIn,
         method: 'post',
         url: apiFormat('login'),
-        info: 'User sign-in'
+        info: 'User sign-in',
+        version,
+        name: 'login'
     },
     {
         fn: signOut,
         method: 'post',
         url: apiFormat('logout'),
         authenticate: true,
-        info: 'User sign-out'
+        info: 'User sign-out',
+        version,
+        name: 'logout'
     },
     {
         fn: pwResetRequest,
         method: 'post',
         url: apiFormat('password-reset-request'),
-        info: 'User password reset request'
+        info: 'User password reset request',
+        version,
+        name: 'password-reset-request'
     },
     {
         fn: pwResetActivation,
         method: 'post',
         url: apiFormat('password-reset'),
-        info: 'User password change using reset token'
+        info: 'User password change using reset token',
+        version,
+        name: 'password-reset'
     }
 ];
