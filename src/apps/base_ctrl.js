@@ -1,25 +1,27 @@
 class BaseCtrl {
 
-    constructor(parent) {
-        this.parent = parent;
+    constructor(req, res, next) {
+        this.req = req;
+        this.res = res;
+        this.next = next;
     }
 
-    execute(res, next) {
+    execute() {
         const obj = new Promise((resolve, reject) => {
-            this.parent.action(resolve, (err) => {
+            this.action(resolve, (err) => {
                 reject(err);
             });
         });
 
         obj
-        .then(data => res.json(data))
-        .catch(err => next(err));
+        .then(data => this.res.json(data))
+        .catch(err => this.next(err));
 
         return this;
     }
 
-    static create(parent) {
-        return new BaseCtrl(parent);
+    static apiEntry(Cls) {
+        return (req, res, next) => new Cls(req, res, next).execute();
     }
 }
 

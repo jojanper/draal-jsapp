@@ -12,13 +12,13 @@ const UserModel = User.model;
 /**
  * Create a new local account.
  */
-function signUp(req, res, next) {
-    const user = new UserModel({
-        email: req.body.email,
-        password: req.body.password
-    });
+class SignUp extends BaseCtrl {
+    action(done, error) {
+        const user = new UserModel({
+            email: this.req.body.email,
+            password: this.req.body.password
+        });
 
-    this.action = (done, error) => {
         User.manager.createUser(user,
             (account) => {
                 TasksLib.sendRegistrationEmail(user.email, account.activationKey);
@@ -26,75 +26,71 @@ function signUp(req, res, next) {
             },
             error
         );
-    };
-
-    return BaseCtrl.create(this).execute(res, next);
+    }
 }
 
 /**
  * Request user password reset.
  */
-function pwResetRequest(req, res, next) {
-    this.action = (done, error) => {
-        User.manager.passwordResetToken(req.body.email,
+class PwResetRequest extends BaseCtrl {
+    action(done, error) {
+        User.manager.passwordResetToken(this.req.body.email,
             (user, token) => {
                 TasksLib.sendPasswordResetEmail(user.email, token);
                 done(`${token}`);
             },
             error
         );
-    };
-
-    return BaseCtrl.create(this).execute(res, next);
+    }
 }
 
 /**
  * Change user password using token identifier.
  */
-function pwResetActivation(req, res, next) {
-    this.action = (done, error) => {
-        User.manager.resetPassword(req.body, () => done(), error);
-    };
-
-    return BaseCtrl.create(this).execute(res, next);
+class PwResetActivation extends BaseCtrl {
+    action(done, error) {
+        User.manager.resetPassword(this.req.body, () => done(), error);
+    }
 }
 
 /**
  * Activate user account.
  */
-function userActivation(req, res, next) {
-    this.action = (done, error) => {
-        AccountProfile.manager.activateUser(req.params.activationkey, () => done(), error);
-    };
-
-    return BaseCtrl.create(this).execute(res, next);
+class UserActivation extends BaseCtrl {
+    action(done, error) {
+        AccountProfile.manager.activateUser(this.req.params.activationkey, () => done(), error);
+    }
 }
 
 /**
  * Login using local account.
  */
-function signIn(req, res, next) {
-    passport.authenticate('local', (err, user) => {
-        if (err) {
-            return next(new APIError('Invalid credentials'));
-        }
-
-        req.logIn(user, (err) => {
+class SignIn extends BaseCtrl {
+    execute() {
+        passport.authenticate('local', (err, user) => {
             if (err) {
-                return next(err);
+                return this.next(new APIError('Invalid credentials'));
             }
 
-            res.json('Sign-in successful');
-        });
-    })(req, res, next);
+            this.req.logIn(user, (err) => {
+                if (err) {
+                    return this.next(err);
+                }
+
+                this.res.json('Sign-in successful');
+            });
+        })(this.req, this.res, this.next);
+    }
 }
 
 /**
  * User logout.
  */
-function signOut(req, res) {
-    req.logout();
-    res.json();
+class SignOut extends BaseCtrl {
+    execute() {
+        this.req.logout();
+        this.res.json();
+    }
 }
 
 function apiFormat(postfix) {
@@ -106,7 +102,7 @@ const version = 1;
 
 module.exports = [
     {
-        fn: signUp,
+        cls: SignUp,
         method: 'post',
         url: apiFormat('signup'),
         info: 'User sign-up',
@@ -114,7 +110,7 @@ module.exports = [
         name: 'register'
     },
     {
-        fn: userActivation,
+        cls: UserActivation,
         method: 'post',
         url: apiFormat('activate/:activationkey'),
         info: 'User account activation',
@@ -122,7 +118,7 @@ module.exports = [
         name: 'account-activation'
     },
     {
-        fn: signIn,
+        cls: SignIn,
         method: 'post',
         url: apiFormat('login'),
         info: 'User sign-in',
@@ -130,7 +126,7 @@ module.exports = [
         name: 'login'
     },
     {
-        fn: signOut,
+        cls: SignOut,
         method: 'post',
         url: apiFormat('logout'),
         authenticate: true,
@@ -139,7 +135,7 @@ module.exports = [
         name: 'logout'
     },
     {
-        fn: pwResetRequest,
+        cls: PwResetRequest,
         method: 'post',
         url: apiFormat('password-reset-request'),
         info: 'User password reset request',
@@ -147,7 +143,7 @@ module.exports = [
         name: 'password-reset-request'
     },
     {
-        fn: pwResetActivation,
+        cls: PwResetActivation,
         method: 'post',
         url: apiFormat('password-reset'),
         info: 'User password change using reset token',

@@ -1,4 +1,4 @@
-const signIn = require('src/apps/user/ctrl')[2].fn;
+const SignIn = require('src/apps/user/ctrl')[2].cls;
 
 const userDetails = {
     email: 'test-1@test.com',
@@ -18,7 +18,7 @@ describe('User login', () => {
 
         appTestHelper.addUser(userDetails, () => {
             // WHEN user logs in
-            signIn(req, null, (err) => {
+            SignIn.apiEntry(SignIn)(req, null, (err) => {
                 // THEN expected error should be returned
                 expect(err).to.be.equal('Failure');
                 done();
