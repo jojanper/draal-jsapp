@@ -41,7 +41,7 @@ module.exports = {
                 args.push(authFn);
             }
 
-            args.push(route.cls.apiEntry(route.cls));
+            args.push(route.cls.apiEntry());
 
             router[route.method](...args);
         });

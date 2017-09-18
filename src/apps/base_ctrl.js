@@ -20,7 +20,8 @@ class BaseCtrl {
         return this;
     }
 
-    static apiEntry(Cls) {
+    static apiEntry() {
+        const Cls = this;
         return (req, res, next) => new Cls(req, res, next).execute();
     }
 }
