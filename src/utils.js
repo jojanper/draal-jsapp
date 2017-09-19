@@ -41,7 +41,7 @@ module.exports = {
                 args.push(authFn);
             }
 
-            args.push(route.fn);
+            args.push(route.cls.apiEntry());
 
             router[route.method](...args);
         });
@@ -60,10 +60,12 @@ module.exports = {
     serializeApiInfo(prefix, routes) {
         return routes.map((item) => {
             const data = {
-                url: prefix + item.url,
+                url: util.format('%s/v%s%s', prefix, item.version, item.url),
                 method: item.method,
                 info: item.info || '',
-                authenticate: item.authenticate || false
+                authenticate: item.authenticate || false,
+                version: item.version,
+                name: item.name
             };
 
             return data;

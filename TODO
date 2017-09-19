@@ -1,11 +1,10 @@
 Some thoughts for further development:
 --------------------------------------
 
-- API listing to include name field
-  - For resolving APIs in client side
 - API post data validation
+  - Move all current data from module.exports into controller class itself
+  - Use static getters for retrieving data? static get CLASSINFO() { ... };
 - Add celery to Docker configuration
 - Missing user account funtionality
-  - Password reset (forgot password)
   - Password change
 - File upload
