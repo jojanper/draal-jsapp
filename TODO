@@ -4,6 +4,7 @@ Some thoughts for further development:
 - API post data validation
   - Move all current data from module.exports into controller class itself
   - Use static getters for retrieving data? static get CLASSINFO() { ... };
+  - Hook https://github.com/ctavan/express-validator to API controller
 - Add celery to Docker configuration
 - Missing user account funtionality
   - Password change
