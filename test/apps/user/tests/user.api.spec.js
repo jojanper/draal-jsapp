@@ -8,8 +8,8 @@ const AccountProfile = require('src/apps/user/models/accountprofile');
 const credentials = {email: 'test@test.com', password: '123456'};
 
 describe('User registration', () => {
-    const api = '/api/auth/signup';
-    const activationApi = '/api/auth/activate/%s';
+    const api = '/api/auth/v1/signup';
+    const activationApi = '/api/auth/v1/activate/%s';
 
     it('signup email is already reserved', () => {
         const account = {email: 'test-reserved@test.com', password: '123456'};
@@ -144,7 +144,7 @@ describe('User registration', () => {
 });
 
 describe('User authentication', () => {
-    const api = '/api/auth/login';
+    const api = '/api/auth/v1/login';
     const errText = 'Invalid credentials';
 
     beforeEach((done) => {
@@ -164,7 +164,11 @@ describe('User authentication', () => {
         // GIVEN active user
         // WHEN user does login
         // THEN it should succeed
-        testrunner(testapp).post(api).send(credentials).expect(200, done);
+        testrunner(testapp).post(api).send(credentials).expect(200)
+            .end((err, res) => {
+                expect(res.body.messages[0]).to.equal('Sign-in successful');
+                done(err);
+            });
     });
 
     it('invalid email is entered', (done) => {
@@ -202,7 +206,7 @@ describe('User logout', () => {
         // GIVEN user has logged in
         // GIVEN active user
         appTestHelper.activateUser(credentials.email, (user) => {
-            app.post('/api/auth/login').send(credentials).expect(200).end(() => {
+            app.post('/api/auth/v1/login').send(credentials).expect(200).end(() => {
                 // WHEN logging out
                 // THEN it should succeed
                 app.post(api).send().expect(200).end((err) => {

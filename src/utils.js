@@ -11,6 +11,8 @@ const retry = (retries, fn, delay = 500) =>
     pause(delay).then(() => retry(retries - 1, fn, delay * 2))
     : Promise.reject(err)));
 
+const DEFAULT_HTTP_METHOD = 'post';
+
 
 module.exports = {
     /**
@@ -35,15 +37,15 @@ module.exports = {
      */
     setRoutes(router, routes, authFn) {
         routes.forEach((route) => {
-            const args = [route.url];
+            const args = [route.cls.url];
 
-            if (route.authenticate) {
+            if (route.cls.CLASSINFO.AUTHENTICATE) {
                 args.push(authFn);
             }
 
             args.push(route.cls.apiEntry());
 
-            router[route.method](...args);
+            router[route.cls.CLASSINFO.METHOD || DEFAULT_HTTP_METHOD](...args);
         });
 
         return router;
@@ -52,24 +54,15 @@ module.exports = {
     /**
      * Serialize API routes.
      *
-     * @param {string} prefix Prefix URL for routes.
+     * @param {string} prefix URL prefix for routes.
      * @param {array} routes List of API routes.
      *
      * @returns {object} Serialized API data.
      */
     serializeApiInfo(prefix, routes) {
-        return routes.map((item) => {
-            const data = {
-                url: util.format('%s/v%s%s', prefix, item.version, item.url),
-                method: item.method,
-                info: item.info || '',
-                authenticate: item.authenticate || false,
-                version: item.version,
-                name: item.name
-            };
-
-            return data;
-        });
+        return routes.map(item =>
+            item.cls.serialize(prefix, DEFAULT_HTTP_METHOD)
+        );
     },
 
     /**

@@ -1,6 +1,7 @@
 const router = require('express').Router();
 const APIError = require('../error');
 const utilsLib = require('../utils');
+const BaseCtrl = require('../apps/base_ctrl');
 
 // User registration and authentication APIs
 const userAPIs = require('../apps/user/ctrl');
@@ -13,16 +14,17 @@ function isAuthenticated(req, res, next) {
         return next();
     }
 
-    res.status(401);
-    res.json();
-    res.end();
+    const ctrl = new BaseCtrl(req, res, next);
+    ctrl.renderResponse({statusCode: 401});
 }
 
 const apiRoutes = [].concat(userAPIs);
 
 module.exports = (prefix) => {
     router.get('', (req, res) => {
-        res.json(utilsLib.serializeApiInfo(prefix, apiRoutes));
+        const ctrl = new BaseCtrl(req, res);
+        const data = utilsLib.serializeApiInfo(prefix, apiRoutes);
+        ctrl.renderResponse({data});
     });
 
     router.get('/error', () => {

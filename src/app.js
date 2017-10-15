@@ -3,6 +3,7 @@
  */
 const utilsLib = require('./utils');
 const index = require('./routes/index')();
+const BaseCtrl = require('./apps/base_ctrl');
 
 const apiPrefix = '/api';
 const api = require('./routes/api')(apiPrefix);
@@ -10,9 +11,8 @@ const api = require('./routes/api')(apiPrefix);
 // Middleware for handling application errors
 function apiMiddlewareErrorHandler(err, req, res, next) {
     if (err.name === 'APIError') {
-        res.status(400);
-        res.json({errors: [err.message]});
-        res.end();
+        const ctrl = new BaseCtrl(req, res, next);
+        ctrl.renderResponse({errors: [err.message], statusCode: 400});
         return;
     }
 

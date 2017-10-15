@@ -1,7 +1,7 @@
 describe('GET /api', () => {
     it('should list all available APIs', (done) => {
         testrunner(testapp).get('/api').expect(200).end((err, res) => {
-            expect(res.body.length).to.be.equal(6);
+            expect(res.body.data.length).to.be.equal(6);
             done(err);
         });
     });
