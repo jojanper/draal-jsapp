@@ -1,5 +1,4 @@
 const passport = require('passport');
-const format = require('util').format;
 
 const User = require('../../models/user');
 const AccountProfile = require('../../models/accountprofile');
@@ -7,12 +6,29 @@ const APIError = require('src/error');
 const TasksLib = require('src/tasks');
 const BaseCtrl = require('../../../base_ctrl');
 
+
 const UserModel = User.model;
+
+// API version 1
+const version1 = 1;
+
+// API URL prefix
+const urlPrefix = 'auth';
+
 
 /**
  * Create a new local account.
  */
 class SignUp extends BaseCtrl {
+    static get CLASSINFO() {
+        return {
+            INFO: 'User sign-up',
+            VERSION: version1,
+            NAME: 'signup',
+            URLPREFIX: urlPrefix
+        };
+    }
+
     action(done, error) {
         const user = new UserModel({
             email: this.req.body.email,
@@ -22,7 +38,8 @@ class SignUp extends BaseCtrl {
         User.manager.createUser(user,
             (account) => {
                 TasksLib.sendRegistrationEmail(user.email, account.activationKey);
-                done(`${account.activationKey}`);
+                console.log(account.activationKey);
+                done();
             },
             error
         );
@@ -33,11 +50,21 @@ class SignUp extends BaseCtrl {
  * Request user password reset.
  */
 class PwResetRequest extends BaseCtrl {
+    static get CLASSINFO() {
+        return {
+            INFO: 'User password reset request',
+            VERSION: version1,
+            NAME: 'password-reset-request',
+            URLPREFIX: urlPrefix
+        };
+    }
+
     action(done, error) {
         User.manager.passwordResetToken(this.req.body.email,
             (user, token) => {
                 TasksLib.sendPasswordResetEmail(user.email, token);
-                done(`${token}`);
+                console.log(token);
+                done();
             },
             error
         );
@@ -48,6 +75,15 @@ class PwResetRequest extends BaseCtrl {
  * Change user password using token identifier.
  */
 class PwResetActivation extends BaseCtrl {
+    static get CLASSINFO() {
+        return {
+            INFO: 'User password change using reset token',
+            VERSION: version1,
+            NAME: 'password-reset',
+            URLPREFIX: urlPrefix
+        };
+    }
+
     action(done, error) {
         User.manager.resetPassword(this.req.body, () => done(), error);
     }
@@ -57,6 +93,16 @@ class PwResetActivation extends BaseCtrl {
  * Activate user account.
  */
 class UserActivation extends BaseCtrl {
+    static get CLASSINFO() {
+        return {
+            INFO: 'User account activation',
+            VERSION: version1,
+            NAME: 'account-activation',
+            URL: 'activate/:activationkey',
+            URLPREFIX: urlPrefix
+        };
+    }
+
     action(done, error) {
         AccountProfile.manager.activateUser(this.req.params.activationkey, () => done(), error);
     }
@@ -66,6 +112,15 @@ class UserActivation extends BaseCtrl {
  * Login using local account.
  */
 class SignIn extends BaseCtrl {
+    static get CLASSINFO() {
+        return {
+            INFO: 'User sign-in',
+            VERSION: version1,
+            NAME: 'login',
+            URLPREFIX: urlPrefix
+        };
+    }
+
     execute() {
         passport.authenticate('local', (err, user) => {
             if (err) {
@@ -77,7 +132,7 @@ class SignIn extends BaseCtrl {
                     return this.next(err);
                 }
 
-                this.res.json('Sign-in successful');
+                this.renderResponse({messages: ['Sign-in successful']});
             });
         })(this.req, this.res, this.next);
     }
@@ -87,67 +142,40 @@ class SignIn extends BaseCtrl {
  * User logout.
  */
 class SignOut extends BaseCtrl {
+    static get CLASSINFO() {
+        return {
+            INFO: 'User sign-out',
+            NAME: 'logout',
+            URLPREFIX: urlPrefix,
+            AUTHENTICATE: true
+        };
+    }
+
     execute() {
         this.req.logout();
-        this.res.json();
+        this.renderResponse();
     }
 }
 
-function apiFormat(postfix) {
-    return format('/auth/%s', postfix);
-}
 
-// API version 1
-const version = 1;
-
+// Export controllers
 module.exports = [
     {
-        cls: SignUp,
-        method: 'post',
-        url: apiFormat('signup'),
-        info: 'User sign-up',
-        version,
-        name: 'register'
+        cls: SignUp
     },
     {
-        cls: UserActivation,
-        method: 'post',
-        url: apiFormat('activate/:activationkey'),
-        info: 'User account activation',
-        version,
-        name: 'account-activation'
+        cls: UserActivation
     },
     {
-        cls: SignIn,
-        method: 'post',
-        url: apiFormat('login'),
-        info: 'User sign-in',
-        version,
-        name: 'login'
+        cls: SignIn
     },
     {
-        cls: SignOut,
-        method: 'post',
-        url: apiFormat('logout'),
-        authenticate: true,
-        info: 'User sign-out',
-        version,
-        name: 'logout'
+        cls: SignOut
     },
     {
-        cls: PwResetRequest,
-        method: 'post',
-        url: apiFormat('password-reset-request'),
-        info: 'User password reset request',
-        version,
-        name: 'password-reset-request'
+        cls: PwResetRequest
     },
     {
-        cls: PwResetActivation,
-        method: 'post',
-        url: apiFormat('password-reset'),
-        info: 'User password change using reset token',
-        version,
-        name: 'password-reset'
+        cls: PwResetActivation
     }
 ];

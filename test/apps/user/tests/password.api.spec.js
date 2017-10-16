@@ -5,11 +5,11 @@ const TasksLib = require('src/tasks');
 
 const credentials = {email: 'test-123456@test.com', password: '123456'};
 
-const resetApi = '/api/auth/password-reset';
+const resetApi = '/api/auth/v1/password-reset';
 
 
 describe('Password reset request', () => {
-    const api = '/api/auth/password-reset-request';
+    const api = '/api/auth/v1/password-reset-request';
 
     it('fails for unknown email', (done) => {
         const email = 'unknown@test.com';

@@ -3,6 +3,7 @@ const UtilsLib = require('src/utils');
 const bcrypt = require('bcrypt');
 const sinon = require('sinon');
 
+const ApiCtrl = require('../src/apps/user/ctrl')[0];
 
 class MockApp {
     constructor(mode) {
@@ -24,10 +25,7 @@ describe('utilsLib', () => {
     });
 
     it('supports serializeApiInfo', () => {
-        const routes = [{
-            url: '/foo',
-            method: 'post'
-        }];
+        const routes = [ApiCtrl];
 
         expect(UtilsLib.serializeApiInfo('', routes)[0]).to.have.keys([
             'url', 'method', 'info', 'authenticate', 'version', 'name'
