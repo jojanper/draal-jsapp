@@ -38,7 +38,7 @@ class BaseCtrl {
         });
 
         obj
-        .then(data => this.res.json(data))
+        .then(data => this.renderResponse({data}))
         .catch(err => this.next(err));
 
         return this;
