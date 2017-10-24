@@ -55,19 +55,16 @@ Get the code:
 npm run client-install
 ```
 
-This monitors any changes in client code and builds code (in development mode):
+This monitors any changes in client code and builds it whenever needed. Also starts the backend server
+and creates new root template for every client code change. The backend server is also restarted
+on every backend code change. Creates debug builds for frontend.
 ```
-cd angular-app && rm -Rf dist/* && npm run watch (or npm run watch-prod)
-```
-
-This takes latest client code into use on backend side:
-```
-npm run client-watch
+npm run fullstack-dev
 ```
 
-And obviously the backend server is running:
+Same as above but creates release builds for frontend.
 ```
-npm start
+npm run fullstack-prod
 ```
 
 ---------
