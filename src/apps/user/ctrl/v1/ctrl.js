@@ -29,6 +29,16 @@ class SignUp extends BaseCtrl {
         };
     }
 
+    static get VALIDATORS() {
+        return [
+            {
+                method: 'body',
+                field: 'email',
+                validator: 'email'
+            }
+        ];
+    }
+
     action(done, error) {
         const user = new UserModel({
             email: this.req.body.email,

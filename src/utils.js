@@ -2,6 +2,7 @@ const bcrypt = require('bcrypt');
 const util = require('util');
 
 const APIError = require('./error');
+const ValidatorAPI = require('./validators');
 
 
 const pause = duration => new Promise(res => setTimeout(res, duration));
@@ -37,14 +38,27 @@ module.exports = {
      */
     setRoutes(router, routes, authFn) {
         routes.forEach((route) => {
+            // Path of HTTP request
             const args = [route.cls.url];
 
+            // Is authentication required
             if (route.cls.CLASSINFO.AUTHENTICATE) {
                 args.push(authFn);
             }
 
+            // Include input validations, if available
+            const validatorOptions = route.cls.VALIDATORS;
+            if (validatorOptions && validatorOptions.length) {
+                validatorOptions.forEach((option) => {
+                    const obj = new ValidatorAPI(option);
+                    args.push(obj.validator);
+                });
+            }
+
+            // Actual API implementation is executed as last item
             args.push(route.cls.apiEntry());
 
+            // Include the route definition for the application
             router[route.cls.CLASSINFO.METHOD || DEFAULT_HTTP_METHOD](...args);
         });
 
