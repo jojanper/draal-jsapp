@@ -44,8 +44,7 @@ class BaseCtrl {
                     const msg = util.format('Input parameter %s: %s', key, mappedErrors[key].msg);
                     apiErrors.push(msg);
                 });
-                reject(new APIError(apiErrors));
-                return;
+                return reject(new APIError(apiErrors));
             }
 
             this.action(resolve, (err) => {
