@@ -2,6 +2,7 @@ const util = require('util');
 const validator = require('express-validator/check');
 
 const APIError = require('src/error');
+const ValidatorAPI = require('src/validators');
 
 
 class BaseCtrl {
@@ -36,22 +37,21 @@ class BaseCtrl {
 
     execute() {
         const obj = new Promise((resolve, reject) => {
+            // First validate input parameters
             const errors = validator.validationResult(this.req);
             if (!errors.isEmpty()) {
-                const apiErrors = [];
-                const mappedErrors = errors.mapped();
-                Object.keys(mappedErrors).forEach((key) => {
-                    const msg = util.format('Input parameter %s: %s', key, mappedErrors[key].msg);
-                    apiErrors.push(msg);
-                });
-                return reject(new APIError(apiErrors));
+                // Errors found, report back
+                return reject(new APIError(ValidatorAPI.getErrors(errors.mapped())));
             }
 
+            // Execute the API action
             this.action(resolve, (err) => {
                 reject(err);
             });
         });
 
+        // On success, render the action response
+        // On failure, call the error handler
         obj
         .then(data => this.renderResponse({data}))
         .catch(err => this.next(err));

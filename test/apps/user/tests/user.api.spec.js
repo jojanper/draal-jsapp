@@ -143,8 +143,7 @@ describe('User registration', () => {
     });
 
     it('email parameter is missing', (done) => {
-        const credentials2 = {password: '123456'};
-        testrunner(testapp).post(api).send(credentials2).expect(400)
+        testrunner(testapp).post(api).send({password: '123456'}).expect(400)
             .end((err, res) => {
                 expect(res.body.errors.length).to.equal(1);
                 expect(res.body.errors[0]).to.equal('Input parameter email: Not an email address');

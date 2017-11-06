@@ -5,6 +5,7 @@ const AccountProfile = require('../../models/accountprofile');
 const APIError = require('src/error');
 const TasksLib = require('src/tasks');
 const BaseCtrl = require('../../../base_ctrl');
+const ValidatorAPI = require('src/validators');
 
 
 const UserModel = User.model;
@@ -32,9 +33,9 @@ class SignUp extends BaseCtrl {
     static get VALIDATORS() {
         return [
             {
-                method: 'body',
                 field: 'email',
-                validator: 'email'
+                api: ValidatorAPI.API.body,
+                validator: ValidatorAPI.VALIDATORS.email
             }
         ];
     }
