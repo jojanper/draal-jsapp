@@ -3,7 +3,8 @@ const validator = require('express-validator/check');
 
 
 const VALIDATORS = {
-    email: 'email'
+    email: 'email',
+    exists: 'exists'
 };
 
 /*
@@ -11,7 +12,25 @@ const VALIDATORS = {
  */
 const errorMessages = {};
 errorMessages[VALIDATORS.email] = 'Not an email address';
+errorMessages[VALIDATORS.exists] = 'Must be present';
 
+
+const createValidatorChain = (chain, validator) => {
+    switch (validator) {
+    case VALIDATORS.email:
+        // Simple email validator
+        return chain.isEmail().withMessage(errorMessages[validator]).trim().normalizeEmail();
+
+    case VALIDATORS.exists:
+        // Check that parameter exists
+        return chain.exists().withMessage(errorMessages[validator]);
+
+    default:
+        break;
+    }
+
+    return null;
+};
 
 /**
  * Interface for handling input data validation and error reporting.
@@ -53,22 +72,21 @@ class ValidatorAPI {
 
     /**
      * Create and return validator function to be used for HTTP requests.
-     * Validator function corresponds to express-validator and actual validator
+     * Validator function corresponds to express-validator and actual validator chain
      * is dependent on input options.
      */
     get validator() {
-        const cls = validator[this.options.api];
+        let chain = null;
+        if (this.options.validators) {
+            const cls = validator[this.options.api];
+            chain = cls(this.options.field);
 
-        switch (this.options.validator) {
-        case 'email':
-            // Simple email validator with predefined error message
-            return cls(this.options.field, errorMessages[this.options.validator]).exists();
-
-        default:
-            break;
+            this.options.validators.forEach((validator) => {
+                chain = createValidatorChain(chain, validator);
+            });
         }
 
-        return null;
+        return chain;
     }
 }
 

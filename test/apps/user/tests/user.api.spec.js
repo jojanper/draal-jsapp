@@ -143,10 +143,39 @@ describe('User registration', () => {
     });
 
     it('email parameter is missing', (done) => {
-        testrunner(testapp).post(api).send({password: '123456'}).expect(400)
+        testrunner(testapp).post(api).send({email: 'testtest.com', password: '123456'}).expect(400)
             .end((err, res) => {
                 expect(res.body.errors.length).to.equal(1);
                 expect(res.body.errors[0]).to.equal('Input parameter email: Not an email address');
+                done();
+            });
+    });
+
+    it('password parameter is missing', (done) => {
+        testrunner(testapp).post(api).send({email: 'test@test.com'}).expect(400)
+            .end((err, res) => {
+                expect(res.body.errors.length).to.equal(1);
+                expect(res.body.errors[0]).to.equal('Input parameter password: Must be present');
+                done();
+            });
+    });
+
+    it('email and password parameters are missing', (done) => {
+        testrunner(testapp).post(api).send().expect(400)
+            .end((err, res) => {
+                expect(res.body.errors.length).to.equal(2);
+                expect(res.body.errors[0]).to.equal('Input parameter email: Must be present');
+                expect(res.body.errors[1]).to.equal('Input parameter password: Must be present');
+                done();
+            });
+    });
+
+    it('email is invalid and and password parameter is missing', (done) => {
+        testrunner(testapp).post(api).send({email: 'testcom'}).expect(400)
+            .end((err, res) => {
+                expect(res.body.errors.length).to.equal(2);
+                expect(res.body.errors[0]).to.equal('Input parameter email: Not an email address');
+                expect(res.body.errors[1]).to.equal('Input parameter password: Must be present');
                 done();
             });
     });

@@ -35,7 +35,12 @@ class SignUp extends BaseCtrl {
             {
                 field: 'email',
                 api: ValidatorAPI.API.body,
-                validator: ValidatorAPI.VALIDATORS.email
+                validators: [ValidatorAPI.VALIDATORS.exists, ValidatorAPI.VALIDATORS.email]
+            },
+            {
+                field: 'password',
+                api: ValidatorAPI.API.body,
+                validators: [ValidatorAPI.VALIDATORS.exists]
             }
         ];
     }
