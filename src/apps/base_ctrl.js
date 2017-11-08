@@ -59,16 +59,12 @@ class BaseCtrl {
         return this;
     }
 
-    renderResponse({data = null, messages = null, errors = null, statusCode = null} =
-        {data: null, messages: null, errors: null, statusCode: null}) {
+    renderResponse({data = null, errors = null, statusCode = null} =
+        {data: null, errors: null, statusCode: null}) {
         const response = {};
 
         if (errors) {
             response.errors = errors;
-        }
-
-        if (messages) {
-            response.messages = messages;
         }
 
         if (data) {

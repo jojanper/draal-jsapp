@@ -202,11 +202,7 @@ describe('User authentication', () => {
         // GIVEN active user
         // WHEN user does login
         // THEN it should succeed
-        testrunner(testapp).post(api).send(credentials).expect(200)
-            .end((err, res) => {
-                expect(res.body.messages[0]).to.equal('Sign-in successful');
-                done(err);
-            });
+        testrunner(testapp).post(api).send(credentials).expect(200, done);
     });
 
     it('invalid email is entered', (done) => {
@@ -225,6 +221,16 @@ describe('User authentication', () => {
                expect(res.body.errors[0]).to.equal(errText);
                done(err);
            });
+    });
+
+    it('email and password parameters are missing', (done) => {
+        testrunner(testapp).post(api).send({}).expect(400)
+            .end((err, res) => {
+                expect(res.body.errors.length).to.equal(2);
+                expect(res.body.errors[0]).to.equal('Input parameter email: Must be present');
+                expect(res.body.errors[1]).to.equal('Input parameter password: Must be present');
+                done();
+            });
     });
 });
 
