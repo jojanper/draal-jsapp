@@ -3,6 +3,8 @@ Some thoughts for further development:
 
 - API post data validation
   - Hook https://github.com/ctavan/express-validator to API controller
+- Move tests to components
+- Manager methods: promisify
 - Add celery to Docker configuration
 - Missing user account funtionality
   - Password change

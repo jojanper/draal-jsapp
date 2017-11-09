@@ -53,29 +53,25 @@ class BaseCtrl {
         // On success, render the action response
         // On failure, call the error handler
         obj
-        .then(data => this.renderResponse({data}))
+        .then(response => this.renderResponse(response))
         .catch(err => this.next(err));
 
         return this;
     }
 
-    renderResponse({data = null, errors = null, statusCode = null} =
-        {data: null, errors: null, statusCode: null}) {
-        const response = {};
+    renderResponse(response) {
+        let data = {};
 
-        if (errors) {
-            response.errors = errors;
+        if (response) {
+            const statusCode = response.statusCode;
+            if (statusCode) {
+                this.res.status(statusCode);
+            }
+
+            data = response.jsonResponse;
         }
 
-        if (data) {
-            response.data = data;
-        }
-
-        if (statusCode) {
-            this.res.status(statusCode);
-        }
-
-        this.res.json(response);
+        this.res.json(data);
         this.res.end();
     }
 

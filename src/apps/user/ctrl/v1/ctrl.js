@@ -5,6 +5,7 @@ const AccountProfile = require('../../models/accountprofile');
 const APIError = require('src/error');
 const TasksLib = require('src/tasks');
 const BaseCtrl = require('../../../base_ctrl');
+const ApiResponse = require('../../../response');
 const ValidatorAPI = require('src/validators');
 
 
@@ -181,7 +182,7 @@ class SignIn extends BaseCtrl {
         // First authenticate user, then login the authenticated user
         const user = await this._authenticate().catch(error);
         await this._login(user).catch(error);
-        done();
+        done(new ApiResponse({messages: ['Sign-in successful']}));
     }
 
     _authenticate() {

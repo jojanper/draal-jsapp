@@ -202,7 +202,12 @@ describe('User authentication', () => {
         // GIVEN active user
         // WHEN user does login
         // THEN it should succeed
-        testrunner(testapp).post(api).send(credentials).expect(200, done);
+        testrunner(testapp).post(api).send(credentials).expect(200)
+            .end((err, res) => {
+                expect(res.body.messages.length).to.equal(1);
+                expect(res.body.messages[0]).to.equal('Sign-in successful');
+                done(err);
+            });
     });
 
     it('invalid email is entered', (done) => {
