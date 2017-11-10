@@ -2,8 +2,8 @@
 const sinon = require('sinon');
 const format = require('util').format;
 
-const TasksLib = require('src/tasks');
-const AccountProfile = require('src/apps/user/models/accountprofile');
+const TasksLib = require('../../../tasks');
+const AccountProfile = require('../models/accountprofile');
 
 const credentials = {email: 'test@test.com', password: '123456'};
 

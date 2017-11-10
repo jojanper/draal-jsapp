@@ -3,7 +3,7 @@ const sinon = require('sinon');
 require('mongoose');
 require('sinon-mongoose');
 
-const User = require('src/apps/user/models/user');
+const User = require('../models/user');
 
 const UserModel = User.model;
 
@@ -22,7 +22,7 @@ function userMgrCreateUser() {
             userMock.expects('save').chain('exec').rejects(errMsg);
 
             // WHEN creating user
-            User.manager.createUser(userMock.object, null, (err) => {
+            User.manager.createUser(userMock.object).catch((err) => {
                 userMock.verify();
                 userMock.restore();
 
@@ -43,7 +43,7 @@ function userMgrCreateUser() {
             });
 
             // WHEN creating new user
-            User.manager.createUser(userMock.object, null, (err) => {
+            User.manager.createUser(userMock.object).catch((err) => {
                 userMock.verify();
                 userMock.restore();
                 bcrypt.hash.restore();
@@ -65,7 +65,7 @@ function userMgrCreateUser() {
 
             return new Promise((resolve) => {
                 // WHEN creating user
-                User.manager.createUser(user, null, (err) => {
+                User.manager.createUser(user).catch((err) => {
                     userMock.verify();
                     userMock.restore();
                     resolve(err);

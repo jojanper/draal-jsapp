@@ -1,7 +1,7 @@
 const sinon = require('sinon');
 
-const UtilsLib = require('src/utils');
-const TasksLib = require('src/tasks');
+const UtilsLib = require('../../../utils');
+const TasksLib = require('../../../tasks');
 
 const credentials = {email: 'test-123456@test.com', password: '123456'};
 

@@ -1,4 +1,4 @@
-const ValidatorAPI = require('src/validators');
+const ValidatorAPI = require('../validators');
 
 
 describe('ValidatorAPI', () => {

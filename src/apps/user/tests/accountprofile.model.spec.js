@@ -2,8 +2,8 @@ const sinon = require('sinon');
 require('mongoose');
 require('sinon-mongoose');
 
-const User = require('src/apps/user/models/user');
-const AccountProfile = require('src/apps/user/models/accountprofile');
+const User = require('../models/user');
+const AccountProfile = require('../models/accountprofile');
 
 const UserModel = User.model;
 const AccountModel = AccountProfile.model;
@@ -29,7 +29,7 @@ describe('activateUser', () => {
 
         return new Promise((resolve) => {
             // WHEN creating user
-            AccountProfile.manager.activateUser('123', null, (err) => {
+            AccountProfile.manager.activateUser('123').catch((err) => {
                 userMock.verify();
                 userMock.restore();
 

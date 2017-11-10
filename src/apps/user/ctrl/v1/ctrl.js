@@ -2,11 +2,12 @@ const passport = require('passport');
 
 const User = require('../../models/user');
 const AccountProfile = require('../../models/accountprofile');
-const APIError = require('src/error');
-const TasksLib = require('src/tasks');
+const APIError = require('../../../../error');
+const TasksLib = require('../../../../tasks');
+const UtilsLib = require('../../../../utils');
 const BaseCtrl = require('../../../base_ctrl');
 const ApiResponse = require('../../../response');
-const ValidatorAPI = require('src/validators');
+const ValidatorAPI = require('../../../../validators');
 
 
 const UserModel = User.model;
@@ -46,20 +47,20 @@ class SignUp extends BaseCtrl {
         ];
     }
 
-    action(done, error) {
+    async action(done, error) {
         const user = new UserModel({
             email: this.req.body.email,
             password: this.req.body.password
         });
 
-        User.manager.createUser(user,
-            (account) => {
-                TasksLib.sendRegistrationEmail(user.email, account.activationKey);
-                console.log(account.activationKey);
-                done();
-            },
-            error
-        );
+        const promise = User.manager.createUser(user);
+        const [err, account] = await UtilsLib.promiseExecution(promise);
+        if (err) {
+            return error(err);
+        }
+
+        TasksLib.sendRegistrationEmail(user.email, account.activationKey);
+        done();
     }
 }
 
@@ -145,8 +146,14 @@ class UserActivation extends BaseCtrl {
         };
     }
 
-    action(done, error) {
-        AccountProfile.manager.activateUser(this.req.params.activationkey, () => done(), error);
+    async action(done, error) {
+        const promise = AccountProfile.manager.activateUser(this.req.params.activationkey);
+        const response = await UtilsLib.promiseExecution(promise);
+        if (response[0]) {
+            return error(response[0]);
+        }
+
+        done();
     }
 }
 
@@ -180,9 +187,14 @@ class SignIn extends BaseCtrl {
 
     async action(done, error) {
         // First authenticate user, then login the authenticated user
-        const user = await this._authenticate().catch(error);
-        await this._login(user).catch(error);
-        done(new ApiResponse({messages: ['Sign-in successful']}));
+        try {
+            const user = await this._authenticate();
+            await this._login(user);
+
+            done(new ApiResponse({messages: ['Sign-in successful']}));
+        } catch (err) {
+            error(err);
+        }
     }
 
     _authenticate() {
