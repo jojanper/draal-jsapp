@@ -9,3 +9,6 @@ Some thoughts for further development:
 - Missing user account funtionality
   - Password change
 - File upload
+- Add support for token based authentication
+  - example project: https://scotch.io/tutorials/authenticate-a-node-js-api-with-json-web-tokens
+  - https://github.com/auth0/node-jsonwebtoken
