@@ -65,6 +65,15 @@ describe('Password reset request', () => {
             });
         });
     });
+
+    it('email parameter is missing', (done) => {
+        testrunner(testapp).post(api).send({email: 'testtest.com'}).expect(400)
+            .end((err, res) => {
+                expect(res.body.errors.length).to.equal(1);
+                expect(res.body.errors[0]).to.equal('Input parameter email: Not an email address');
+                done();
+            });
+    });
 });
 
 describe('Password change using token', () => {
@@ -73,6 +82,16 @@ describe('Password change using token', () => {
         testrunner(testapp).post(resetApi).send(data).expect(400)
             .then((res) => {
                 expect(res.body.errors[0]).to.equal('Invalid token');
+                done();
+            });
+    });
+
+    it('email and token parameters are missing', (done) => {
+        testrunner(testapp).post(resetApi).send().expect(400)
+            .end((err, res) => {
+                expect(res.body.errors.length).to.equal(2);
+                expect(res.body.errors[0]).to.equal('Input parameter email: Must be present');
+                expect(res.body.errors[1]).to.equal('Input parameter token: Must be present');
                 done();
             });
     });

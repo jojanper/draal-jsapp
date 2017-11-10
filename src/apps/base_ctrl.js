@@ -1,4 +1,9 @@
 const util = require('util');
+const validator = require('express-validator/check');
+
+const APIError = require('src/error');
+const ValidatorAPI = require('src/validators');
+
 
 class BaseCtrl {
 
@@ -32,39 +37,41 @@ class BaseCtrl {
 
     execute() {
         const obj = new Promise((resolve, reject) => {
+            // First validate input parameters
+            const errors = validator.validationResult(this.req);
+            if (!errors.isEmpty()) {
+                // Errors found, report back
+                return reject(new APIError(ValidatorAPI.getErrors(errors.mapped())));
+            }
+
+            // Execute the API action
             this.action(resolve, (err) => {
                 reject(err);
             });
         });
 
+        // On success, render the action response
+        // On failure, call the error handler
         obj
-        .then(data => this.renderResponse({data}))
+        .then(response => this.renderResponse(response))
         .catch(err => this.next(err));
 
         return this;
     }
 
-    renderResponse({data = null, messages = null, errors = null, statusCode = null} =
-        {data: null, messages: null, errors: null, statusCode: null}) {
-        const response = {};
+    renderResponse(response) {
+        let data = {};
 
-        if (errors) {
-            response.errors = errors;
+        if (response) {
+            const statusCode = response.statusCode;
+            if (statusCode) {
+                this.res.status(statusCode);
+            }
+
+            data = response.jsonResponse;
         }
 
-        if (messages) {
-            response.messages = messages;
-        }
-
-        if (data) {
-            response.data = data;
-        }
-
-        if (statusCode) {
-            this.res.status(statusCode);
-        }
-
-        this.res.json(response);
+        this.res.json(data);
         this.res.end();
     }
 

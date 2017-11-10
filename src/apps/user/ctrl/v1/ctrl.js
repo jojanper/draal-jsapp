@@ -5,6 +5,8 @@ const AccountProfile = require('../../models/accountprofile');
 const APIError = require('src/error');
 const TasksLib = require('src/tasks');
 const BaseCtrl = require('../../../base_ctrl');
+const ApiResponse = require('../../../response');
+const ValidatorAPI = require('src/validators');
 
 
 const UserModel = User.model;
@@ -27,6 +29,21 @@ class SignUp extends BaseCtrl {
             NAME: 'signup',
             URLPREFIX: urlPrefix
         };
+    }
+
+    static get VALIDATORS() {
+        return [
+            {
+                field: 'email',
+                api: ValidatorAPI.API.body,
+                validators: [ValidatorAPI.VALIDATORS.exists, ValidatorAPI.VALIDATORS.email]
+            },
+            {
+                field: 'password',
+                api: ValidatorAPI.API.body,
+                validators: [ValidatorAPI.VALIDATORS.exists]
+            }
+        ];
     }
 
     action(done, error) {
@@ -59,6 +76,16 @@ class PwResetRequest extends BaseCtrl {
         };
     }
 
+    static get VALIDATORS() {
+        return [
+            {
+                field: 'email',
+                api: ValidatorAPI.API.body,
+                validators: [ValidatorAPI.VALIDATORS.exists, ValidatorAPI.VALIDATORS.email]
+            }
+        ];
+    }
+
     action(done, error) {
         User.manager.passwordResetToken(this.req.body.email,
             (user, token) => {
@@ -82,6 +109,21 @@ class PwResetActivation extends BaseCtrl {
             NAME: 'password-reset',
             URLPREFIX: urlPrefix
         };
+    }
+
+    static get VALIDATORS() {
+        return [
+            {
+                field: 'email',
+                api: ValidatorAPI.API.body,
+                validators: [ValidatorAPI.VALIDATORS.exists, ValidatorAPI.VALIDATORS.email]
+            },
+            {
+                field: 'token',
+                api: ValidatorAPI.API.body,
+                validators: [ValidatorAPI.VALIDATORS.exists]
+            }
+        ];
     }
 
     action(done, error) {
@@ -121,20 +163,50 @@ class SignIn extends BaseCtrl {
         };
     }
 
-    execute() {
-        passport.authenticate('local', (err, user) => {
-            if (err) {
-                return this.next(new APIError('Invalid credentials'));
+    static get VALIDATORS() {
+        return [
+            {
+                field: 'email',
+                api: ValidatorAPI.API.body,
+                validators: [ValidatorAPI.VALIDATORS.exists, ValidatorAPI.VALIDATORS.email]
+            },
+            {
+                field: 'password',
+                api: ValidatorAPI.API.body,
+                validators: [ValidatorAPI.VALIDATORS.exists]
             }
+        ];
+    }
 
-            this.req.logIn(user, (err) => {
+    async action(done, error) {
+        // First authenticate user, then login the authenticated user
+        const user = await this._authenticate().catch(error);
+        await this._login(user).catch(error);
+        done(new ApiResponse({messages: ['Sign-in successful']}));
+    }
+
+    _authenticate() {
+        return new Promise((resolve, reject) => {
+            passport.authenticate('local', (err, user) => {
                 if (err) {
-                    return this.next(err);
+                    return reject(new APIError('Invalid credentials'));
                 }
 
-                this.renderResponse({messages: ['Sign-in successful']});
+                resolve(user);
+            })(this.req, this.res, this.next);
+        });
+    }
+
+    _login(user) {
+        return new Promise((resolve, reject) => {
+            this.req.logIn(user, (err) => {
+                if (err) {
+                    return reject(err);
+                }
+
+                resolve();
             });
-        })(this.req, this.res, this.next);
+        });
     }
 }
 
@@ -151,9 +223,9 @@ class SignOut extends BaseCtrl {
         };
     }
 
-    execute() {
+    action(done) {
         this.req.logout();
-        this.renderResponse();
+        done();
     }
 }
 
