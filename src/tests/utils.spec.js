@@ -1,9 +1,9 @@
 /* eslint-disable no-unused-expressions */
-const UtilsLib = require('src/utils');
+const UtilsLib = require('../utils');
 const bcrypt = require('bcrypt');
 const sinon = require('sinon');
 
-const ApiCtrl = require('../src/apps/user/ctrl')[0];
+const ApiCtrl = require('../apps/user/ctrl')[0];
 
 class MockApp {
     constructor(mode) {

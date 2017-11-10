@@ -1,4 +1,4 @@
-const ApiResponse = require('../src/apps/response');
+const ApiResponse = require('../response');
 
 
 describe('ApiResponse', () => {

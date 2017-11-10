@@ -1,4 +1,4 @@
-const SignIn = require('src/apps/user/ctrl')[2].cls;
+const SignIn = require('../ctrl')[2].cls;
 
 const userDetails = {
     email: 'test-1@test.com',

@@ -67,7 +67,7 @@ const port = normalizePort(process.env.PORT || '3000');
 app.set('port', port);
 
 // Prepare application business logic
-require('src/app')(app);
+require('./src/app')(app);
 
 // Passport init
 require('./config/passport')(passport);
