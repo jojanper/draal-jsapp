@@ -2,11 +2,11 @@ const passport = require('passport');
 
 const User = require('../../models/user');
 const AccountProfile = require('../../models/accountprofile');
-const APIError = require('src/error');
-const TasksLib = require('src/tasks');
+const APIError = require('../../../../error');
+const TasksLib = require('../../../../tasks');
 const BaseCtrl = require('../../../base_ctrl');
 const ApiResponse = require('../../../response');
-const ValidatorAPI = require('src/validators');
+const ValidatorAPI = require('../../../../validators');
 
 
 const UserModel = User.model;

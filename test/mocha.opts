@@ -1,5 +1,8 @@
+src/**/*.spec.js
+test/bootstrap.spec.js
 -R spec
 --require test/helpers
 -u exports
 --recursive
 --timeout 3000
+--exit

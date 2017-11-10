@@ -1,8 +1,8 @@
 const util = require('util');
 const validator = require('express-validator/check');
 
-const APIError = require('src/error');
-const ValidatorAPI = require('src/validators');
+const APIError = require('../error');
+const ValidatorAPI = require('../validators');
 
 
 class BaseCtrl {

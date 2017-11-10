@@ -1,5 +1,5 @@
-const User = require('src/apps/user/models/user');
-const UserAccount = require('src/apps/user/models/accountprofile');
+const User = require('../src/apps/user/models/user');
+const UserAccount = require('../src/apps/user/models/accountprofile');
 
 const UserModel = User.model;
 
