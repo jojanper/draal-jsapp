@@ -33,17 +33,15 @@ class UserManager extends BaseManager {
         return this.execute('findOne', data);
     }
 
-    findLoginUser(email, password, success, error) {
-        this.findUser(email, true)
+    findLoginUser(email, password) {
+        return this.findUser(email, true)
             .then((user) => {
                 if (!user) {
                     throw new APIError(`Email ${email} not found`);
                 }
 
                 return user.comparePassword(password);
-            })
-            .then(user => success(user))
-            .catch(err => error(err));
+            });
     }
 
     _getUser(email) {

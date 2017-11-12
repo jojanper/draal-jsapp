@@ -19,7 +19,9 @@ function passportInit(passport) {
     });
 
     passport.use(new LocalStrategy({usernameField: 'email'}, (email, password, done) => {
-        User.manager.findLoginUser(email, password, user => done(null, user), err => done(err));
+        User.manager.findLoginUser(email, password)
+            .then(user => done(null, user))
+            .catch(err => done(err));
     }));
 }
 

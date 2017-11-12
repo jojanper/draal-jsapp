@@ -136,7 +136,7 @@ function userMgrFindLoginUser() {
 
             return new Promise((resolve) => {
                 // WHEN querying login user
-                User.manager.findLoginUser(user.email, user.password, null, (err) => {
+                User.manager.findLoginUser(user.email, user.password).catch((err) => {
                     userMock.verify();
                     userMock.restore();
                     resolve(err);
@@ -159,7 +159,7 @@ function userMgrFindLoginUser() {
 
             return new Promise((resolve) => {
                 // WHEN querying login user
-                User.manager.findLoginUser(user.email, user.password, null, (err) => {
+                User.manager.findLoginUser(user.email, user.password).catch((err) => {
                     userMock.verify();
                     userMock.restore();
                     resolve(err);
