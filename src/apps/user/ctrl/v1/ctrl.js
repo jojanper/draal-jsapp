@@ -47,20 +47,14 @@ class SignUp extends BaseCtrl {
         ];
     }
 
-    async action(done, error) {
+    async action() {
         const user = new UserModel({
             email: this.req.body.email,
             password: this.req.body.password
         });
 
-        const promise = User.manager.createUser(user);
-        const [err, account] = await UtilsLib.promiseExecution(promise);
-        if (err) {
-            return error(err);
-        }
-
+        const account = await User.manager.createUser(user);
         TasksLib.sendRegistrationEmail(user.email, account.activationKey);
-        done();
     }
 }
 
@@ -87,16 +81,15 @@ class PwResetRequest extends BaseCtrl {
         ];
     }
 
-    async action(done, error) {
-        const promise = User.manager.passwordResetToken(this.req.body.email);
-        const [err, response] = await UtilsLib.promiseExecution(promise);
-        if (err) {
-            return error(err);
-        }
+    async action() {
+        const user = new UserModel({
+            email: this.req.body.email,
+            password: this.req.body.password
+        });
 
-        const [email, token] = response;
+        const promise = User.manager.passwordResetToken(this.req.body.email);
+        const [email, token] = await promise;
         TasksLib.sendPasswordResetEmail(email, token);
-        done();
     }
 }
 
@@ -128,14 +121,8 @@ class PwResetActivation extends BaseCtrl {
         ];
     }
 
-    async action(done, error) {
-        const promise = User.manager.resetPassword(this.req.body);
-        const response = await UtilsLib.promiseExecution(promise);
-        if (response[0]) {
-            return error(response[0]);
-        }
-
-        done();
+    action() {
+        return User.manager.resetPassword(this.req.body);
     }
 }
 
@@ -153,14 +140,8 @@ class UserActivation extends BaseCtrl {
         };
     }
 
-    async action(done, error) {
-        const promise = AccountProfile.manager.activateUser(this.req.params.activationkey);
-        const response = await UtilsLib.promiseExecution(promise);
-        if (response[0]) {
-            return error(response[0]);
-        }
-
-        done();
+    action() {
+        return AccountProfile.manager.activateUser(this.req.params.activationkey);
     }
 }
 
@@ -192,16 +173,10 @@ class SignIn extends BaseCtrl {
         ];
     }
 
-    async action(done, error) {
-        // First authenticate user, then login the authenticated user
-        try {
-            const user = await this._authenticate();
-            await this._login(user);
-
-            done(new ApiResponse({messages: ['Sign-in successful']}));
-        } catch (err) {
-            error(err);
-        }
+    async action() {
+        const user = await this._authenticate();
+        await this._login(user);
+        return new ApiResponse({messages: ['Sign-in successful']});
     }
 
     _authenticate() {
@@ -242,9 +217,9 @@ class SignOut extends BaseCtrl {
         };
     }
 
-    action(done) {
+    action() {
         this.req.logout();
-        done();
+        return Promise.resolve();
     }
 }
 

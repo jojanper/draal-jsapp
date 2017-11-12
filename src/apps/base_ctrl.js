@@ -45,9 +45,9 @@ class BaseCtrl {
             }
 
             // Execute the API action
-            this.action(resolve, (err) => {
-                reject(err);
-            });
+            this.action()
+                .then(resolve)
+                .catch(reject);
         });
 
         // On success, render the action response
