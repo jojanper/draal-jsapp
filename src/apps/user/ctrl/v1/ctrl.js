@@ -87,15 +87,16 @@ class PwResetRequest extends BaseCtrl {
         ];
     }
 
-    action(done, error) {
-        User.manager.passwordResetToken(this.req.body.email,
-            (user, token) => {
-                TasksLib.sendPasswordResetEmail(user.email, token);
-                console.log(token);
-                done();
-            },
-            error
-        );
+    async action(done, error) {
+        const promise = User.manager.passwordResetToken(this.req.body.email);
+        const [err, response] = await UtilsLib.promiseExecution(promise);
+        if (err) {
+            return error(err);
+        }
+
+        const [email, token] = response;
+        TasksLib.sendPasswordResetEmail(email, token);
+        done();
     }
 }
 

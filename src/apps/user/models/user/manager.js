@@ -60,11 +60,8 @@ class UserManager extends BaseManager {
         });
     }
 
-    passwordResetToken(email, success, error) {
-        this._getUser(email)
-            .then(user => user.createPwResetToken())
-            .then(([user, token]) => success(user, token))
-            .catch(err => error(err));
+    passwordResetToken(email) {
+        return this._getUser(email).then(user => user.createPwResetToken());
     }
 
     resetPassword(data, success, error) {
