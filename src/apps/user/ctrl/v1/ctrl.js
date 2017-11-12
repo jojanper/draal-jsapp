@@ -4,7 +4,6 @@ const User = require('../../models/user');
 const AccountProfile = require('../../models/accountprofile');
 const APIError = require('../../../../error');
 const TasksLib = require('../../../../tasks');
-const UtilsLib = require('../../../../utils');
 const BaseCtrl = require('../../../base_ctrl');
 const ApiResponse = require('../../../response');
 const ValidatorAPI = require('../../../../validators');
@@ -82,14 +81,9 @@ class PwResetRequest extends BaseCtrl {
     }
 
     async action() {
-        const user = new UserModel({
-            email: this.req.body.email,
-            password: this.req.body.password
-        });
-
         const promise = User.manager.passwordResetToken(this.req.body.email);
-        const [email, token] = await promise;
-        TasksLib.sendPasswordResetEmail(email, token);
+        const [user, token] = await promise;
+        TasksLib.sendPasswordResetEmail(user.email, token);
     }
 }
 
