@@ -128,8 +128,14 @@ class PwResetActivation extends BaseCtrl {
         ];
     }
 
-    action(done, error) {
-        User.manager.resetPassword(this.req.body, () => done(), error);
+    async action(done, error) {
+        const promise = User.manager.resetPassword(this.req.body);
+        const response = await UtilsLib.promiseExecution(promise);
+        if (response[0]) {
+            return error(response[0]);
+        }
+
+        done();
     }
 }
 
