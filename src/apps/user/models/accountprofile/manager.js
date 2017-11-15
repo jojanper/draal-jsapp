@@ -21,7 +21,7 @@ class AccountProfileManager extends BaseManager {
         const dbObj = this.queryObj('findOne', {activationKey});
         const query = dbObj.getQuery().populate('user');
 
-        return dbObj.setQuery(query).exec(/*error*/)
+        return dbObj.setQuery(query).exec()
             .then((account) => {
                 if (!account) {
                     throw new APIError('Invalid account activation key');
