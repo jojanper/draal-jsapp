@@ -29,7 +29,7 @@ describe('activateUser', () => {
 
         return new Promise((resolve) => {
             // WHEN creating user
-            AccountProfile.manager.activateUser('123', null, (err) => {
+            AccountProfile.manager.activateUser('123').catch((err) => {
                 userMock.verify();
                 userMock.restore();
 

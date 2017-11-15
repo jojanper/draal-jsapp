@@ -22,7 +22,7 @@ function userMgrCreateUser() {
             userMock.expects('save').chain('exec').rejects(errMsg);
 
             // WHEN creating user
-            User.manager.createUser(userMock.object, null, (err) => {
+            User.manager.createUser(userMock.object).catch((err) => {
                 userMock.verify();
                 userMock.restore();
 
@@ -43,7 +43,7 @@ function userMgrCreateUser() {
             });
 
             // WHEN creating new user
-            User.manager.createUser(userMock.object, null, (err) => {
+            User.manager.createUser(userMock.object).catch((err) => {
                 userMock.verify();
                 userMock.restore();
                 bcrypt.hash.restore();
@@ -65,7 +65,7 @@ function userMgrCreateUser() {
 
             return new Promise((resolve) => {
                 // WHEN creating user
-                User.manager.createUser(user, null, (err) => {
+                User.manager.createUser(user).catch((err) => {
                     userMock.verify();
                     userMock.restore();
                     resolve(err);
@@ -136,7 +136,7 @@ function userMgrFindLoginUser() {
 
             return new Promise((resolve) => {
                 // WHEN querying login user
-                User.manager.findLoginUser(user.email, user.password, null, (err) => {
+                User.manager.findLoginUser(user.email, user.password).catch((err) => {
                     userMock.verify();
                     userMock.restore();
                     resolve(err);
@@ -159,7 +159,7 @@ function userMgrFindLoginUser() {
 
             return new Promise((resolve) => {
                 // WHEN querying login user
-                User.manager.findLoginUser(user.email, user.password, null, (err) => {
+                User.manager.findLoginUser(user.email, user.password).catch((err) => {
                     userMock.verify();
                     userMock.restore();
                     resolve(err);

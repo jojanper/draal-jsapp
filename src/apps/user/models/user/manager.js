@@ -11,71 +11,60 @@ class UserManager extends BaseManager {
         super(User);
     }
 
-    createUser(user, success, error) {
-        this.execute('findOne', {email: user.email}, null, error)
+    createUser(user) {
+        return this.execute('findOne', {email: user.email})
             .then((existingUser) => {
                 if (existingUser) {
-                    throw new APIError(format('Account with %s email address already exists', user.email));
+                    const msg = format('Account with %s email address already exists', user.email);
+                    throw new APIError(msg);
                 }
 
                 return user.save();
             })
-            .then(savedUser => AccountProfile.manager.createProfile(savedUser))
-            .then(savedAccountProfile => success(savedAccountProfile))
-            .catch(err => error(err));
+            .then(savedUser => AccountProfile.manager.createProfile(savedUser));
     }
 
-    findUser(email, error, active = true) {
+    findUser(email, active = undefined) {
         const data = {email: email.toLowerCase()};
-        if (active !== null) {
+        if (active !== undefined) {
             data.active = active;
         }
-        return this.execute('findOne', data, null, error);
+
+        return this.execute('findOne', data);
     }
 
-    findLoginUser(email, password, success, error) {
-        this.findUser(email, error)
+    findLoginUser(email, password) {
+        return this.findUser(email, true)
             .then((user) => {
                 if (!user) {
                     throw new APIError(`Email ${email} not found`);
                 }
 
                 return user.comparePassword(password);
-            })
-            .then(user => success(user))
-            .catch(err => error(err));
+            });
     }
 
-    _getUser(email, error) {
-        return new Promise((resolve, reject) => {
-            this.findUser(email, error, null)
-                .then((user) => {
-                    if (!user) {
-                        throw new APIError(`Email ${email} not found`);
-                    }
+    _getUser(email) {
+        return this.findUser(email).then((user) => {
+            if (!user) {
+                throw new APIError(`Email ${email} not found`);
+            }
 
-                    if (!user.active) {
-                        throw new APIError('Password reset can be requested only for active user');
-                    }
+            if (!user.active) {
+                throw new APIError('Password reset can be requested only for active user');
+            }
 
-                    resolve(user);
-                })
-                .catch(err => reject(err));
+            return Promise.resolve(user);
         });
     }
 
-    passwordResetToken(email, success, error) {
-        this._getUser(email, error)
-            .then(user => user.createPwResetToken())
-            .then(([user, token]) => success(user, token))
-            .catch(err => error(err));
+    passwordResetToken(email) {
+        return this._getUser(email).then(user => user.createPwResetToken());
     }
 
-    resetPassword(data, success, error) {
-        this._getUser(data.email, error)
-            .then(user => user.changePasswordWithToken(data.token, data.password))
-            .then(user => success(user))
-            .catch(err => error(err));
+    resetPassword(data) {
+        return this._getUser(data.email)
+            .then(user => user.changePasswordWithToken(data.token, data.password));
     }
 }
 

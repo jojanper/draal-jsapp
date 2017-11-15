@@ -46,20 +46,14 @@ class SignUp extends BaseCtrl {
         ];
     }
 
-    action(done, error) {
+    async action() {
         const user = new UserModel({
             email: this.req.body.email,
             password: this.req.body.password
         });
 
-        User.manager.createUser(user,
-            (account) => {
-                TasksLib.sendRegistrationEmail(user.email, account.activationKey);
-                console.log(account.activationKey);
-                done();
-            },
-            error
-        );
+        const account = await User.manager.createUser(user);
+        TasksLib.sendRegistrationEmail(user.email, account.activationKey);
     }
 }
 
@@ -86,15 +80,10 @@ class PwResetRequest extends BaseCtrl {
         ];
     }
 
-    action(done, error) {
-        User.manager.passwordResetToken(this.req.body.email,
-            (user, token) => {
-                TasksLib.sendPasswordResetEmail(user.email, token);
-                console.log(token);
-                done();
-            },
-            error
-        );
+    async action() {
+        const promise = User.manager.passwordResetToken(this.req.body.email);
+        const [user, token] = await promise;
+        TasksLib.sendPasswordResetEmail(user.email, token);
     }
 }
 
@@ -126,8 +115,8 @@ class PwResetActivation extends BaseCtrl {
         ];
     }
 
-    action(done, error) {
-        User.manager.resetPassword(this.req.body, () => done(), error);
+    action() {
+        return User.manager.resetPassword(this.req.body);
     }
 }
 
@@ -145,8 +134,8 @@ class UserActivation extends BaseCtrl {
         };
     }
 
-    action(done, error) {
-        AccountProfile.manager.activateUser(this.req.params.activationkey, () => done(), error);
+    action() {
+        return AccountProfile.manager.activateUser(this.req.params.activationkey);
     }
 }
 
@@ -178,11 +167,10 @@ class SignIn extends BaseCtrl {
         ];
     }
 
-    async action(done, error) {
-        // First authenticate user, then login the authenticated user
-        const user = await this._authenticate().catch(error);
-        await this._login(user).catch(error);
-        done(new ApiResponse({messages: ['Sign-in successful']}));
+    async action() {
+        const user = await this._authenticate();
+        await this._login(user);
+        return new ApiResponse({messages: ['Sign-in successful']});
     }
 
     _authenticate() {
@@ -223,9 +211,9 @@ class SignOut extends BaseCtrl {
         };
     }
 
-    action(done) {
+    action() {
         this.req.logout();
-        done();
+        return Promise.resolve();
     }
 }
 

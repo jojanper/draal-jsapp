@@ -16,12 +16,12 @@ class AccountProfileManager extends BaseManager {
         return this.getNewModel({user: user.id, activationKey: key}).save();
     }
 
-    activateUser(activationKey, success, error) {
+    activateUser(activationKey) {
         let currentAccount;
         const dbObj = this.queryObj('findOne', {activationKey});
         const query = dbObj.getQuery().populate('user');
 
-        dbObj.setQuery(query).exec(error)
+        return dbObj.setQuery(query).exec()
             .then((account) => {
                 if (!account) {
                     throw new APIError('Invalid account activation key');
@@ -42,9 +42,7 @@ class AccountProfileManager extends BaseManager {
             .then(() => {
                 currentAccount.setActivated();
                 return UtilsLib.retryPromise(2, () => currentAccount.save());
-            })
-            .then(account => success(account))
-            .catch(err => error(err));
+            });
     }
 }
 

@@ -35,6 +35,16 @@ class BaseCtrl {
         this.next = next;
     }
 
+    /**
+     * Execute controller action. The derived class is expected to provide the
+     * implementation for the action. The action method is expected to return
+     * a promise object. Promise resolve method must return Response instance whereas
+     * promise reject method must return error either as APIError instance or some
+     * Error instance.
+     *
+     * Before the actual action is executed, input parameter related errors are validated
+     * to make sure that all relevant data is available.
+     */
     execute() {
         const obj = new Promise((resolve, reject) => {
             // First validate input parameters
@@ -45,9 +55,9 @@ class BaseCtrl {
             }
 
             // Execute the API action
-            this.action(resolve, (err) => {
-                reject(err);
-            });
+            this.action()
+                .then(resolve)
+                .catch(reject);
         });
 
         // On success, render the action response

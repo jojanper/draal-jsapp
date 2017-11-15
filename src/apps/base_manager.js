@@ -12,8 +12,8 @@ class DBQuery {
         return this;
     }
 
-    exec(error) {
-        return this.query.exec().catch(err => error(err));
+    exec() {
+        return this.query.exec();
     }
 }
 
@@ -43,15 +43,14 @@ class BaseManager {
      * @param {string} method Query name.
      * @param {*} params Query parameters.
      * @param {function=} cb Callback function.
-     * @param {function=} error Callback function for promise rejection.
      * @returns {Query|Promise}.
      */
-    execute(method, params, cb, error) {
+    execute(method, params, cb) {
         if (cb) {
             return this.model[method](params, cb);
         }
 
-        return new DBQuery(this.model[method](params)).exec(error);
+        return new DBQuery(this.model[method](params)).exec();
     }
 
     /**
