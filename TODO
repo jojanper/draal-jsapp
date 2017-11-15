@@ -1,7 +1,7 @@
 Some thoughts for further development:
 --------------------------------------
 
-- Manager methods: promisify
+- Wiki pages regarding how to create API action
 - Add celery to Docker configuration
 - Missing user account funtionality
   - Password change
