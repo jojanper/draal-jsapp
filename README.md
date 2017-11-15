@@ -1,4 +1,7 @@
-[![Build Status](https://travis-ci.org/jojanper/draal-jsapp.svg?branch=master)](https://travis-ci.org/jojanper/draal-jsapp)
+[![build][travis-image]][travis-url]
+
+[travis-image]: https://travis-ci.org/jojanper/draal-jsapp.svg?branch=master
+[travis-url]: https://npmjs.org/package/get-package-readme
 
 # draal-jsapp
 > Node.js web backend. Project setup has been generated using [express-generator](https://expressjs.com/en/starter/generator.html).
@@ -7,7 +10,7 @@
 
 ### Prerequisites
 
-- [Node.js 6.0+](https://nodejs.org)
+- [Node.js 8.9+](https://nodejs.org)
 - MongoDB
   - [Linux installation](https://docs.mongodb.com/manual/administration/install-on-linux/)
   - [OS X installation](https://docs.mongodb.com/manual/tutorial/install-mongodb-on-os-x/)

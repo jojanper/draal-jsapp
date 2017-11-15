@@ -22,7 +22,7 @@ matrix:
         - sudo mkdir -p /data/db
         - brew services start mongodb
 env:
-  - TRAVIS_NODE_VERSION="8.4.0"
+  - TRAVIS_NODE_VERSION="8.9.0"
 install:
   # Clear out whatever version of NVM Travis has.
   # Grab NVM and checkout the latest stable tag.

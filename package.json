@@ -112,6 +112,6 @@
     "reporter": ["text", "text-summary"]
   },
   "engines": {
-    "node": ">= 7.6.0"
+    "node": ">= 8.9.0"
   }
 }
