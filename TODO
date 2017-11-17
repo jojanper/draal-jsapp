@@ -9,3 +9,9 @@ Some thoughts for further development:
 - Add support for token based authentication
   - example project: https://scotch.io/tutorials/authenticate-a-node-js-api-with-json-web-tokens
   - https://github.com/auth0/node-jsonwebtoken
+- API validations
+  - Serialize as part of API data
+  - Generalize names:
+    - exists -> required
+  - Validation messages:
+    - Option to show also input field instead of general message
