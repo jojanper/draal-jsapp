@@ -3,8 +3,8 @@
 
 [travis-image]: https://travis-ci.org/jojanper/draal-jsapp.svg?branch=master
 [travis-url]:  https://travis-ci.org/jojanper/draal-jsapp
-[codecov-image]: https://codecov.io/gh/jojanper/draaljs-app/coverage.svg?branch=master
-[codecov-url]: https://codecov.io/gh/jojanper/draaljs-app?branch=master
+[codecov-image]: https://codecov.io/gh/jojanper/draal-jsapp/coverage.svg?branch=master
+[codecov-url]: https://codecov.io/gh/jojanper/draal-jsapp?branch=master
 
 
 # draal-jsapp
