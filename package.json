@@ -12,6 +12,7 @@
   "main": "app.js",
   "scripts": {
     "cibuild": "npm run lint && npm test",
+    "codecov": "codecov --disable=gcov --root=./coverage",
     "docker-build": "docker-compose build",
     "docker-run": "docker-compose up",
     "docker-rund": "docker-compose up -d",
@@ -108,9 +109,17 @@
     }
   },
   "nyc": {
-    "include": ["src", "config", "app.js"],
+    "include": [
+      "src",
+      "config",
+      "app.js"
+    ],
     "exclude": "**/*.spec.js",
-    "reporter": ["text", "text-summary", "lcovonly"]
+    "reporter": [
+      "text",
+      "text-summary",
+      "lcovonly"
+    ]
   },
   "engines": {
     "node": ">= 8.9.0"
