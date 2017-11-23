@@ -1,7 +1,11 @@
 [![build][travis-image]][travis-url]
+[![codecov.io][codecov-image]][codecov-url]
 
 [travis-image]: https://travis-ci.org/jojanper/draal-jsapp.svg?branch=master
 [travis-url]:  https://travis-ci.org/jojanper/draal-jsapp
+[codecov-image]: https://codecov.io/gh/jojanper/draaljs-app/coverage.svg?branch=master
+[codecov-url]: https://codecov.io/gh/jojanper/draaljs-app?branch=master
+
 
 # draal-jsapp
 > Node.js web backend. Project setup has been generated using [express-generator](https://expressjs.com/en/starter/generator.html).

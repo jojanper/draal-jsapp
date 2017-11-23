@@ -57,6 +57,7 @@
   },
   "devDependencies": {
     "chai": "^3.5.0",
+    "codecov": "^3.0.0",
     "concurrently": "^3.5.0",
     "eslint": "^3.18.0",
     "eslint-config-airbnb-base": "^11.3.2",
@@ -109,7 +110,7 @@
   "nyc": {
     "include": ["src", "config", "app.js"],
     "exclude": "**/*.spec.js",
-    "reporter": ["text", "text-summary"]
+    "reporter": ["text", "text-summary", "lcovonly"]
   },
   "engines": {
     "node": ">= 8.9.0"

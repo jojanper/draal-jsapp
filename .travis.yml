@@ -11,6 +11,7 @@ matrix:
       before_install:
         - docker --version;
         - docker-compose --version;
+        - pip install --user codecov
     - os: osx
       sudo: required
       language: generic
@@ -21,8 +22,11 @@ matrix:
         - brew install mongodb
         - sudo mkdir -p /data/db
         - brew services start mongodb
+        - pip install --user codecov
 env:
   - TRAVIS_NODE_VERSION="8.9.0"
+after_success:
+  - codecov
 install:
   # Clear out whatever version of NVM Travis has.
   # Grab NVM and checkout the latest stable tag.
