@@ -1,10 +1,17 @@
 [![build][travis-image]][travis-url]
 [![codecov.io][codecov-image]][codecov-url]
+[![Dependency Status][david-image]][david-url]
+[![devDependency Status][david-dev-image]][david-dev-url]
+
 
 [travis-image]: https://travis-ci.org/jojanper/draal-jsapp.svg?branch=master
 [travis-url]:  https://travis-ci.org/jojanper/draal-jsapp
 [codecov-image]: https://codecov.io/gh/jojanper/draal-jsapp/coverage.svg?branch=master
 [codecov-url]: https://codecov.io/gh/jojanper/draal-jsapp?branch=master
+[david-image]: https://david-dm.org/jojanper/draal-jsapp.svg
+[david-url]: https://david-dm.org/jojanper/draal-jsapp
+[david-dev-image]: https://david-dm.org/jojanper/draal-jsapp/dev-status.svg
+[david-dev-url]: https://david-dm.org/jojanper/draal-jsapp#info=devDependencies
 
 
 # draal-jsapp
