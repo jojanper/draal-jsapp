@@ -15,3 +15,5 @@ Some thoughts for further development:
     - exists -> required
   - Validation messages:
     - Option to show also input field instead of general message
+- SocketIO permissions
+  - https://www.codementor.io/tips/0217388244/sharing-passport-js-sessions-with-both-express-and-socket-io

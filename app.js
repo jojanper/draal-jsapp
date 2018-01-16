@@ -10,6 +10,7 @@ const MongoStore = require('connect-mongo')(session);
 const dotenv = require('dotenv');
 const chalk = require('chalk');
 const debug = require('debug')('draal-jsapp:server');
+const socketIo = require('socket.io');
 
 const mongoLib = require('./config/mongodb');
 const celeryClient = require('./config/celery');
@@ -85,6 +86,20 @@ mongoLib.config(mongoose, () => {
             console.log('%s App is running at http://localhost:%d in %s mode',
                 chalk.green('✓'), app.get('port'), app.get('env'));
             console.log('  Press CTRL-C to stop\n');
+        });
+
+        const io = socketIo(server);
+        io.on('connect', (socket) => {
+            console.log('Connected client on port %s.', app.get('port'));
+
+            socket.on('message', (message) => {
+                console.log('[server](message): %s', JSON.stringify(message));
+                io.emit('message', message);
+            });
+
+            socket.on('disconnect', () => {
+                console.log('Client disconnected');
+            });
         });
 
         /**
