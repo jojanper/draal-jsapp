@@ -14,6 +14,8 @@ const socketIo = require('socket.io');
 
 const mongoLib = require('./config/mongodb');
 const celeryClient = require('./config/celery');
+const appLogic = require('./src/app');
+const appPassportConfig = require('./config/passport');
 
 /**
  * Normalize a port into a number, string, or false.
@@ -34,91 +36,113 @@ function normalizePort(val) {
     return false;
 }
 
-const app = express();
-
 // Load environment variables (API keys etc).
 dotenv.load({path: process.env.SECRETS_PATH || '.env.secrets'});
 
-// View engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'pug');
-
-app.use(logger('dev'));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended: false}));
-app.use(cookieParser());
-app.use(session({
-    resave: true,
-    saveUninitialized: true,
-    secret: process.env.SESSION_SECRET,
-    store: new MongoStore({
-        url: mongoLib.dbURI,
-        autoReconnect: true,
-        clear_interval: 3600
-    })
-}));
-app.use(passport.initialize());
-app.use(passport.session());
-app.use(express.static(path.join(__dirname, 'public')));
-
 /**
- * Get port from environment and store in Express.
+ * The actual web application.
  */
-const port = normalizePort(process.env.PORT || '3000');
-app.set('port', port);
+class WebApplication {
 
-// Prepare application business logic
-require('./src/app')(app);
+    /**
+     * Get port from environment.
+     */
+    static get port() {
+        return normalizePort(process.env.PORT || '3000');
+    }
 
-// Passport init
-require('./config/passport')(passport);
+    constructor() {
+        // HTTP server object
+        this.server = null;
 
+        // Socket server
+        this.io = null;
 
-// Set up MongoDB, application starts to listen the desired port after a successful
-// connection has been made
-mongoLib.config(mongoose, () => {
-    // Setup up tasks handler
-    celeryClient.connect(() => {
-        /**
-         * Listen on provided port, on all network interfaces.
-         */
-        const server = app.listen(port, () => {
+        // Express application
+        this.app = express();
+    }
+
+    getApp() {
+        return this.app;
+    }
+
+    createApp() {
+        this.app.set('port', WebApplication.port);
+
+        this.setupView();
+        this.setupParsers();
+        this.setupDb();
+        this.setupAuth();
+        this.setupAppLogic();
+
+        return this;
+    }
+
+    setupView() {
+        this.app.set('views', path.join(__dirname, 'views'));
+        this.app.set('view engine', 'pug');
+        this.app.use(express.static(path.join(__dirname, 'public')));
+    }
+
+    setupParsers() {
+        this.app.use(logger('dev'));
+        this.app.use(bodyParser.json());
+        this.app.use(bodyParser.urlencoded({extended: false}));
+        this.app.use(cookieParser());
+    }
+
+    setupDb() {
+        this.app.use(session({
+            resave: true,
+            saveUninitialized: true,
+            secret: process.env.SESSION_SECRET,
+            store: new MongoStore({
+                url: mongoLib.dbURI,
+                autoReconnect: true,
+                clear_interval: 3600
+            })
+        }));
+    }
+
+    setupAuth() {
+        this.app.use(passport.initialize());
+        this.app.use(passport.session());
+
+        appPassportConfig(passport);
+    }
+
+    setupAppLogic() {
+        appLogic(this.app);
+    }
+
+    /**
+     * Bind and listen for connections on the specified host and port.
+     */
+    listen() {
+        this.server = this.app.listen(WebApplication.port, () => {
             console.log('%s App is running at http://localhost:%d in %s mode',
-                chalk.green('✓'), app.get('port'), app.get('env'));
+                chalk.green('✓'), this.app.get('port'), this.app.get('env'));
             console.log('  Press CTRL-C to stop\n');
-        });
-
-        const io = socketIo(server);
-        io.on('connect', (socket) => {
-            console.log('Connected client on port %s.', app.get('port'));
-
-            socket.on('message', (message) => {
-                console.log('[server](message): %s', JSON.stringify(message));
-                io.emit('message', message);
-            });
-
-            socket.on('disconnect', () => {
-                console.log('Client disconnected');
-            });
         });
 
         /**
          * Event listener for HTTP server "listening" event.
          */
-        function onListening() {
-            const addr = server.address();
+        const onListening = () => {
+            const addr = this.server.address();
             const bind = typeof addr === 'string' ? `pipe ${addr}` : `port ${addr.port}`;
             debug(`Listening on ${bind}`);
-        }
+        };
 
         /**
          * Event listener for HTTP server "error" event.
          */
-        function onError(error) {
+        const onError = (error) => {
             if (error.syscall !== 'listen') {
                 throw error;
             }
 
+            const port = WebApplication.port;
             const bind = typeof port === 'string' ? `Pipe ${port}` : `Port ${port}`;
 
             // Handle specific listen errors with friendly messages
@@ -134,12 +158,57 @@ mongoLib.config(mongoose, () => {
             default:
                 throw error;
             }
-        }
+        };
 
-        server.on('error', onError);
-        server.on('listening', onListening);
+        this.server.on('error', onError);
+        this.server.on('listening', onListening);
+    }
+
+    /**
+     * Create socket server for the application.
+     */
+    createSocket() {
+        this.io = socketIo(this.server);
+    }
+
+    /**
+     * Listen client socket connections.
+     */
+    listenSocket() {
+        this.io.on('connect', (socket) => {
+            console.log('Connected client on port %s.', this.app.get('port'));
+
+            socket.on('message', (message) => {
+                console.log('[server](message): %s', JSON.stringify(message));
+                this.io.emit('message', message);
+            });
+
+            socket.on('disconnect', () => {
+                console.log('Client disconnected');
+            });
+        });
+    }
+}
+
+const app = new WebApplication().createApp();
+
+// Setup up tasks handler
+const celerySetup = () => {
+    celeryClient.connect(() => {
+        /**
+         * Listen on provided port, on all network interfaces.
+         */
+        app.listen();
+        app.createSocket();
+        app.listenSocket();
     });
-});
+};
+
+/**
+ * Set up MongoDB, application starts to listen the desired port after a successful
+ * connection has been made.
+ */
+mongoLib.config(mongoose, celerySetup);
 
 // If the Node process ends, close open connections
 process.on('SIGINT', () => {
@@ -148,4 +217,4 @@ process.on('SIGINT', () => {
         .then(() => process.exit(0));
 });
 
-module.exports = app;
+module.exports = app.getApp();
