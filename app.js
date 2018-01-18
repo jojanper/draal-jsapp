@@ -69,29 +69,29 @@ class WebApplication {
     createApp() {
         this.app.set('port', WebApplication.port);
 
-        this.setupView();
-        this.setupParsers();
-        this.setupDb();
-        this.setupAuth();
-        this.setupAppLogic();
+        this._setupView();
+        this._setupParsers();
+        this._setupDb();
+        this._setupAuth();
+        this._setupAppLogic();
 
         return this;
     }
 
-    setupView() {
+    _setupView() {
         this.app.set('views', path.join(__dirname, 'views'));
         this.app.set('view engine', 'pug');
         this.app.use(express.static(path.join(__dirname, 'public')));
     }
 
-    setupParsers() {
+    _setupParsers() {
         this.app.use(logger('dev'));
         this.app.use(bodyParser.json());
         this.app.use(bodyParser.urlencoded({extended: false}));
         this.app.use(cookieParser());
     }
 
-    setupDb() {
+    _setupDb() {
         this.app.use(session({
             resave: true,
             saveUninitialized: true,
@@ -104,14 +104,14 @@ class WebApplication {
         }));
     }
 
-    setupAuth() {
+    _setupAuth() {
         this.app.use(passport.initialize());
         this.app.use(passport.session());
 
         appPassportConfig(passport);
     }
 
-    setupAppLogic() {
+    _setupAppLogic() {
         appLogic(this.app);
     }
 
@@ -151,10 +151,12 @@ class WebApplication {
                 console.error(`${bind} requires elevated privileges`);
                 process.exit(1);
                 break;
+
             case 'EADDRINUSE':
                 console.error(`${bind} is already in use`);
                 process.exit(1);
                 break;
+
             default:
                 throw error;
             }
@@ -195,9 +197,7 @@ const app = new WebApplication().createApp();
 // Setup up tasks handler
 const celerySetup = () => {
     celeryClient.connect(() => {
-        /**
-         * Listen on provided port, on all network interfaces.
-         */
+        // Application is now ready.
         app.listen();
         app.createSocket();
         app.listenSocket();
