@@ -61,7 +61,7 @@ global.appTestHelper = {
 const port = process.env.PORT || '3000';
 const serverUrl = `http://localhost:${port}`;
 
-function socketClient(namespace, data) {
+function socketClient(event, data) {
     const options = {
         transports: ['websocket'],
         'force new connection': true
@@ -71,13 +71,13 @@ function socketClient(namespace, data) {
         const client = io.connect(serverUrl, options);
 
         client.once('connect', () => {
-            client.once(namespace, (serverData) => {
+            client.once(event, (serverData) => {
                 resolve(Promise.resolve([serverData, () => {
                     client.disconnect();
                 }]));
             });
 
-            client.emit(namespace, data);
+            client.emit(event, data);
         });
     });
 }

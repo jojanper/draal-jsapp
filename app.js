@@ -62,10 +62,16 @@ class WebApplication {
         this.app = express();
     }
 
+    /**
+     * Return Express application.
+     */
     getApp() {
         return this.app;
     }
 
+    /**
+     * Create and setup the Express application.
+     */
     createApp() {
         this.app.set('port', WebApplication.port);
 
@@ -174,7 +180,7 @@ class WebApplication {
     }
 
     /**
-     * Listen client socket connections.
+     * Listen socket connections from clients.
      */
     listenSocket() {
         this.io.on('connect', (socket) => {
@@ -182,7 +188,7 @@ class WebApplication {
 
             socket.on('message', (message) => {
                 console.log('[server](message): %s', JSON.stringify(message));
-                this.io.emit('message', message);
+                this.io.sockets.emit('message', message);
             });
 
             socket.on('disconnect', () => {
@@ -205,8 +211,8 @@ const celerySetup = () => {
 };
 
 /**
- * Set up MongoDB, application starts to listen the desired port after a successful
- * connection has been made.
+ * Set up MongoDB and then Celery client, application starts to listen
+ * the desired port after successful connections have been made.
  */
 mongoLib.config(mongoose, celerySetup);
 
