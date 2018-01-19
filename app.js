@@ -20,11 +20,8 @@ const isProduction = (process.env.NODE_ENV === 'production');
 const secretsFile = (isProduction) ? '.env.secrets' : '.env.test.secrets';
 dotenv.load({path: process.env.SECRETS_PATH || secretsFile});
 
-const mongoLib = require('./config/mongodb');
-const celeryClient = require('./config/celery');
-const appLogic = require('./src/app');
-const appPassportConfig = require('./config/passport');
-const logger = require('./src/logger').logger;
+const draaljs = require('./src');
+const draaljsConfig = require('./config');
 
 /**
  * Normalize a port into a number, string, or false.
@@ -93,11 +90,11 @@ class WebApplication {
     _setupView() {
         if (!isProduction) {
             this.app.use(morgan('dev'));
+            this.app.use(express.static(path.join(__dirname, 'public')));
         }
 
         this.app.set('views', path.join(__dirname, 'views'));
         this.app.set('view engine', 'pug');
-        this.app.use(express.static(path.join(__dirname, 'public')));
     }
 
     _setupParsers() {
@@ -112,7 +109,7 @@ class WebApplication {
             saveUninitialized: true,
             secret: process.env.SESSION_SECRET,
             store: new MongoStore({
-                url: mongoLib.dbURI,
+                url: draaljsConfig.mongo.dbURI,
                 autoReconnect: true,
                 clear_interval: 3600
             })
@@ -123,11 +120,11 @@ class WebApplication {
         this.app.use(passport.initialize());
         this.app.use(passport.session());
 
-        appPassportConfig(passport);
+        draaljsConfig.passport(passport);
     }
 
     _setupAppLogic() {
-        appLogic(this.app);
+        draaljs.bootstrap(this.app);
     }
 
     /**
@@ -146,7 +143,7 @@ class WebApplication {
         const onListening = () => {
             const addr = this.server.address();
             const bind = typeof addr === 'string' ? `pipe ${addr}` : `port ${addr.port}`;
-            logger.debug(`Listening on ${bind}`);
+            draaljs.logger.debug(`Listening on ${bind}`);
         };
 
         /**
@@ -211,7 +208,7 @@ const app = new WebApplication().createApp();
 
 // Setup up tasks handler
 const celerySetup = () => {
-    celeryClient.connect(() => {
+    draaljsConfig.celery.connect(() => {
         // Application is now ready.
         app.listen();
         app.createSocket();
@@ -223,12 +220,12 @@ const celerySetup = () => {
  * Set up MongoDB and then Celery client, application starts to listen
  * the desired port after successful connections have been made.
  */
-mongoLib.config(mongoose, celerySetup);
+draaljsConfig.mongo.config(mongoose, celerySetup);
 
 // If the Node process ends, close open connections
 process.on('SIGINT', () => {
-    mongoLib.close(mongoose)
-        .then(() => celeryClient.close())
+    draaljsConfig.mongo.close(mongoose)
+        .then(() => draaljsConfig.celery.close())
         .then(() => process.exit(0));
 });
 
