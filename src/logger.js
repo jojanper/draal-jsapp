@@ -6,9 +6,13 @@ const path = require('path');
 const fs = require('fs');
 
 
+// 50 MB
+const maxsize = 50 * 1024 * 1024;
+
 const prefix = process.env.DRAALJS_LOGGER_PREFIX || 'logs';
 const logPrefix = path.join(__dirname, '..', prefix);
 
+console.log(logPrefix);
 // Make sure the log folder exists
 if (!fs.existsSync(logPrefix)) {
     fs.mkdirSync(logPrefix);
@@ -28,12 +32,14 @@ if (process.env.NODE_ENV !== 'production') {
 transports.push(
     new winston.transports.File({
         filename: path.join(logPrefix, 'error.log'),
-        level: 'error'
+        level: 'error',
+        maxsize
     })
 );
 transports.push(
     new winston.transports.File({
-        filename: path.join(logPrefix, 'debug.log')
+        filename: path.join(logPrefix, 'debug.log'),
+        maxsize
     })
 );
 
