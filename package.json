@@ -26,7 +26,7 @@
     "lint": "eslint *.js ./config/*.js ./src/** ./test/**",
     "start": "NODE_PATH=$NODE_PATH:. DEBUG=draal-jsapp:* nodemon ./app.js -e .js --ignore node_modules",
     "start-prod": "NODE_PATH=$NODE_PATH:. NODE_ENV=production node ./app.js",
-    "pretest": "mongo draaljs-test --eval \"db.dropDatabase()\"",
+    "pretest": "rimraf unit-test-logs && mongo draaljs-test --eval \"db.dropDatabase()\"",
     "test": "NODE_PATH=$NODE_PATH:. NODE_ENV=test MONGODB_URI=mongodb://localhost:27017/draaljs-test nyc mocha",
     "client-install": "git clone https://github.com/jojanper/angular-app.git && cd angular-app && npm i",
     "client-build": "rimraf public && mkdir public && cp -r angular-app/dist/* public/ && rm -f public/index.html && npm run client-template",
