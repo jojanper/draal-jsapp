@@ -190,16 +190,8 @@ class WebApplication {
      */
     listenSocket() {
         this.io.on('connect', (socket) => {
-            console.log('Connected client on port %s.', this.app.get('port'));
-
-            socket.on('message', (message) => {
-                console.log('[server](message): %s', JSON.stringify(message));
-                this.io.sockets.emit('message', message);
-            });
-
-            socket.on('disconnect', () => {
-                console.log('Client disconnected');
-            });
+            draaljs.logger.debug(`Connected client on port ${this.app.get('port')}`);
+            draaljs.socket(this.io, socket);
         });
     }
 }
