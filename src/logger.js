@@ -1,9 +1,10 @@
+/**
+ * Logging module for the application.
+ */
 const winston = require('winston');
 const path = require('path');
 const fs = require('fs');
 
-const formatter = info =>
-    `{"timestamp": "${info.timestamp}", "level": "${info.level}", "message": "${info.message}"}`;
 
 const prefix = process.env.DRAALJS_LOGGER_PREFIX || 'logs';
 const logPrefix = path.join(__dirname, '..', prefix);
@@ -36,6 +37,10 @@ transports.push(
     })
 );
 
+const formatter = info =>
+`{"timestamp": "${info.timestamp}", "level": "${info.level}", "message": "${info.message}"}`;
+
+// Main logger
 const logger = winston.createLogger({
     level: 'debug',
     format: winston.format.combine(
@@ -44,9 +49,10 @@ const logger = winston.createLogger({
         winston.format.printf(formatter)
     ),
     timestamp: true,
-    transports: transports
+    transports
 });
 
+// Multiple loggers may be available for different feature area
 module.exports = {
     logger
-}
+};

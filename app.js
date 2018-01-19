@@ -1,3 +1,6 @@
+/**
+ * Application server setup.
+ */
 const express = require('express');
 const path = require('path');
 const morgan = require('morgan');
@@ -11,7 +14,7 @@ const dotenv = require('dotenv');
 const chalk = require('chalk');
 const socketIo = require('socket.io');
 
-const isProduction = (process.env.NODE_ENV === 'production') ? true : false;
+const isProduction = (process.env.NODE_ENV === 'production');
 
 // Load environment variables (API keys etc).
 const secretsFile = (isProduction) ? '.env.secrets' : '.env.test.secrets';
