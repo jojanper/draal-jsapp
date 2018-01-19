@@ -1,6 +1,6 @@
 const express = require('express');
 const path = require('path');
-const logger = require('morgan');
+const morgan = require('morgan');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
@@ -9,13 +9,19 @@ const passport = require('passport');
 const MongoStore = require('connect-mongo')(session);
 const dotenv = require('dotenv');
 const chalk = require('chalk');
-const debug = require('debug')('draal-jsapp:server');
 const socketIo = require('socket.io');
+
+const isProduction = (process.env.NODE_ENV === 'production') ? true : false;
+
+// Load environment variables (API keys etc).
+const secretsFile = (isProduction) ? '.env.secrets' : '.env.test.secrets';
+dotenv.load({path: process.env.SECRETS_PATH || secretsFile});
 
 const mongoLib = require('./config/mongodb');
 const celeryClient = require('./config/celery');
 const appLogic = require('./src/app');
 const appPassportConfig = require('./config/passport');
+const logger = require('./src/logger').logger;
 
 /**
  * Normalize a port into a number, string, or false.
@@ -35,9 +41,6 @@ function normalizePort(val) {
 
     return false;
 }
-
-// Load environment variables (API keys etc).
-dotenv.load({path: process.env.SECRETS_PATH || '.env.secrets'});
 
 /**
  * The actual web application.
@@ -85,13 +88,16 @@ class WebApplication {
     }
 
     _setupView() {
+        if (!isProduction) {
+            this.app.use(morgan('dev'));
+        }
+
         this.app.set('views', path.join(__dirname, 'views'));
         this.app.set('view engine', 'pug');
         this.app.use(express.static(path.join(__dirname, 'public')));
     }
 
     _setupParsers() {
-        this.app.use(logger('dev'));
         this.app.use(bodyParser.json());
         this.app.use(bodyParser.urlencoded({extended: false}));
         this.app.use(cookieParser());
@@ -137,7 +143,7 @@ class WebApplication {
         const onListening = () => {
             const addr = this.server.address();
             const bind = typeof addr === 'string' ? `pipe ${addr}` : `port ${addr.port}`;
-            debug(`Listening on ${bind}`);
+            logger.debug(`Listening on ${bind}`);
         };
 
         /**

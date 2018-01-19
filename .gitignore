@@ -8,3 +8,4 @@ virtualenv*
 .vscode
 .nyc_output
 logs
+unit-test-logs
