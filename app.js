@@ -1,6 +1,9 @@
+/**
+ * Application server setup.
+ */
 const express = require('express');
 const path = require('path');
-const logger = require('morgan');
+const morgan = require('morgan');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
@@ -9,10 +12,16 @@ const passport = require('passport');
 const MongoStore = require('connect-mongo')(session);
 const dotenv = require('dotenv');
 const chalk = require('chalk');
-const debug = require('debug')('draal-jsapp:server');
+const socketIo = require('socket.io');
 
-const mongoLib = require('./config/mongodb');
-const celeryClient = require('./config/celery');
+const isProduction = (process.env.NODE_ENV === 'production');
+
+// Load environment variables (API keys etc).
+const secretsFile = (isProduction) ? '.env.secrets' : '.env.test.secrets';
+dotenv.load({path: process.env.SECRETS_PATH || secretsFile});
+
+const draaljs = require('./src');
+const draaljsConfig = require('./config');
 
 /**
  * Normalize a port into a number, string, or false.
@@ -33,77 +42,119 @@ function normalizePort(val) {
     return false;
 }
 
-const app = express();
-
-// Load environment variables (API keys etc).
-dotenv.load({path: process.env.SECRETS_PATH || '.env.secrets'});
-
-// View engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'pug');
-
-app.use(logger('dev'));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended: false}));
-app.use(cookieParser());
-app.use(session({
-    resave: true,
-    saveUninitialized: true,
-    secret: process.env.SESSION_SECRET,
-    store: new MongoStore({
-        url: mongoLib.dbURI,
-        autoReconnect: true,
-        clear_interval: 3600
-    })
-}));
-app.use(passport.initialize());
-app.use(passport.session());
-app.use(express.static(path.join(__dirname, 'public')));
-
 /**
- * Get port from environment and store in Express.
+ * The actual web application.
  */
-const port = normalizePort(process.env.PORT || '3000');
-app.set('port', port);
+class WebApplication {
 
-// Prepare application business logic
-require('./src/app')(app);
+    /**
+     * Get port from environment.
+     */
+    static get port() {
+        return normalizePort(process.env.PORT || '3000');
+    }
 
-// Passport init
-require('./config/passport')(passport);
+    constructor() {
+        // HTTP server object
+        this.server = null;
 
+        // Socket server
+        this.io = null;
 
-// Set up MongoDB, application starts to listen the desired port after a successful
-// connection has been made
-mongoLib.config(mongoose, () => {
-    // Setup up tasks handler
-    celeryClient.connect(() => {
-        /**
-         * Listen on provided port, on all network interfaces.
-         */
-        const server = app.listen(port, () => {
+        // Express application
+        this.app = express();
+    }
+
+    /**
+     * Return Express application.
+     */
+    getApp() {
+        return this.app;
+    }
+
+    /**
+     * Create and setup the Express application.
+     */
+    createApp() {
+        this.app.set('port', WebApplication.port);
+
+        this._setupView();
+        this._setupParsers();
+        this._setupDb();
+        this._setupAuth();
+        this._setupAppLogic();
+
+        return this;
+    }
+
+    _setupView() {
+        if (!isProduction) {
+            this.app.use(morgan('dev'));
+            this.app.use(express.static(path.join(__dirname, 'public')));
+        }
+
+        this.app.set('views', path.join(__dirname, 'views'));
+        this.app.set('view engine', 'pug');
+    }
+
+    _setupParsers() {
+        this.app.use(bodyParser.json());
+        this.app.use(bodyParser.urlencoded({extended: false}));
+        this.app.use(cookieParser());
+    }
+
+    _setupDb() {
+        this.app.use(session({
+            resave: true,
+            saveUninitialized: true,
+            secret: process.env.SESSION_SECRET,
+            store: new MongoStore({
+                url: draaljsConfig.mongo.dbURI,
+                autoReconnect: true,
+                clear_interval: 3600
+            })
+        }));
+    }
+
+    _setupAuth() {
+        this.app.use(passport.initialize());
+        this.app.use(passport.session());
+
+        draaljsConfig.passport(passport);
+    }
+
+    _setupAppLogic() {
+        draaljs.bootstrap(this.app);
+    }
+
+    /**
+     * Bind and listen for connections on the specified host and port.
+     */
+    listen() {
+        this.server = this.app.listen(WebApplication.port, () => {
             console.log('%s App is running at http://localhost:%d in %s mode',
-                chalk.green('✓'), app.get('port'), app.get('env'));
+                chalk.green('✓'), this.app.get('port'), this.app.get('env'));
             console.log('  Press CTRL-C to stop\n');
         });
 
         /**
          * Event listener for HTTP server "listening" event.
          */
-        function onListening() {
-            const addr = server.address();
+        const onListening = () => {
+            const addr = this.server.address();
             const bind = typeof addr === 'string' ? `pipe ${addr}` : `port ${addr.port}`;
-            debug(`Listening on ${bind}`);
-        }
+            draaljs.logger.debug(`Listening on ${bind}`);
+        };
 
         /**
          * Event listener for HTTP server "error" event.
          */
-        function onError(error) {
+        const onError = (error) => {
             if (error.syscall !== 'listen') {
                 throw error;
             }
 
+            const port = WebApplication.port;
             const bind = typeof port === 'string' ? `Pipe ${port}` : `Port ${port}`;
 
             // Handle specific listen errors with friendly messages
@@ -112,25 +163,70 @@ mongoLib.config(mongoose, () => {
                 console.error(`${bind} requires elevated privileges`);
                 process.exit(1);
                 break;
+
             case 'EADDRINUSE':
                 console.error(`${bind} is already in use`);
                 process.exit(1);
                 break;
+
             default:
                 throw error;
             }
-        }
+        };
 
-        server.on('error', onError);
-        server.on('listening', onListening);
+        this.server.on('error', onError);
+        this.server.on('listening', onListening);
+    }
+
+    /**
+     * Create socket server for the application.
+     */
+    createSocket() {
+        this.io = socketIo(this.server);
+    }
+
+    /**
+     * Listen socket connections from clients.
+     */
+    listenSocket() {
+        this.io.on('connect', (socket) => {
+            console.log('Connected client on port %s.', this.app.get('port'));
+
+            socket.on('message', (message) => {
+                console.log('[server](message): %s', JSON.stringify(message));
+                this.io.sockets.emit('message', message);
+            });
+
+            socket.on('disconnect', () => {
+                console.log('Client disconnected');
+            });
+        });
+    }
+}
+
+const app = new WebApplication().createApp();
+
+// Setup up tasks handler
+const celerySetup = () => {
+    draaljsConfig.celery.connect(() => {
+        // Application is now ready.
+        app.listen();
+        app.createSocket();
+        app.listenSocket();
     });
-});
+};
+
+/**
+ * Set up MongoDB and then Celery client, application starts to listen
+ * the desired port after successful connections have been made.
+ */
+draaljsConfig.mongo.config(mongoose, celerySetup);
 
 // If the Node process ends, close open connections
 process.on('SIGINT', () => {
-    mongoLib.close(mongoose)
-        .then(() => celeryClient.close())
+    draaljsConfig.mongo.close(mongoose)
+        .then(() => draaljsConfig.celery.close())
         .then(() => process.exit(0));
 });
 
-module.exports = app;
+module.exports = app.getApp();

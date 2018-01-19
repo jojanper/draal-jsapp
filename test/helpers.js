@@ -1,5 +1,8 @@
+const io = require('socket.io-client');
+
 const User = require('../src/apps/user/models/user');
 const UserAccount = require('../src/apps/user/models/accountprofile');
+
 
 const UserModel = User.model;
 
@@ -53,3 +56,30 @@ global.appTestHelper = {
     getAccount: email => appTestHelper.getUserByEmail(email)
         .then(user => appTestHelper.getUserAccount(user))
 };
+
+
+const port = process.env.PORT || '3000';
+const serverUrl = `http://localhost:${port}`;
+
+function socketClient(event, data) {
+    const options = {
+        transports: ['websocket'],
+        'force new connection': true
+    };
+
+    return new Promise((resolve) => {
+        const client = io.connect(serverUrl, options);
+
+        client.once('connect', () => {
+            client.once(event, (serverData) => {
+                resolve(Promise.resolve([serverData, () => {
+                    client.disconnect();
+                }]));
+            });
+
+            client.emit(event, data);
+        });
+    });
+}
+
+global.socketClient = socketClient;

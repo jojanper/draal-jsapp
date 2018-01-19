@@ -7,3 +7,5 @@ virtualenv*
 .gitignore
 .vscode
 .nyc_output
+logs
+*-logs
