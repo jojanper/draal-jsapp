@@ -12,7 +12,6 @@ const maxsize = 50 * 1024 * 1024;
 const prefix = process.env.DRAALJS_LOGGER_PREFIX || 'logs';
 const logPrefix = path.join(__dirname, '..', prefix);
 
-console.log(logPrefix);
 // Make sure the log folder exists
 if (!fs.existsSync(logPrefix)) {
     fs.mkdirSync(logPrefix);
