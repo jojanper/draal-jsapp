@@ -6,10 +6,10 @@ const User = require('../../models/user');
 const AccountProfile = require('../../models/accountprofile');
 const APIError = require('../../../../error');
 const TasksLib = require('../../../../tasks');
-const BaseCtrl = core.ctrl;
-const ApiResponse = core.response;
 const ValidatorAPI = require('../../../../validators');
 
+const BaseCtrl = core.ctrl;
+const ApiResponse = core.response;
 
 const UserModel = User.model;
 

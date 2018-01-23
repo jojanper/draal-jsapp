@@ -4,7 +4,8 @@
 const apps = require('./apps');
 
 const utilsLib = require('./utils');
-const index = require('./routes/index')();
+const index = require('./routes')();
+
 const BaseCtrl = apps.core.ctrl;
 const ApiResponse = apps.core.response;
 

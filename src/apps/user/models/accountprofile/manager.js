@@ -5,6 +5,7 @@ const core = require('../../../core');
 const AccountProfile = require('./model');
 const APIError = require('../../../../error');
 const UtilsLib = require('../../../../utils');
+
 const BaseManager = core.manager;
 
 
