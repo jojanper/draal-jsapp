@@ -24,6 +24,13 @@ const userSchema = new mongoose.Schema({
 
 }, {timestamps: true});
 
+userSchema.set('toObject', {
+    getters: true,
+    transform: (_doc, ret) => {
+        delete ret._id;
+    }
+});
+
 /**
  * Password hash middleware.
  */

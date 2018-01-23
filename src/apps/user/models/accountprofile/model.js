@@ -24,6 +24,13 @@ const profileSchema = new mongoose.Schema({
     }
 });
 
+profileSchema.set('toObject', {
+    getters: true,
+    transform: (_doc, ret) => {
+        delete ret._id;
+    }
+});
+
 profileSchema.statics.getStatuses = function getStatuses() {
     return ProfileStatuses;
 };

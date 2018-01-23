@@ -10,7 +10,7 @@ const fs = require('fs');
 const maxsize = 50 * 1024 * 1024;
 
 const prefix = process.env.DRAALJS_LOGGER_PREFIX || 'logs';
-const logPrefix = path.join(__dirname, '..', '..', prefix);
+const logPrefix = path.join(__dirname, '..', prefix);
 
 // Make sure the log folder exists
 if (!fs.existsSync(logPrefix)) {
@@ -56,6 +56,8 @@ const logger = winston.createLogger({
     timestamp: true,
     transports
 });
+
+logger.debug(`Logs folder: ${logPrefix}`);
 
 // Multiple loggers may be available for different feature area
 module.exports = {
