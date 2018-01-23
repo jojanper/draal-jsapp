@@ -1,13 +1,13 @@
 const router = require('express').Router();
 
-const APIError = require('../error');
-const utilsLib = require('../utils');
-const BaseCtrl = require('../apps/base_ctrl');
-const ApiResponse = require('../apps/response');
-const logger = require('../logger').logger;
+const { apiRoutes } = require('../apps');
+const core = require('../core');
+const { logger } = require('../logger');
 
-// User registration and authentication APIs
-const userAPIs = require('../apps/user/ctrl');
+const APIError = core.error;
+const utilsLib = core.utils;
+const BaseCtrl = core.ctrl;
+const ApiResponse = core.response;
 
 
 /**
@@ -21,8 +21,6 @@ function isAuthenticated(req, res, next) {
     const ctrl = new BaseCtrl(req, res, next);
     ctrl.renderResponse(new ApiResponse({statusCode: 401}));
 }
-
-const apiRoutes = [].concat(userAPIs);
 
 module.exports = (prefix) => {
     router.get('', (req, res) => {

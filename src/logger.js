@@ -28,22 +28,18 @@ if (process.env.NODE_ENV !== 'production') {
 // Write to all logs with level `debug` and below to `combined.log`
 // Write all logs error (and below) to `error.log`.
 //
-transports.push(
-    new winston.transports.File({
-        filename: path.join(logPrefix, 'error.log'),
-        level: 'error',
-        maxsize
-    })
-);
-transports.push(
-    new winston.transports.File({
-        filename: path.join(logPrefix, 'debug.log'),
-        maxsize
-    })
-);
+transports.push(new winston.transports.File({
+    filename: path.join(logPrefix, 'error.log'),
+    level: 'error',
+    maxsize
+}));
+transports.push(new winston.transports.File({
+    filename: path.join(logPrefix, 'debug.log'),
+    maxsize
+}));
 
 const formatter = info =>
-`{"timestamp": "${info.timestamp}", "level": "${info.level}", "message": "${info.message}"}`;
+    `{"timestamp": "${info.timestamp}", "level": "${info.level}", "message": "${info.message}"}`;
 
 // Main logger
 const logger = winston.createLogger({
@@ -56,6 +52,8 @@ const logger = winston.createLogger({
     timestamp: true,
     transports
 });
+
+logger.debug(`Logs folder: ${logPrefix}`);
 
 // Multiple loggers may be available for different feature area
 module.exports = {

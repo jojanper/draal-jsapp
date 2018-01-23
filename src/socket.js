@@ -1,7 +1,7 @@
 /**
  * Business logic for real-time communications.
  */
-const logger = require('./logger').logger;
+const { logger } = require('./logger');
 
 const realtimeSetup = (io, socket) => {
     socket.on('message', (message) => {

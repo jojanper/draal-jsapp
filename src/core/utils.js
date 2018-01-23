@@ -8,9 +8,9 @@ const ValidatorAPI = require('./validators');
 const pause = duration => new Promise(res => setTimeout(res, duration));
 
 const retry = (retries, fn, delay = 500) =>
-  fn().catch(err => ((retries > 1) ?
-    pause(delay).then(() => retry(retries - 1, fn, delay * 2))
-    : Promise.reject(err)));
+    fn().catch(err => ((retries > 1) ?
+        pause(delay).then(() => retry(retries - 1, fn, delay * 2))
+        : Promise.reject(err)));
 
 const DEFAULT_HTTP_METHOD = 'post';
 
@@ -74,9 +74,7 @@ module.exports = {
      * @returns {object} Serialized API data.
      */
     serializeApiInfo(prefix, routes) {
-        return routes.map(item =>
-            item.cls.serialize(prefix, DEFAULT_HTTP_METHOD)
-        );
+        return routes.map(item => item.cls.serialize(prefix, DEFAULT_HTTP_METHOD));
     },
 
     /**

@@ -1,13 +1,14 @@
 /**
  * Application business logic initialization.
  */
-const utilsLib = require('./utils');
-const index = require('./routes/index')();
-const BaseCtrl = require('./apps/base_ctrl');
-const ApiResponse = require('./apps/response');
+const core = require('./core');
+const routes = require('./routes');
+
+const BaseCtrl = core.ctrl;
+const ApiResponse = core.response;
+const utilsLib = core.utils;
 
 const apiPrefix = '/api';
-const api = require('./routes/api')(apiPrefix);
 
 
 // Middleware for handling application errors
@@ -24,8 +25,8 @@ function apiMiddlewareErrorHandler(err, req, res, next) {
 
 function appBusinessLogicSetup(app) {
     // Application API routes
-    app.use('/', index);
-    app.use(apiPrefix, api);
+    app.use('/', routes.entry());
+    app.use(apiPrefix, routes.api(apiPrefix));
 
     // Catch and handle application errors
     app.use(`${apiPrefix}/*`, apiMiddlewareErrorHandler);

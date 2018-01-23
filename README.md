@@ -57,6 +57,18 @@ npm run lint
 npm run cibuild
 ```
 
+### Utility management commands
+```
+# List all user commands
+node src/apps/user/commands.js --help
+
+# List users
+node src/apps/user/commands.js getUsers
+
+# List account profiles
+node src/apps/user/commands.js getAccountProfiles
+```
+
 ### Frontend support
 It is envisioned that project remains more or less as pure backend. There is currently only one
 [template](https://github.com/jojanper/draal-jsapp/blob/master/views/index.pug) in use that bootstraps

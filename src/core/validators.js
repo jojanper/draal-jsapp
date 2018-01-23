@@ -39,7 +39,6 @@ const createValidatorChain = (chain, validator) => {
  * what kind of validation chanin should be returned and so on).
  */
 class ValidatorAPI {
-
     static get API() {
         return {
             body: 'body'

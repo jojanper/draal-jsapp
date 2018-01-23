@@ -1,9 +1,11 @@
 const crypto = require('crypto');
 
+const core = require('../../../../core');
 const AccountProfile = require('./model');
-const APIError = require('../../../../error');
-const UtilsLib = require('../../../../utils');
-const BaseManager = require('../../../base_manager');
+
+const APIError = core.error;
+const UtilsLib = core.utils;
+const BaseManager = core.manager;
 
 
 class AccountProfileManager extends BaseManager {

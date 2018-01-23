@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const UtilsLib = require('../../../../utils');
+const UtilsLib = require('../../../../core').utils;
 
 
 const ProfileStatuses = {
@@ -21,6 +21,13 @@ const profileSchema = new mongoose.Schema({
     status: {
         type: String,
         default: ProfileStatuses.active
+    }
+});
+
+profileSchema.set('toObject', {
+    getters: true,
+    transform: (_doc, ret) => {
+        delete ret._id;
     }
 });
 

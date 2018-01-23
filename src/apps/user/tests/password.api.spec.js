@@ -1,6 +1,6 @@
 const sinon = require('sinon');
 
-const UtilsLib = require('../../../utils');
+const UtilsLib = require('../../../core').utils;
 const TasksLib = require('../../../tasks');
 
 const credentials = {email: 'test-123456@test.com', password: '123456'};
@@ -36,33 +36,36 @@ describe('Password reset request', () => {
             const spyCall = sinon.spy(TasksLib, 'sendPasswordResetEmail');
 
             // Password reset request must succeed
-            testrunner(testapp).post(api).send({email: user.email}).expect(200)
-            .then(() => {
-                expect(spyCall.getCalls().length).to.be.equal(1);
+            testrunner(testapp).post(api).send({email: user.email})
+                .expect(200)
+                .then(() => {
+                    expect(spyCall.getCalls().length).to.be.equal(1);
 
-                // Get the token from spy as user token that is saved to DB is encrypted
-                resetToken = spyCall.getCall(0).args[1];
-                const data = {email: credentials.email, token: resetToken, password: 'pw'};
+                    // Get the token from spy as user token that is saved to DB is encrypted
+                    /* eslint-disable prefer-destructuring */
+                    resetToken = spyCall.getCall(0).args[1];
+                    /* eslint-enable prefer-destructuring */
+                    const data = {email: credentials.email, token: resetToken, password: 'pw'};
 
-                // Password reset using requested token must succeed
-                return testrunner(testapp).post(resetApi).send(data).expect(200);
-            })
-            .then(() => appTestHelper.getUserByEmail(credentials.email))
-            .then((user) => {
-                // Set token to expired timestamp
-                user.pwResetExpires -= 2 * UtilsLib.getActivationThreshold();
-                return user.save();
-            })
-            .then(() => {
-                // Password reset must fail for expired token
-                const data = {email: credentials.email, token: resetToken, password: 'pw'};
-                return testrunner(testapp).post(resetApi).send(data).expect(400);
-            })
-            .then((res) => {
-                expect(res.body.errors[0]).to.equal('Password reset expired, please re-reset the password');
-                user.pwResetExpires = Date.now() + UtilsLib.getActivationThreshold();
-                user.save().then(() => done());
-            });
+                    // Password reset using requested token must succeed
+                    return testrunner(testapp).post(resetApi).send(data).expect(200);
+                })
+                .then(() => appTestHelper.getUserByEmail(credentials.email))
+                .then((user) => {
+                    // Set token to expired timestamp
+                    user.pwResetExpires -= 2 * UtilsLib.getActivationThreshold();
+                    return user.save();
+                })
+                .then(() => {
+                    // Password reset must fail for expired token
+                    const data = {email: credentials.email, token: resetToken, password: 'pw'};
+                    return testrunner(testapp).post(resetApi).send(data).expect(400);
+                })
+                .then((res) => {
+                    expect(res.body.errors[0]).to.equal('Password reset expired, please re-reset the password');
+                    user.pwResetExpires = Date.now() + UtilsLib.getActivationThreshold();
+                    user.save().then(() => done());
+                });
         });
     });
 

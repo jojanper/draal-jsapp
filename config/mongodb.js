@@ -8,7 +8,7 @@ const dbURI = process.env.MONGODB_URI || 'mongodb://localhost:27017/draaljs-app'
 
 function connect(mongoose, dbURI) {
     function connectWithRetry() {
-        return mongoose.connect(dbURI, {server: {auto_reconnect: true}}, (err) => {
+        return mongoose.connect(dbURI, {auto_reconnect: true}, (err) => {
             if (err) {
                 console.error(err);
                 console.error('Failed to connect to mongo on startup - retrying in 5 sec.');

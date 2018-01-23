@@ -1,8 +1,10 @@
 const mongoose = require('mongoose');
 const crypto = require('crypto');
 
-const APIError = require('../../../../error');
-const UtilsLib = require('../../../../utils');
+const core = require('../../../../core');
+
+const APIError = core.error;
+const UtilsLib = core.utils;
 
 
 const userSchema = new mongoose.Schema({
@@ -21,6 +23,13 @@ const userSchema = new mongoose.Schema({
     }
 
 }, {timestamps: true});
+
+userSchema.set('toObject', {
+    getters: true,
+    transform: (_doc, ret) => {
+        delete ret._id;
+    }
+});
 
 /**
  * Password hash middleware.
@@ -61,7 +70,9 @@ userSchema.methods.createPwResetToken = async function createResetToken() {
     }
 
     // Save encrypted token
+    /* eslint-disable prefer-destructuring */
     this.pwResetToken = response[1];
+    /* eslint-enable prefer-destructuring */
     const [err, user] = await UtilsLib.promiseExecution(this.save());
     if (err) {
         // Error, return rejected promise

@@ -3,7 +3,21 @@ const UtilsLib = require('../utils');
 const bcrypt = require('bcrypt');
 const sinon = require('sinon');
 
-const ApiCtrl = require('../apps/user/ctrl')[0];
+const BaseCtrl = require('../base_ctrl');
+
+/**
+ * Create API entry point for testing.
+ */
+class TestCtrl extends BaseCtrl {
+    static get CLASSINFO() {
+        return {
+            INFO: 'User sign-up',
+            VERSION: 1,
+            NAME: 'signup',
+            URLPREFIX: '/test-url'
+        };
+    }
+}
 
 class MockApp {
     constructor(mode) {
@@ -25,7 +39,7 @@ describe('utilsLib', () => {
     });
 
     it('supports serializeApiInfo', () => {
-        const routes = [ApiCtrl];
+        const routes = [{cls: TestCtrl}];
 
         expect(UtilsLib.serializeApiInfo('', routes)[0]).to.have.keys([
             'url', 'method', 'info', 'authenticate', 'version', 'name'
@@ -38,14 +52,13 @@ describe('utilsLib', () => {
         UtilsLib.retryPromise(2, () =>
             new Promise((resolve, reject) => {
                 retries++;
-                reject('a');
-            })
-        )
-        .catch((err) => {
-            expect(retries).to.equal(2);
-            expect(err).to.equal('a');
-            done();
-        });
+                reject(new Error('a'));
+            }))
+            .catch((err) => {
+                expect(retries).to.equal(2);
+                expect(err.message).to.equal('a');
+                done();
+            });
     });
 
     it('hash creation fails', () => {

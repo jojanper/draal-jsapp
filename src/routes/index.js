@@ -1,6 +1,8 @@
 const router = require('express').Router();
 
-module.exports = () => {
+const routes = exports;
+
+routes.entry = () => {
     // Application root/home page
     router.get('', (req, res) => {
         res.render('index', {title: 'Draal'});
@@ -8,3 +10,5 @@ module.exports = () => {
 
     return router;
 };
+
+routes.api = require('./api');
