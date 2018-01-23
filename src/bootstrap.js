@@ -9,7 +9,6 @@ const ApiResponse = core.response;
 const utilsLib = core.utils;
 
 const apiPrefix = '/api';
-const api = routes.api(apiPrefix);
 
 
 // Middleware for handling application errors
@@ -27,7 +26,7 @@ function apiMiddlewareErrorHandler(err, req, res, next) {
 function appBusinessLogicSetup(app) {
     // Application API routes
     app.use('/', routes.entry());
-    app.use(apiPrefix, api);
+    app.use(apiPrefix, routes.api(apiPrefix));
 
     // Catch and handle application errors
     app.use(`${apiPrefix}/*`, apiMiddlewareErrorHandler);

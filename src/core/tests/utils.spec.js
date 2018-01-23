@@ -3,7 +3,21 @@ const UtilsLib = require('../utils');
 const bcrypt = require('bcrypt');
 const sinon = require('sinon');
 
-const ApiCtrl = require('../../apps').apiRoutes[0];
+const BaseCtrl = require('../base_ctrl');
+
+/**
+ * Create API entry point for testing.
+ */
+class TestCtrl extends BaseCtrl {
+    static get CLASSINFO() {
+        return {
+            INFO: 'User sign-up',
+            VERSION: 1,
+            NAME: 'signup',
+            URLPREFIX: '/test-url'
+        };
+    }
+}
 
 class MockApp {
     constructor(mode) {
@@ -25,7 +39,7 @@ describe('utilsLib', () => {
     });
 
     it('supports serializeApiInfo', () => {
-        const routes = [ApiCtrl];
+        const routes = [{cls: TestCtrl}];
 
         expect(UtilsLib.serializeApiInfo('', routes)[0]).to.have.keys([
             'url', 'method', 'info', 'authenticate', 'version', 'name'
