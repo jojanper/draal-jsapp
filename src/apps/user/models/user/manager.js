@@ -1,8 +1,9 @@
 const format = require('util').format;
 
+const core = require('../../../core');
 const User = require('./model');
 const APIError = require('../../../../error');
-const BaseManager = require('../../../base_manager');
+const BaseManager = core.manager;
 const AccountProfile = require('../accountprofile');
 
 

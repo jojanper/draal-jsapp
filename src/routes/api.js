@@ -1,10 +1,13 @@
 const router = require('express').Router();
 
+const apps = require('../apps');
+
 const APIError = require('../error');
-const utilsLib = require('../utils');
-const BaseCtrl = require('../apps/base_ctrl');
-const ApiResponse = require('../apps/response');
+const utilsLib = require('../utils');;
 const logger = require('../logger').logger;
+
+const BaseCtrl = apps.core.ctrl;
+const ApiResponse = apps.core.response
 
 // User registration and authentication APIs
 const userAPIs = require('../apps/user/ctrl');

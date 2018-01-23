@@ -1,10 +1,12 @@
 /**
  * Application business logic initialization.
  */
+const apps = require('./apps');
+
 const utilsLib = require('./utils');
 const index = require('./routes/index')();
-const BaseCtrl = require('./apps/base_ctrl');
-const ApiResponse = require('./apps/response');
+const BaseCtrl = apps.core.ctrl;
+const ApiResponse = apps.core.response;
 
 const apiPrefix = '/api';
 const api = require('./routes/api')(apiPrefix);
