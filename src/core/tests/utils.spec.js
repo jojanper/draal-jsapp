@@ -52,14 +52,13 @@ describe('utilsLib', () => {
         UtilsLib.retryPromise(2, () =>
             new Promise((resolve, reject) => {
                 retries++;
-                reject('a');
-            })
-        )
-        .catch((err) => {
-            expect(retries).to.equal(2);
-            expect(err).to.equal('a');
-            done();
-        });
+                reject(new Error('a'));
+            }))
+            .catch((err) => {
+                expect(retries).to.equal(2);
+                expect(err.message).to.equal('a');
+                done();
+            });
     });
 
     it('hash creation fails', () => {

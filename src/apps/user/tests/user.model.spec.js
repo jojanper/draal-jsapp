@@ -70,12 +70,10 @@ function userMgrCreateUser() {
                     userMock.restore();
                     resolve(err);
                 });
-            })
-            .then((err) => {
+            }).then((err) => {
                 // THEN it should return expected error
                 expect(err.name).to.be.equal(errMsg);
-            })
-            .catch((err) => { throw new Error(err); });
+            }).catch((err) => { throw new Error(err); });
         });
     });
 }
@@ -141,12 +139,10 @@ function userMgrFindLoginUser() {
                     userMock.restore();
                     resolve(err);
                 });
-            })
-            .then((err) => {
+            }).then((err) => {
                 // THEN it should return expected error
                 expect(err).to.be.equal(errMsg);
-            })
-            .catch((err) => { throw new Error(err); });
+            }).catch((err) => { throw new Error(err); });
         });
 
         it('login user query fails', () => {
@@ -164,12 +160,10 @@ function userMgrFindLoginUser() {
                     userMock.restore();
                     resolve(err);
                 });
-            })
-            .then((err) => {
+            }).then((err) => {
                 // THEN it should return expected error
                 expect(err.name).to.be.equal(errMsg);
-            })
-            .catch((err) => { throw new Error(err); });
+            }).catch((err) => { throw new Error(err); });
         });
     });
 }

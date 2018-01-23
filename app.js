@@ -29,11 +29,6 @@ const draaljsConfig = require('./config');
 function normalizePort(val) {
     const port = parseInt(val, 10);
 
-    if (isNaN(port)) {
-        // named pipe
-        return val;
-    }
-
     if (port >= 0) {
         // port number
         return port;
@@ -46,7 +41,6 @@ function normalizePort(val) {
  * The actual web application.
  */
 class WebApplication {
-
     /**
      * Get port from environment.
      */
@@ -132,8 +126,10 @@ class WebApplication {
      */
     listen() {
         this.server = this.app.listen(WebApplication.port, () => {
-            console.log('%s App is running at http://localhost:%d in %s mode',
-                chalk.green('✓'), this.app.get('port'), this.app.get('env'));
+            console.log(
+                '%s App is running at http://localhost:%d in %s mode',
+                chalk.green('✓'), this.app.get('port'), this.app.get('env')
+            );
             console.log('  Press CTRL-C to stop\n');
         });
 
@@ -154,7 +150,7 @@ class WebApplication {
                 throw error;
             }
 
-            const port = WebApplication.port;
+            const { port } = WebApplication.port;
             const bind = typeof port === 'string' ? `Pipe ${port}` : `Port ${port}`;
 
             // Handle specific listen errors with friendly messages

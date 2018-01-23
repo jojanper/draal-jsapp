@@ -1,16 +1,13 @@
 const router = require('express').Router();
 
-const apps = require('../apps');
+const { apiRoutes } = require('../apps');
 const core = require('../core');
-const logger = require('../logger').logger;
+const { logger } = require('../logger');
 
 const APIError = core.error;
 const utilsLib = core.utils;
 const BaseCtrl = core.ctrl;
 const ApiResponse = core.response;
-
-// Available APIs and corresponding setup
-const apiRoutes = apps.apiRoutes;
 
 
 /**

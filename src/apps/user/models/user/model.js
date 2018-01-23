@@ -70,7 +70,9 @@ userSchema.methods.createPwResetToken = async function createResetToken() {
     }
 
     // Save encrypted token
+    /* eslint-disable prefer-destructuring */
     this.pwResetToken = response[1];
+    /* eslint-enable prefer-destructuring */
     const [err, user] = await UtilsLib.promiseExecution(this.save());
     if (err) {
         // Error, return rejected promise

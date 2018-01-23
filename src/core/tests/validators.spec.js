@@ -8,10 +8,10 @@ describe('ValidatorAPI', () => {
             validators: ['unknown']
         };
 
-        let validator = new ValidatorAPI(options).validator;
-        expect(validator).to.equal(null);
+        let obj = new ValidatorAPI(options);
+        expect(obj.validator).to.equal(null);
 
-        validator = new ValidatorAPI({api: ValidatorAPI.API.body}).validator;
-        expect(validator).to.equal(null);
+        obj = new ValidatorAPI({api: ValidatorAPI.API.body});
+        expect(obj.validator).to.equal(null);
     });
 });

@@ -6,7 +6,6 @@ const ValidatorAPI = require('./validators');
 
 
 class BaseCtrl {
-
     /**
      * Derived class must implement this one
      * static get CLASSINFO() {}
@@ -63,8 +62,8 @@ class BaseCtrl {
         // On success, render the action response
         // On failure, call the error handler
         obj
-        .then(response => this.renderResponse(response))
-        .catch(err => this.next(err));
+            .then(response => this.renderResponse(response))
+            .catch(err => this.next(err));
 
         return this;
     }
@@ -73,9 +72,8 @@ class BaseCtrl {
         let data = {};
 
         if (response) {
-            const statusCode = response.statusCode;
-            if (statusCode) {
-                this.res.status(statusCode);
+            if (response.statusCode) {
+                this.res.status(response.statusCode);
             }
 
             data = response.jsonResponse;

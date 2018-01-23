@@ -1,4 +1,4 @@
-const format = require('util').format;
+const { format } = require('util');
 
 const core = require('../../../../core');
 const User = require('./model');

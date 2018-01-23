@@ -1,5 +1,3 @@
 const apps = exports;
 
-apps.apiRoutes = [].concat(
-    require('./user/ctrl')
-);
+apps.apiRoutes = [].concat(require('./user/ctrl'));

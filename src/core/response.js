@@ -1,6 +1,9 @@
 class Response {
-    constructor({data = null, errors = null, messages = null, statusCode = null} =
-        {data: null, errors: null, messages: null, statusCode: null}) {
+    constructor({
+        data = null, errors = null, messages = null, statusCode = null
+    } = {
+            data: null, errors: null, messages: null, statusCode: null
+        }) {
         this._data = data;
         this._errors = errors;
         this._messages = messages;

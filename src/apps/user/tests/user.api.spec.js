@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-expressions */
 const sinon = require('sinon');
-const format = require('util').format;
+const { format } = require('util');
 
 const TasksLib = require('../../../tasks');
 const AccountProfile = require('../models/accountprofile');
@@ -25,12 +25,10 @@ describe('User registration', () => {
                         }
                     });
             });
-        })
-        .then((res) => {
+        }).then((res) => {
             const msg = 'Account with test-reserved@test.com email address already exists';
             expect(res.body.errors[0]).to.equal(msg);
-        })
-        .catch((err) => { throw new Error(err); });
+        }).catch((err) => { throw new Error(err); });
     });
 
     it('signup succeeds', () => {
@@ -49,12 +47,10 @@ describe('User registration', () => {
                         });
                     }).catch(err => reject(err));
                 });
-        })
-        .then((profile) => {
+        }).then((profile) => {
             expect(profile.activationKey.length).to.be.equal(64);
             expect(spyCall.getCalls().length).to.be.equal(1);
-        })
-        .catch((err) => { throw new Error(err); });
+        }).catch((err) => { throw new Error(err); });
     });
 
     it('invalid account activation key is used', (done) => {
@@ -212,20 +208,20 @@ describe('User authentication', () => {
 
     it('invalid email is entered', (done) => {
         testrunner(testapp).post(api).send({email: 'test_@test.com', password: '123456'})
-           .expect(400)
-           .end((err, res) => {
-               expect(res.body.errors[0]).to.equal(errText);
-               done(err);
-           });
+            .expect(400)
+            .end((err, res) => {
+                expect(res.body.errors[0]).to.equal(errText);
+                done(err);
+            });
     });
 
     it('invalid password is entered', (done) => {
         testrunner(testapp).post(api).send({email: 'test@test.com', password: '12345d6'})
-           .expect(400)
-           .end((err, res) => {
-               expect(res.body.errors[0]).to.equal(errText);
-               done(err);
-           });
+            .expect(400)
+            .end((err, res) => {
+                expect(res.body.errors[0]).to.equal(errText);
+                done(err);
+            });
     });
 
     it('email and password parameters are missing', (done) => {
