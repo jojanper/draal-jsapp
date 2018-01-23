@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const UtilsLib = require('../../../../utils');
+const UtilsLib = require('../../../../core').utils;
 
 
 const ProfileStatuses = {

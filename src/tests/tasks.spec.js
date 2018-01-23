@@ -1,7 +1,7 @@
 const sinon = require('sinon');
 const celery = require('node-celery');
 
-const CeleryClient = require('../../config/celery');
+const CeleryClient = require('../../config').celery;
 const TasksLib = require('../tasks');
 
 

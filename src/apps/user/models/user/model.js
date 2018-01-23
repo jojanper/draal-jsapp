@@ -1,8 +1,10 @@
 const mongoose = require('mongoose');
 const crypto = require('crypto');
 
-const APIError = require('../../../../error');
-const UtilsLib = require('../../../../utils');
+const core = require('../../../../core');
+
+const APIError = core.error;
+const UtilsLib = core.utils;
 
 
 const userSchema = new mongoose.Schema({

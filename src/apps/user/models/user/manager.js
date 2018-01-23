@@ -1,10 +1,10 @@
 const format = require('util').format;
 
-const core = require('../../../core');
+const core = require('../../../../core');
 const User = require('./model');
-const APIError = require('../../../../error');
 const AccountProfile = require('../accountprofile');
 
+const APIError = core.error;
 const BaseManager = core.manager;
 
 
