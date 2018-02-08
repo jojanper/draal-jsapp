@@ -6,6 +6,7 @@ const core = require('../../../../core');
 const APIError = core.error;
 const UtilsLib = core.utils;
 
+const SESSION_EXPIRATION = parseInt(process.env.SESSION_EXPIRATION, 10);
 
 const userSchema = new mongoose.Schema({
     email: {
@@ -30,6 +31,26 @@ userSchema.set('toObject', {
         delete ret._id;
     }
 });
+
+/**
+ * Serialize user model.
+ */
+userSchema.methods.serialize = function serialize() {
+    return {
+        email: this.email,
+        created: this.createdAt,
+        updated: this.updatedAt
+    };
+};
+
+/**
+ * Serialize user data for login response.
+ */
+userSchema.methods.loginResponse = function loginResponse() {
+    return Object.assign({
+        expires: Date.now() + SESSION_EXPIRATION
+    }, this.serialize());
+};
 
 /**
  * Password hash middleware.

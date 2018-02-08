@@ -2,6 +2,7 @@
  * Application server setup.
  */
 const express = require('express');
+const helmet = require('helmet');
 const path = require('path');
 const morgan = require('morgan');
 const cookieParser = require('cookie-parser');
@@ -72,18 +73,43 @@ class WebApplication {
     createApp() {
         this.app.set('port', WebApplication.port);
 
+        this._setupPlugins();
         this._setupView();
         this._setupParsers();
-        this._setupDb();
         this._setupAuth();
         this._setupAppLogic();
 
         return this;
     }
 
-    _setupView() {
+    /**
+     * Set up application plugins.
+     */
+    _setupPlugins() {
+        // See https://www.twilio.com/blog/2017/11/securing-your-express-app.html
+        this.app.use(helmet());
+
         if (!isProduction) {
             this.app.use(morgan('dev'));
+        }
+
+        this.app.use(session({
+            resave: true,
+            saveUninitialized: true,
+            secret: process.env.SESSION_SECRET,
+            cookie: {maxAge: Date.now() + parseInt(process.env.SESSION_EXPIRATION, 10)},
+            store: new MongoStore({
+                url: draaljsConfig.mongo.dbURI,
+                autoReconnect: true
+            })
+        }));
+    }
+
+    /**
+     * Set up views for the application.
+     */
+    _setupView() {
+        if (!isProduction) {
             this.app.use(express.static(path.join(__dirname, 'public')));
         }
 
@@ -91,25 +117,18 @@ class WebApplication {
         this.app.set('view engine', 'pug');
     }
 
+    /**
+     * Set up HTTP request parsers.
+     */
     _setupParsers() {
         this.app.use(bodyParser.json());
         this.app.use(bodyParser.urlencoded({extended: false}));
         this.app.use(cookieParser());
     }
 
-    _setupDb() {
-        this.app.use(session({
-            resave: true,
-            saveUninitialized: true,
-            secret: process.env.SESSION_SECRET,
-            store: new MongoStore({
-                url: draaljsConfig.mongo.dbURI,
-                autoReconnect: true,
-                clear_interval: 3600
-            })
-        }));
-    }
-
+    /**
+     * Set up authentication.
+     */
     _setupAuth() {
         this.app.use(passport.initialize());
         this.app.use(passport.session());
@@ -117,6 +136,9 @@ class WebApplication {
         draaljsConfig.passport(passport);
     }
 
+    /**
+     * Set up application business logic.
+     */
     _setupAppLogic() {
         draaljs.bootstrap(this.app);
     }
@@ -192,9 +214,10 @@ class WebApplication {
     }
 }
 
+// Create application
 const app = new WebApplication().createApp();
 
-// Setup up tasks handler
+// Setup up backend tasks handler
 const celerySetup = () => {
     draaljsConfig.celery.connect(() => {
         // Application is now ready.
@@ -205,7 +228,7 @@ const celerySetup = () => {
 };
 
 /**
- * Set up MongoDB and then Celery client, application starts to listen
+ * Set up MongoDB and then Celery client, the application starts to listen
  * the desired port after successful connections have been made.
  */
 draaljsConfig.mongo.config(mongoose, celerySetup);

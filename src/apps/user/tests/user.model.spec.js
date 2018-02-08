@@ -226,4 +226,33 @@ describe('User model', () => {
             done();
         });
     });
+
+    it('supports toObject', () => {
+        const user = new UserModel({
+            email: 'one@test.com',
+            password: 'pw',
+            createdAt: Date.now(),
+            updatedAt: Date.now()
+        });
+
+        const data = user.toObject();
+        expect(Object.keys(data).length).equal(6);
+        expect(data).to.have.keys(['email', 'password', 'id', 'active', 'createdAt', 'updatedAt']);
+    });
+
+    it('supports serialize', () => {
+        const user = new UserModel({email: 'one@test.com', password: 'pw'});
+
+        const data = user.serialize();
+        expect(Object.keys(data).length).equal(3);
+        expect(data).to.have.keys(['email', 'created', 'updated']);
+    });
+
+    it('supports loginResponse', () => {
+        const user = new UserModel({email: 'one@test.com', password: 'pw'});
+
+        const data = user.loginResponse();
+        expect(Object.keys(data).length).equal(4);
+        expect(data).to.have.keys(['email', 'created', 'updated', 'expires']);
+    });
 });
