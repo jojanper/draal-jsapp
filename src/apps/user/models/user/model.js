@@ -28,20 +28,15 @@ const userSchema = new mongoose.Schema({
 userSchema.set('toObject', {
     getters: true,
     transform: (_doc, ret) => {
+        delete ret.id;
+        delete ret.password;
+        delete ret.pwResetToken;
+        delete ret.pwResetExpires;
+
         delete ret._id;
+        delete ret.__v;
     }
 });
-
-/**
- * Serialize user model.
- */
-userSchema.methods.serialize = function serialize() {
-    return {
-        email: this.email,
-        created: this.createdAt,
-        updated: this.updatedAt
-    };
-};
 
 /**
  * Serialize user data for login response.
@@ -49,7 +44,7 @@ userSchema.methods.serialize = function serialize() {
 userSchema.methods.loginResponse = function loginResponse() {
     return Object.assign({
         expires: Date.now() + SESSION_EXPIRATION
-    }, this.serialize());
+    }, this.toObject());
 };
 
 /**
@@ -91,9 +86,7 @@ userSchema.methods.createPwResetToken = async function createResetToken() {
     }
 
     // Save encrypted token
-    /* eslint-disable prefer-destructuring */
-    this.pwResetToken = response[1];
-    /* eslint-enable prefer-destructuring */
+    [, this.pwResetToken] = response;
     const [err, user] = await UtilsLib.promiseExecution(this.save());
     if (err) {
         // Error, return rejected promise

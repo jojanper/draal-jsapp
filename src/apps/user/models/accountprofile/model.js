@@ -28,6 +28,7 @@ profileSchema.set('toObject', {
     getters: true,
     transform: (_doc, ret) => {
         delete ret._id;
+        delete ret.__v;
     }
 });
 
