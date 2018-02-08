@@ -202,6 +202,9 @@ describe('User authentication', () => {
             .end((err, res) => {
                 expect(res.body.messages.length).to.equal(1);
                 expect(res.body.messages[0]).to.equal('Sign-in successful');
+                expect(Object.keys(res.body.data)).to.have.all.members([
+                    'email', 'createdAt', 'updatedAt', 'expires', 'active'
+                ]);
                 done(err);
             });
     });

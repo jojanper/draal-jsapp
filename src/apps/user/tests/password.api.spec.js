@@ -42,9 +42,7 @@ describe('Password reset request', () => {
                     expect(spyCall.getCalls().length).to.be.equal(1);
 
                     // Get the token from spy as user token that is saved to DB is encrypted
-                    /* eslint-disable prefer-destructuring */
-                    resetToken = spyCall.getCall(0).args[1];
-                    /* eslint-enable prefer-destructuring */
+                    [, resetToken] = spyCall.getCall(0).args;
                     const data = {email: credentials.email, token: resetToken, password: 'pw'};
 
                     // Password reset using requested token must succeed

@@ -49,4 +49,13 @@ describe('AccountProfile model', () => {
     it('supports getStatuses method', () => {
         expect(AccountModel.getStatuses()).to.have.keys(['active', 'activated', 'expired']);
     });
+
+    it('supports toObject', () => {
+        const user = new UserModel(userDetails);
+        const account = new AccountModel({user, activationKey: '123'});
+
+        const data = account.toObject();
+        expect(Object.keys(data).length).equal(4);
+        expect(data).to.have.keys(['activationKey', 'status', 'id', 'user']);
+    });
 });

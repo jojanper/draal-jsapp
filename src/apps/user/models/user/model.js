@@ -5,7 +5,9 @@ const core = require('../../../../core');
 
 const APIError = core.error;
 const UtilsLib = core.utils;
+const promiseExec = UtilsLib.promiseExecution;
 
+const SESSION_EXPIRATION = parseInt(process.env.SESSION_EXPIRATION, 10);
 
 const userSchema = new mongoose.Schema({
     email: {
@@ -27,9 +29,24 @@ const userSchema = new mongoose.Schema({
 userSchema.set('toObject', {
     getters: true,
     transform: (_doc, ret) => {
+        delete ret.id;
+        delete ret.password;
+        delete ret.pwResetToken;
+        delete ret.pwResetExpires;
+
         delete ret._id;
+        delete ret.__v;
     }
 });
+
+/**
+ * Serialize user data for login response.
+ */
+userSchema.methods.loginResponse = function loginResponse() {
+    return Object.assign({
+        expires: Date.now() + SESSION_EXPIRATION
+    }, this.toObject());
+};
 
 /**
  * Password hash middleware.
@@ -41,7 +58,7 @@ userSchema.pre('save', async function save(next) {
     }
 
     const promise = UtilsLib.hashify(user.password);
-    const [err, pwHash] = await UtilsLib.promiseExecution(promise);
+    const [err, pwHash] = await promiseExec(promise);
     if (err) {
         return next(err);
     }
@@ -63,17 +80,15 @@ userSchema.methods.createPwResetToken = async function createResetToken() {
     const token = crypto.createHash('sha256').digest('hex');
 
     // Encrypt token
-    const response = await UtilsLib.promiseExecution(UtilsLib.hashify(token));
+    const response = await promiseExec(UtilsLib.hashify(token));
     if (response[0]) {
         // Error, return rejected promise
         return Promise.reject(response[0]);
     }
 
     // Save encrypted token
-    /* eslint-disable prefer-destructuring */
-    this.pwResetToken = response[1];
-    /* eslint-enable prefer-destructuring */
-    const [err, user] = await UtilsLib.promiseExecution(this.save());
+    [, this.pwResetToken] = response;
+    const [err, user] = await promiseExec(this.save());
     if (err) {
         // Error, return rejected promise
         return Promise.reject(err);
@@ -86,7 +101,7 @@ userSchema.methods.createPwResetToken = async function createResetToken() {
 userSchema.methods.changePasswordWithToken = async function changePwWithToken(token, password) {
     // Validate reset token
     const promise = UtilsLib.hashComparison(token, this.pwResetToken, this, true);
-    const response = await UtilsLib.promiseExecution(promise);
+    const response = await promiseExec(promise);
     if (response[0]) {
         throw new APIError('Invalid token');
     }

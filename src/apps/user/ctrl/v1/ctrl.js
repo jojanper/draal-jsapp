@@ -172,7 +172,10 @@ class SignIn extends BaseCtrl {
     async action() {
         const user = await this._authenticate();
         await this._login(user);
-        return new ApiResponse({messages: ['Sign-in successful']});
+        return new ApiResponse({
+            data: user.loginResponse(),
+            messages: ['Sign-in successful']
+        });
     }
 
     _authenticate() {

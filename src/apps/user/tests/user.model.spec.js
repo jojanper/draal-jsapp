@@ -226,4 +226,32 @@ describe('User model', () => {
             done();
         });
     });
+
+    it('supports toObject', () => {
+        const user = new UserModel({
+            active: false,
+            email: 'one@test.com',
+            password: 'pw',
+            createdAt: Date.now(),
+            updatedAt: Date.now()
+        });
+
+        const data = user.toObject();
+        expect(Object.keys(data).length).equal(4);
+        expect(data).to.have.keys(['email', 'active', 'createdAt', 'updatedAt']);
+    });
+
+    it('supports loginResponse', () => {
+        const user = new UserModel({
+            active: false,
+            email: 'one@test.com',
+            password: 'pw',
+            createdAt: Date.now(),
+            updatedAt: Date.now()
+        });
+
+        const data = user.loginResponse();
+        expect(Object.keys(data).length).equal(5);
+        expect(data).to.have.keys(['email', 'createdAt', 'updatedAt', 'expires', 'active']);
+    });
 });
