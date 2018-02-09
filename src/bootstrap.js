@@ -3,6 +3,7 @@
  */
 const core = require('./core');
 const routes = require('./routes');
+const { logger } = require('./logger');
 
 const BaseCtrl = core.ctrl;
 const ApiResponse = core.response;
@@ -44,6 +45,11 @@ function appBusinessLogicSetup(app) {
         // Set locals, only providing error in development
         res.locals.message = err.message;
         res.locals.error = utilsLib.isDevelopment(req.app) ? err : {};
+
+        if (!err.status) {
+            logger.error(err);
+            logger.error(console.trace());
+        }
 
         // Render the error page
         res.status(err.status || 500);

@@ -44,7 +44,7 @@ userSchema.set('toObject', {
  */
 userSchema.methods.loginResponse = function loginResponse() {
     return Object.assign({
-        expires: Date.now() + SESSION_EXPIRATION
+        expires: SESSION_EXPIRATION
     }, this.toObject());
 };
 
