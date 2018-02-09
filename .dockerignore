@@ -7,5 +7,6 @@ coverage/
 config/
 node_modules/
 scripts/
+tests*
 test/
 README.md

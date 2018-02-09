@@ -34,7 +34,7 @@ services:
       context: ./config/nginx
       dockerfile: Dockerfile
     ports:
-      - "8008:80"
+      - "8088:80"
     links:
       - web
     volumes_from:
@@ -45,5 +45,9 @@ services:
       dockerfile: ./config/celery/Dockerfile
     volumes:
       - .:/draaltasks
+    links:
+      - rabbitmq
     depends_on:
       - rabbitmq
+    environment:
+      - CELERY_BROKER_URL=amqp://guest:guest@rabbitmq:5672//
