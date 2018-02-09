@@ -24,6 +24,8 @@ dotenv.load({path: process.env.SECRETS_PATH || secretsFile});
 const draaljs = require('./src');
 const draaljsConfig = require('./config');
 
+const maxAge = parseInt(process.env.SESSION_EXPIRATION, 10);
+
 /**
  * Normalize a port into a number, string, or false.
  */
@@ -94,10 +96,10 @@ class WebApplication {
         }
 
         this.app.use(session({
-            resave: true,
-            saveUninitialized: true,
+            resave: false,
+            saveUninitialized: false,
             secret: process.env.SESSION_SECRET,
-            cookie: {maxAge: Date.now() + parseInt(process.env.SESSION_EXPIRATION, 10)},
+            cookie: {maxAge},
             store: new MongoStore({
                 url: draaljsConfig.mongo.dbURI,
                 autoReconnect: true

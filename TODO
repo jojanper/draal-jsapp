@@ -1,7 +1,6 @@
 Some thoughts for further development:
 --------------------------------------
 
-- Wiki pages regarding how to create API action
 - Add celery to Docker configuration
 - Missing user account funtionality
   - Password change
@@ -44,5 +43,3 @@ Some thoughts for further development:
 
   // sending to individual socketid
   socket.broadcast.to(socketid).emit('message', 'for your eyes only');
-
-- Logger: winston?

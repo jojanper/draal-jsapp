@@ -222,7 +222,6 @@ class SignOut extends BaseCtrl {
     }
 }
 
-
 // Export controllers
 module.exports = [
     {
