@@ -3,24 +3,12 @@ const router = require('express').Router();
 const { apiRoutes } = require('../apps');
 const core = require('../core');
 const { logger } = require('../logger');
+const { isAuthenticated } = require('./middlewares');
 
 const APIError = core.error;
 const utilsLib = core.utils;
 const BaseCtrl = core.ctrl;
 const ApiResponse = core.response;
-
-
-/**
- * Login required middleware.
- */
-function isAuthenticated(req, res, next) {
-    if (req.isAuthenticated()) {
-        return next();
-    }
-
-    const ctrl = new BaseCtrl(req, res, next);
-    ctrl.renderResponse(new ApiResponse({statusCode: 401}));
-}
 
 module.exports = (prefix) => {
     router.get('', (req, res) => {
@@ -39,7 +27,9 @@ module.exports = (prefix) => {
         throw new Error('Application is not expected to handle this error');
     });
 
-    utilsLib.setRoutes(router, apiRoutes, isAuthenticated);
+    utilsLib.setRoutes(router, apiRoutes, {
+        authFn: isAuthenticated
+    });
 
     return router;
 };

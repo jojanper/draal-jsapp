@@ -32,18 +32,19 @@ module.exports = {
      *
      * @param {object} router Router object.
      * @param {array} routes List of routes to be included for application.
-     * @param {function} authFn Authentication middleware.
+     * @param {object} middlewares Middlewares to be attached to the routes.
+     * @param {function} middlewares.authFn Authentication middleware.
      *
      * @returns {object} Router object.
      */
-    setRoutes(router, routes, authFn) {
+    setRoutes(router, routes, middlewares) {
         routes.forEach((route) => {
             // Path of HTTP request
             const args = [route.cls.url];
 
             // Is authentication required
             if (route.cls.CLASSINFO.AUTHENTICATE) {
-                args.push(authFn);
+                args.push(middlewares.authFn);
             }
 
             // Include input validations, if available
