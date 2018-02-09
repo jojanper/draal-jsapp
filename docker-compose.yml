@@ -27,6 +27,7 @@ services:
     depends_on:
       - mongodb
       - rabbitmq
+      - worker
   nginx:
     container_name: nginx
     build:
@@ -38,3 +39,11 @@ services:
       - web
     volumes_from:
       - web
+  worker:
+    build:
+      context: .
+      dockerfile: ./config/celery/Dockerfile
+    volumes:
+      - .:/draaltasks
+    depends_on:
+      - rabbitmq
