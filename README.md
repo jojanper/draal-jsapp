@@ -148,9 +148,7 @@ https://travis-ci.org/jojanper/draal-jsapp
 - Linux users should install also [Docker compose](https://docs.docker.com/compose/install/)
 
 Docker Compose is used to run multi-container Docker applications. This project creates two
-separate containers: one for the nodejs application and the other for NGINX reverse proxy. The application
-is accessible at http://localhost:8008. Currently, the Docker configuration does not include Celery tasks
-runner (will change is near future).
+separate containers: one for the nodejs application and the other for NGINX reverse proxy. The application is accessible at http://localhost:8088..
 
 To build the project
 ```
@@ -176,6 +174,21 @@ npm run docker-rm # (to remove the application container)
 To debug container
 ```
 docker exec -t -i <container-id> /bin/bash
+```
+
+---------
+
+## Troubleshooting
+
+If you get following error:
+```
+[nodemon] Internal watch failed: watch <file-path> ENOSPC
+```
+
+try increasing the limit per user for the max number of watches:
+
+```
+echo fs.inotify.max_user_watches=582222 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
 ```
 
 ---------

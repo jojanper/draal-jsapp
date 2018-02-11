@@ -24,7 +24,7 @@
     "fullstack-dev": "npm run ngapp-prepare && concurrently --names backend,frontend,template \"npm start\" \"cd angular-app && npm run watch\" \"npm run client-watch\"",
     "fullstack-prod": "npm run ngapp-prepare && concurrently --names backend,frontend,template \"npm start\" \"cd angular-app && npm run watch-prod\" \"npm run client-watch\"",
     "lint": "eslint *.js ./config/*.js ./src/** ./test/**",
-    "start": "NODE_PATH=$NODE_PATH:. DEBUG=draal-jsapp:* nodemon ./app.js -e .js --ignore node_modules",
+    "start": "NODE_PATH=$NODE_PATH:. DEBUG=draal-jsapp:* nodemon ./app.js -e .js",
     "start-prod": "NODE_PATH=$NODE_PATH:. NODE_ENV=production node ./app.js",
     "pretest": "rimraf unit-test-logs && mongo draaljs-test --eval \"db.dropDatabase()\"",
     "test": "NODE_PATH=$NODE_PATH:. NODE_ENV=test MONGODB_URI=mongodb://localhost:27017/draaljs-test nyc mocha",
