@@ -1,9 +1,9 @@
-FROM node:8.9.0
+FROM node:carbon-alpine
 
 COPY . /draaljs-app
 
 WORKDIR /draaljs-app
 
-RUN npm install
+RUN npm install --only=production
 
-CMD ["npm", "run", "start-prod"]
+CMD ["node", "./app.js"]

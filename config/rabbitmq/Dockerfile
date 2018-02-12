@@ -1,6 +1,6 @@
-FROM rabbitmq
+FROM rabbitmq:3.7-management
 
-# https://stackoverflow.com/questions/30747469/how-to-add-initial-users-when-starting-a-rabbitmq-docker-container
-# https://groups.google.com/forum/#!topic/rabbitmq-users/vfNSfSkP3uw
-CMD ["rabbitmqctl", "add_vhost", "draal_tasks"]
-#CMD ["rabbitmqctl", "add_vhost", "draal_tasks"]
+COPY rabbitmq.config /etc/rabbitmq/
+COPY definitions.json /etc/rabbitmq/
+RUN chown rabbitmq:rabbitmq /etc/rabbitmq/rabbitmq.config /etc/rabbitmq/definitions.json
+CMD ["rabbitmq-server"]
