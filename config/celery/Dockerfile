@@ -8,4 +8,4 @@ WORKDIR /pytasks/
 
 RUN pip install -r requirements.txt
 
-ENTRYPOINT celery -A pytasks worker --concurrency=2 --loglevel=info  --logfile=/var/log/celery.log
+ENTRYPOINT celery -A pytasks.celery_app:app worker --concurrency=2 --loglevel=info  --logfile=/var/log/celery.log

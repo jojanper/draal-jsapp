@@ -124,7 +124,7 @@ npm run pylint
 ### Start Celery worker
 ```
 export CELERY_ON=1
-celery -A pytasks worker -l info
+celery -A pytasks.celery_app:app worker -l info
 ```
 
 The RabbitMQ broker need to be running, to see RabbitMQ status
@@ -177,6 +177,18 @@ npm run docker-rm # (to remove the application container)
 To debug container
 ```
 docker exec -t -i <container-id> /bin/bash
+```
+
+Usefull Docker commands
+```
+# Stop and remove containers
+docker stop $(docker ps -a -q)
+docker rm $(docker ps -a -q)
+
+# Remove images
+docker rmi $(docker images -q)
+
+docker system prune
 ```
 
 ---------

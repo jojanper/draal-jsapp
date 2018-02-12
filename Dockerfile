@@ -1,4 +1,4 @@
-FROM node:carbon-alpine
+FROM node:carbon-slim
 
 COPY . /draaljs-app
 

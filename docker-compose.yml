@@ -5,15 +5,11 @@ services:
     build:
       context: ./config/rabbitmq
       dockerfile: Dockerfile
-    #image: rabbitmq
-    #command:
-    #  - rabbitmqctl add_vhost draal_tasks
-    #  - rabbitmqctl set_permissions -p draal_tasks guest ".*" ".*" ".*"
     ports:
       - "5672:5672"
   mongodb:
     container_name: mongodb
-    image: mongo:3.4
+    image: mongo:3.6
   web:
     container_name: draaljs
     build:

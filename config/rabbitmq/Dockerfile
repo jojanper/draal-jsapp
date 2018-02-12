@@ -1,4 +1,4 @@
-FROM rabbitmq:3.7-management
+FROM rabbitmq:3.7-management-alpine
 
 COPY rabbitmq.config /etc/rabbitmq/
 COPY definitions.json /etc/rabbitmq/

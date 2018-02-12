@@ -12,6 +12,17 @@
       "name": "draal_tasks"
     }
   ],
+  "exchanges": [
+    {
+      "name": "celeryresults",
+      "vhost": "draal_tasks",
+      "type": "topic",
+      "durable": true,
+      "auto_delete": false,
+      "internal": false,
+      "arguments": {}
+    }
+  ],
   "permissions": [
     {
       "user": "guest",
