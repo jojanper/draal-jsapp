@@ -103,6 +103,8 @@ Communication between Producer and Consumer requires message broker (RabbitMQ in
 prerequisites for backend tasks development have been installed, the installation is finalized with
 
 ```
+sudo apt-get install python3-pip (optional)
+sudo pip3 install virtualenv (optional)
 npm run virtualenv-install
 source virtualenv2.7/draal/bin/activate
 ```
@@ -121,6 +123,7 @@ npm run pylint
 
 ### Start Celery worker
 ```
+export CELERY_ON=1
 celery -A pytasks worker -l info
 ```
 
@@ -148,7 +151,7 @@ https://travis-ci.org/jojanper/draal-jsapp
 - Linux users should install also [Docker compose](https://docs.docker.com/compose/install/)
 
 Docker Compose is used to run multi-container Docker applications. This project creates two
-separate containers: one for the nodejs application and the other for NGINX reverse proxy. The application is accessible at http://localhost:8088..
+separate containers: one for the nodejs application and the other for NGINX reverse proxy. The application is accessible at http://localhost:8088.
 
 To build the project
 ```
