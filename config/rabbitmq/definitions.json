@@ -1,0 +1,35 @@
+{
+  "users": [
+    {
+      "name": "guest",
+      "password": "guest",
+      "hashing_algorithm": "rabbit_password_hashing_sha256",
+      "tags": ""
+    }
+  ],
+  "vhosts": [
+    {
+      "name": "draal_tasks"
+    }
+  ],
+  "exchanges": [
+    {
+      "name": "celeryresults",
+      "vhost": "draal_tasks",
+      "type": "topic",
+      "durable": true,
+      "auto_delete": false,
+      "internal": false,
+      "arguments": {}
+    }
+  ],
+  "permissions": [
+    {
+      "user": "guest",
+      "vhost": "draal_tasks",
+      "configure": ".*",
+      "write": ".*",
+      "read": ".*"
+    }
+  ]
+}

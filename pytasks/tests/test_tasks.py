@@ -4,7 +4,7 @@
 import unittest
 from mock import patch
 
-from pytasks.celery import app
+from pytasks.celery_app import app
 from pytasks.tasks import registration_email, passwordreset_email
 
 

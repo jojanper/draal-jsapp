@@ -1,6 +1,10 @@
 {
-    "ignore": [
-      ".git",
-      "node_modules/**/node_modules"
-    ]
+  "verbose": true,
+  "ignore": [
+    ".git",
+    "node_modules/**/node_modules",
+    "virtualenv*",
+    "*-logs/*.log",
+    "angular-app/node-modules"
+  ]
 }

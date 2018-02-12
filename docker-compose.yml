@@ -2,12 +2,14 @@ version: "2"
 services:
   rabbitmq:
     container_name: rabbitmq
-    image: rabbitmq
+    build:
+      context: ./config/rabbitmq
+      dockerfile: Dockerfile
     ports:
       - "5672:5672"
   mongodb:
     container_name: mongodb
-    image: mongo:3.4
+    image: mongo:3.6
   web:
     container_name: draaljs
     build:
@@ -22,7 +24,7 @@ services:
       - PORT=3008
       - MONGODB_URI=mongodb://mongodb:27017/test
       - ACCOUNT_ACTIVATION_DAYS=7
-      - CELERY_BROKER_URL=amqp://guest:guest@rabbitmq:5672//
+      - CELERY_BROKER_URL=amqp://guest:guest@rabbitmq:5672/draal_tasks
       - CELERY_ON=1
     depends_on:
       - mongodb
@@ -45,9 +47,16 @@ services:
       dockerfile: ./config/celery/Dockerfile
     volumes:
       - .:/draaltasks
+      - docker-logs:/var/log
     links:
       - rabbitmq
     depends_on:
       - rabbitmq
     environment:
-      - CELERY_BROKER_URL=amqp://guest:guest@rabbitmq:5672//
+      - CELERY_BROKER_URL=amqp://guest:guest@rabbitmq:5672/draal_tasks
+      - CELERY_ON=1
+volumes:
+  docker-logs:
+    driver_opts:
+      device: ${PWD}/docker-logs
+      o: bind

@@ -12,7 +12,7 @@ ENV_TAG = 'CELERY_BROKER_URL'
 DEFAULT_BROKER = 'amqp://guest:guest@localhost:5672//'
 BROKER_URL = os.environ[ENV_TAG] if ENV_TAG in os.environ else DEFAULT_BROKER
 
-app = Celery('pytasks', broker=BROKER_URL, include=['pytasks.tasks'])
+app = Celery('pytasks', backend='rpc://', broker=BROKER_URL, include=['pytasks.tasks'])
 
 # Optional configuration, see the application user guide.
 app.conf.update(

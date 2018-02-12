@@ -103,6 +103,8 @@ Communication between Producer and Consumer requires message broker (RabbitMQ in
 prerequisites for backend tasks development have been installed, the installation is finalized with
 
 ```
+sudo apt-get install python3-pip (optional)
+sudo pip3 install virtualenv (optional)
 npm run virtualenv-install
 source virtualenv2.7/draal/bin/activate
 ```
@@ -121,7 +123,8 @@ npm run pylint
 
 ### Start Celery worker
 ```
-celery -A pytasks worker -l info
+export CELERY_ON=1
+celery -A pytasks.celery_app:app worker -l info
 ```
 
 The RabbitMQ broker need to be running, to see RabbitMQ status
@@ -148,9 +151,7 @@ https://travis-ci.org/jojanper/draal-jsapp
 - Linux users should install also [Docker compose](https://docs.docker.com/compose/install/)
 
 Docker Compose is used to run multi-container Docker applications. This project creates two
-separate containers: one for the nodejs application and the other for NGINX reverse proxy. The application
-is accessible at http://localhost:8008. Currently, the Docker configuration does not include Celery tasks
-runner (will change is near future).
+separate containers: one for the nodejs application and the other for NGINX reverse proxy. The application is accessible at http://localhost:8088.
 
 To build the project
 ```
@@ -176,6 +177,33 @@ npm run docker-rm # (to remove the application container)
 To debug container
 ```
 docker exec -t -i <container-id> /bin/bash
+```
+
+Usefull Docker commands
+```
+# Stop and remove containers
+docker stop $(docker ps -a -q)
+docker rm $(docker ps -a -q)
+
+# Remove images
+docker rmi $(docker images -q)
+
+docker system prune
+```
+
+---------
+
+## Troubleshooting
+
+If you get following error:
+```
+[nodemon] Internal watch failed: watch <file-path> ENOSPC
+```
+
+try increasing the limit per user for the max number of watches:
+
+```
+echo fs.inotify.max_user_watches=582222 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
 ```
 
 ---------
