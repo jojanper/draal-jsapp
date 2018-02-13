@@ -10,3 +10,4 @@ scripts/
 tests*
 test/
 README.md
+*.pyc
