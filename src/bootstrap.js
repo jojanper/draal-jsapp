@@ -1,15 +1,26 @@
 /**
  * Application business logic initialization.
  */
+const bodyParser = require('body-parser');
+const { graphqlExpress, graphiqlExpress } = require('graphql-server-express');
+const { makeExecutableSchema } = require('graphql-tools');
+
 const core = require('./core');
 const routes = require('./routes');
 const { logger } = require('./logger');
+const { typeDefs, resolvers } = require('./graphql');
+
 
 const BaseCtrl = core.ctrl;
 const ApiResponse = core.response;
 const utilsLib = core.utils;
 
 const apiPrefix = '/api';
+
+const schema = makeExecutableSchema({
+    typeDefs,
+    resolvers: resolvers()
+});
 
 
 // Middleware for handling application errors
@@ -28,6 +39,9 @@ function appBusinessLogicSetup(app) {
     // Application API routes
     app.use('/', routes.entry());
     app.use(apiPrefix, routes.api(apiPrefix));
+
+    app.use('/graphql', bodyParser.json(), graphqlExpress({schema}));
+    app.get('/graphiql', graphiqlExpress({endpointURL: '/graphql'}));
 
     // Catch and handle application errors
     app.use(`${apiPrefix}/*`, apiMiddlewareErrorHandler);

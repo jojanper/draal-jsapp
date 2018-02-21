@@ -43,3 +43,9 @@ Some thoughts for further development:
 
   // sending to individual socketid
   socket.broadcast.to(socketid).emit('message', 'for your eyes only');
+
+- GraphQL
+  - https://github.com/apollographql/apollo-server
+  - https://github.com/amaurymartiny/graphql-example
+  - https://github.com/graphcool/graphql-server-example
+  - https://github.com/sitepoint-editors/graphql-nodejs (projections example!)
