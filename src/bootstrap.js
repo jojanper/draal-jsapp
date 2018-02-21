@@ -40,6 +40,7 @@ function appBusinessLogicSetup(app) {
     app.use('/', routes.entry());
     app.use(apiPrefix, routes.api(apiPrefix));
 
+    // GraphQL endpoint and interactive editor
     app.use('/graphql', bodyParser.json(), graphqlExpress({schema}));
     app.get('/graphiql', graphiqlExpress({endpointURL: '/graphql'}));
 

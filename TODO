@@ -49,3 +49,4 @@ Some thoughts for further development:
   - https://github.com/amaurymartiny/graphql-example
   - https://github.com/graphcool/graphql-server-example
   - https://github.com/sitepoint-editors/graphql-nodejs (projections example!)
+  - https://marmelab.com/blog/2017/09/06/dive-into-graphql-part-iii-building-a-graphql-server-with-nodejs.html#integration-testing-of-the-query-engine
