@@ -3,12 +3,11 @@
  */
 const bodyParser = require('body-parser');
 const { graphqlExpress, graphiqlExpress } = require('graphql-server-express');
-const { makeExecutableSchema } = require('graphql-tools');
 
 const core = require('./core');
 const routes = require('./routes');
 const { logger } = require('./logger');
-const { typeDefs, resolvers } = require('./graphql');
+const { schema } = require('./graphql');
 
 
 const BaseCtrl = core.ctrl;
@@ -16,11 +15,6 @@ const ApiResponse = core.response;
 const utilsLib = core.utils;
 
 const apiPrefix = '/api';
-
-const schema = makeExecutableSchema({
-    typeDefs,
-    resolvers: resolvers()
-});
 
 
 // Middleware for handling application errors

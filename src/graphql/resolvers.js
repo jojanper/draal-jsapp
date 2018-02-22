@@ -1,4 +1,4 @@
-const User = require('../apps/user/models/user');
+const { resolvers: UserResolvers } = require('../apps/user/graphql');
 
 /*
 query {user(id: "5a6a39ed2564ff5365c79817") {
@@ -6,21 +6,6 @@ query {user(id: "5a6a39ed2564ff5365c79817") {
 }}
 query {users}
 */
-module.exports = function resolvers() {
-    return {
-        RootQuery: {
-            user(root, { id }, context, info) {
-                /*
-                console.log(root);
-                console.log(context);
-                console.log(id);
-                */
-                console.log(info.fieldNodes[0].selectionSet);
-                return User.manager.execute('findOne', {_id: id});
-            },
-            users() {
-                return User.manager.execute('find');
-            }
-        }
-    };
+module.exports = {
+    Query: Object.assign({}, UserResolvers.Query)
 };
