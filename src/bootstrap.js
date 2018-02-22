@@ -1,13 +1,9 @@
 /**
  * Application business logic initialization.
  */
-const bodyParser = require('body-parser');
-const { graphqlExpress, graphiqlExpress } = require('graphql-server-express');
-
 const core = require('./core');
 const routes = require('./routes');
 const { logger } = require('./logger');
-const { schema } = require('./graphql');
 
 
 const BaseCtrl = core.ctrl;
@@ -33,10 +29,6 @@ function appBusinessLogicSetup(app) {
     // Application API routes
     app.use('/', routes.entry());
     app.use(apiPrefix, routes.api(apiPrefix));
-
-    // GraphQL endpoint and interactive editor
-    app.use('/graphql', bodyParser.json(), graphqlExpress({schema}));
-    app.get('/graphiql', graphiqlExpress({endpointURL: '/graphql'}));
 
     // Catch and handle application errors
     app.use(`${apiPrefix}/*`, apiMiddlewareErrorHandler);
