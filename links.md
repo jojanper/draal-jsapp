@@ -6,6 +6,13 @@
 - https://github.com/graphcool/graphql-server-example
 - https://github.com/sitepoint-editors/graphql-nodejs (projections example!)
 - https://marmelab.com/blog/2017/09/06/dive-into-graphql-part-iii-building-a-graphql-server-with-nodejs.html#integration-testing-of-the-query-engine
+- https://dev-blog.apollodata.com/4-simple-ways-to-call-a-graphql-api-a6807bcdb355
+- https://medium.com/@james_mensch/production-apollo-graphql-authentication-authorization-6dbce79d6f1b
+- https://about.sourcegraph.com/graphql/handling-authentication-and-authorization-in-graphql/
+- https://blog.codeship.com/graphql-as-an-api-gateway-to-micro-services/
+- https://blog.cloudboost.io/a-crud-app-with-apollo-graphql-nodejs-express-mongodb-angular5-2874111cd6a5
+- https://developer.github.com/v4/guides/forming-calls/
+- https://scotch.io/@codediger/build-a-simple-graphql-api-server-with-express-and-nodejs
 
 ### Token authentication
 - https://scotch.io/tutorials/authenticate-a-node-js-api-with-json-web-tokens
@@ -40,3 +47,6 @@
   // sending to individual socketid
   socket.broadcast.to(socketid).emit('message', 'for your eyes only');
   ```
+
+### Docker
+- https://blog.hasura.io/an-exhaustive-guide-to-writing-dockerfiles-for-node-js-web-apps-bbee6bd2f3c4

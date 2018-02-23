@@ -141,6 +141,21 @@ CELERY_ON=1 npm start
 
 ---------
 
+## GraphQL
+GraphQL API endpoint is available in /api/graphql.
+
+To query users:
+```
+curl -X POST -H "Content-Type: application/json" --data '{"query": "{users{id,email}}"}' http://localhost:3000/api/graphql
+```
+
+To query a user:
+```
+curl -X POST -H "Content-Type: application/json" --data '{"query": "{user(id: \"<user-id>\"){id,email}}"}' http://localhost:3000/api/graphql
+```
+
+---------
+
 ## Travis CI
 https://travis-ci.org/jojanper/draal-jsapp
 
