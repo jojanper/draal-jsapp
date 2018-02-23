@@ -8,7 +8,7 @@ const {
     resolvers: UserResolvers,
     schema: UserSchema
 } = require('../index');
-const User = require('../../models/user');
+const { User } = require('../../models');
 const Base = require('../../../../graphql/base');
 
 const UserModel = User.model;

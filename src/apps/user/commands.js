@@ -6,8 +6,7 @@ const mongoose = require('mongoose');
 const prettyjson = require('prettyjson');
 
 const draaljsConfig = require('../../../config');
-const User = require('./models/user');
-const Account = require('./models/accountprofile');
+const {User, AccountProfile } = require('./models');
 
 const options = {
     noColor: false
@@ -38,7 +37,7 @@ program.command('getUsers').description('List users').action(() => {
 
 program.command('getAccountProfiles').description('List account profiles').action(() => {
     execute(() => {
-        const dbObj = Account.manager.queryObj('find', {});
+        const dbObj = AccountProfile.manager.queryObj('find', {});
         const query = dbObj.getQuery().populate('user');
         return dbObj.setQuery(query).exec();
     });
