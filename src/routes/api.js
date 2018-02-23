@@ -22,7 +22,7 @@ module.exports = (prefix) => {
     // GraphQL endpoint and interactive editor
     router.use('/graphql', bodyParser.json(), graphqlExpress(request => ({
         schema,
-        context: {user: request.session.passport.user}
+        context: {user: (request.session.passport) ? request.session.passport.user : null}
     })));
     router.get('/graphiql', graphiqlExpress({endpointURL: `${prefix}/graphql`}));
 

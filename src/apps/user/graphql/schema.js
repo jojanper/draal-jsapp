@@ -3,9 +3,8 @@ const Base = require('../../../graphql/base');
 const User = `
 type User {
     id: ID!
-    firstname: String
-    lastname: String
-    email: String
+    email: String,
+    active: Boolean
 }
 extend type Query {
     user(id: ID): User
