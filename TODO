@@ -1,13 +1,14 @@
 Some thoughts for further development:
 --------------------------------------
 
-- Add celery to Docker configuration
 - Missing user account funtionality
   - Password change
 - File upload
 - Add support for token based authentication
-  - example project: https://scotch.io/tutorials/authenticate-a-node-js-api-with-json-web-tokens
-  - https://github.com/auth0/node-jsonwebtoken
+  - See links.md
+- GraphQL
+  - Only authenticated users allowed -> use middleware
+  - Admin permission required to view users
 - API validations
   - Serialize as part of API data
   - Generalize names:
@@ -15,31 +16,4 @@ Some thoughts for further development:
   - Validation messages:
     - Option to show also input field instead of general message
 - SocketIO permissions
-  - https://www.codementor.io/tips/0217388244/sharing-passport-js-sessions-with-both-express-and-socket-io
-
-- SocketIO
-  - https://stackoverflow.com/questions/10058226/send-response-to-all-clients-except-sender/10099325#10099325
-
-  // sending to sender-client only
-  socket.emit('message', "this is a test");
-
-  // sending to all clients, include sender
-  io.emit('message', "this is a test");
-
-  // sending to all clients except sender
-  socket.broadcast.emit('message', "this is a test");
-
-  // sending to all clients in 'game' room(channel) except sender
-  socket.broadcast.to('game').emit('message', 'nice game');
-
-  // sending to all clients in 'game' room(channel), include sender
-  io.in('game').emit('message', 'cool game');
-
-  // sending to sender client, only if they are in 'game' room(channel)
-  socket.to('game').emit('message', 'enjoy the game');
-
-  // sending to all clients in namespace 'myNamespace', include sender
-  io.of('myNamespace').emit('message', 'gg');
-
-  // sending to individual socketid
-  socket.broadcast.to(socketid).emit('message', 'for your eyes only');
+  - See links.md

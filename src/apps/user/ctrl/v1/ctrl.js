@@ -2,8 +2,7 @@ const passport = require('passport');
 
 const core = require('../../../../core');
 
-const User = require('../../models/user');
-const AccountProfile = require('../../models/accountprofile');
+const { User, AccountProfile } = require('../../models');
 const TasksLib = require('../../../../tasks');
 
 const APIError = core.error;

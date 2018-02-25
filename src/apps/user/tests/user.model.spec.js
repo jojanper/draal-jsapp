@@ -3,7 +3,7 @@ const sinon = require('sinon');
 require('mongoose');
 require('sinon-mongoose');
 
-const User = require('../models/user');
+const { User } = require('../models');
 
 const UserModel = User.model;
 

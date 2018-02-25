@@ -9,11 +9,11 @@ function passportInit(passport) {
      * Passport needs ability to serialize and unserialize users out of session.
      */
     passport.serializeUser((user, done) => {
-        done(null, user.id);
+        done(null, user);
     });
 
     passport.deserializeUser((id, done) => {
-        User.manager.execute('findById', id, (err, user) => {
+        User.manager.execute('findOne', {email: id.email}, (err, user) => {
             done(err, user);
         });
     });
