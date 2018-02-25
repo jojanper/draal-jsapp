@@ -8,6 +8,7 @@ Some thoughts for further development:
   - See links.md
 - GraphQL
   - Only authenticated users allowed -> use middleware
+  - Admin permission required to view users
 - API validations
   - Serialize as part of API data
   - Generalize names:
