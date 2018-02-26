@@ -1,0 +1,12 @@
+FROM node:8.9 AS build
+
+COPY . /draaljs-app
+WORKDIR /draaljs-app
+RUN npm install --production
+
+FROM gcr.io/distroless/nodejs
+
+COPY --from=build /draaljs-app /draaljs-app
+WORKDIR /draaljs-app
+ENV NODE_ENV production
+ENTRYPOINT ["/nodejs/bin/node", "./app.js"]

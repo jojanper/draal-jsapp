@@ -14,6 +14,7 @@
     "cibuild": "npm run lint && npm test",
     "codecov": "codecov --disable=gcov --root=./coverage",
     "docker-build": "docker-compose build",
+    "docker-build-prod": "docker-compose -f docker-compose.yml build",
     "docker-run": "docker-compose up",
     "docker-rund": "docker-compose up -d",
     "docker-stop": "docker stop draaljs",

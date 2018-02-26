@@ -165,12 +165,18 @@ https://travis-ci.org/jojanper/draal-jsapp
 - Install [Docker](https://docs.docker.com/engine/installation/)
 - Linux users should install also [Docker compose](https://docs.docker.com/compose/install/)
 
-Docker Compose is used to run multi-container Docker applications. This project creates two
-separate containers: one for the nodejs application and the other for NGINX reverse proxy. The application is accessible at http://localhost:8088.
+Docker Compose is used to run multi-container Docker applications. This project currently creates multiple containers:
+the actual nodejs application, background task worker(s) for the application, NGINX reverse proxy, RabbitMQ message broker and MongoDB database.
+The application is accessible at http://localhost:8088.
 
-To build the project
+To build the project (for development mode, docker-compose.override.yml overrides default values)
 ```
 npm run docker-build
+```
+
+To build production version of the project (uses distroless nodejs Docker image)
+```
+npm run docker-build-prod
 ```
 
 To start the application
