@@ -1,0 +1,6 @@
+# Override default values for development mode
+version: "2"
+services:
+  web:
+    build:
+      dockerfile: ./config/app/Dockerfile

@@ -6,6 +6,6 @@ WORKDIR /draaljs-app
 
 ENV NODE_ENV production
 
-RUN npm install --only=production
+RUN npm install
 
 CMD ["node", "./app.js"]
