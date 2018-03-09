@@ -9,6 +9,7 @@ const fs = require('fs');
 // 50 MB
 const maxsize = 50 * 1024 * 1024;
 
+console.log(`Logger prefix path: ${process.env.DRAALJS_LOGGER_PREFIX}`);
 const logPrefix = process.env.DRAALJS_LOGGER_PREFIX || path.join(__dirname, '..', 'logs');
 
 // Make sure the log folder exists
@@ -27,15 +28,18 @@ if (process.env.NODE_ENV !== 'production') {
 // Write to all logs with level `debug` and below to `combined.log`
 // Write all logs error (and below) to `error.log`.
 //
-transports.push(new winston.transports.File({
-    filename: path.join(logPrefix, 'app-error.log'),
-    level: 'error',
-    maxsize
-}));
-transports.push(new winston.transports.File({
-    filename: path.join(logPrefix, 'app-debug.log'),
-    maxsize
-}));
+console.log(`Logger file creation state: ${process.env.DRAALJS_LOGGER_DISABLE_FILES}`);
+if (process.env.DRAALJS_LOGGER_DISABLE_FILES !== 0) {
+    transports.push(new winston.transports.File({
+        filename: path.join(logPrefix, 'app-error.log'),
+        level: 'error',
+        maxsize
+    }));
+    transports.push(new winston.transports.File({
+        filename: path.join(logPrefix, 'app-debug.log'),
+        maxsize
+    }));
+}
 
 const formatter = info =>
     `{"timestamp": "${info.timestamp}", "level": "${info.level}", "message": "${info.message}"}`;
