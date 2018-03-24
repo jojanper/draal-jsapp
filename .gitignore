@@ -9,3 +9,4 @@ virtualenv*
 .nyc_output
 logs
 *-logs
+*.tar

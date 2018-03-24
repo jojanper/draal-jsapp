@@ -1,4 +1,4 @@
-version: "2"
+version: "3"
 services:
   rabbitmq:
     container_name: rabbitmq
@@ -18,8 +18,7 @@ services:
     expose:
       - "3008"
     volumes:
-      - .:/draaljs-app
-      - /draaljs-app/node_modules
+      - web:/draaljs-app
       - docker-logs:/var/log
     env_file:
      - .env-docker
@@ -38,14 +37,14 @@ services:
       - "8088:80"
     links:
       - web
-    volumes_from:
-      - web
+    volumes:
+      - web:/draaljs-app
+      - docker-logs:/var/log
   worker:
     build:
       context: .
       dockerfile: ./config/celery/Dockerfile
     volumes:
-      - .:/draaltasks
       - docker-logs:/var/log
     links:
       - rabbitmq
@@ -55,6 +54,9 @@ services:
      - .env-docker
 volumes:
   docker-logs:
+    driver: local
     driver_opts:
+      type: none
       device: ${PWD}/docker-logs
       o: bind
+  web:
