@@ -1,7 +1,8 @@
 FROM node:8.9 AS build
 
-COPY . /draaljs-app
+COPY node-src.tar /draaljs-app/
 WORKDIR /draaljs-app
+RUN tar -xvf node-src.tar && rm node-src.tar
 RUN npm install --production
 
 FROM gcr.io/distroless/nodejs

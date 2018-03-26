@@ -13,9 +13,9 @@
   "scripts": {
     "cibuild": "npm run lint && npm test",
     "codecov": "codecov --disable=gcov --root=./coverage",
-    "docker-build": "docker-compose build",
-    "docker-build-aws": "docker-compose -f docker-compose-aws.yml build",
-    "docker-build-prod": "docker-compose -f docker-compose.yml build",
+    "docker-build": "npm run app-tarball && docker-compose build",
+    "docker-build-aws": "npm run app-tarball && docker-compose -f docker-compose-aws.yml build",
+    "docker-build-prod": "npm run app-tarball && docker-compose -f docker-compose.yml build",
     "docker-run": "docker-compose up",
     "docker-rund": "docker-compose up -d",
     "docker-stop": "docker stop draaljs",
@@ -38,7 +38,8 @@
     "pip-install": "pip install -U pip setuptools && npm run pypackages-install",
     "pypackages-install": "pip install -r requirements.txt",
     "pylint": "flake8 --config=.flake8 -v pytasks",
-    "pytests": "nose2 -s . -v --with-coverage --coverage-report term-missing --coverage pytasks"
+    "pytests": "nose2 -s . -v --with-coverage --coverage-report term-missing --coverage pytasks",
+    "app-tarball": "bash config/app/tarball.sh"
   },
   "dependencies": {
     "bcrypt": "1.0.3",
