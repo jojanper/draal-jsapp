@@ -7,8 +7,6 @@ const APIError = core.error;
 const UtilsLib = core.utils;
 const promiseExec = UtilsLib.promiseExecution;
 
-const SESSION_EXPIRATION = parseInt(process.env.SESSION_EXPIRATION, 10);
-
 const userSchema = new mongoose.Schema({
     email: {
         type: String,
@@ -44,7 +42,7 @@ userSchema.set('toObject', {
  */
 userSchema.methods.loginResponse = function loginResponse() {
     return Object.assign({
-        expires: SESSION_EXPIRATION
+        expires: parseInt(process.env.SESSION_EXPIRATION, 10)
     }, this.toObject());
 };
 
