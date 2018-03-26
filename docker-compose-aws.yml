@@ -1,0 +1,16 @@
+version: "2"
+services:
+  aws:
+    container_name: draaljs
+    build:
+      context: .
+      dockerfile: ./config/app/Dockerfile-prod
+    expose:
+      - "3008"
+    volumes:
+      - .:/draaljs-app
+      - /draaljs-app/node_modules
+    env_file:
+     - .env-docker-aws
+    environment:
+      - PORT=3008
