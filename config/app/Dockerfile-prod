@@ -10,4 +10,5 @@ FROM gcr.io/distroless/nodejs
 COPY --from=build /draaljs-app /draaljs-app
 WORKDIR /draaljs-app
 ENV NODE_ENV production
+VOLUME ["/draaljs-app"]
 ENTRYPOINT ["/nodejs/bin/node", "./app.js"]
