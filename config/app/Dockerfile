@@ -10,5 +10,6 @@ FROM node:carbon-slim
 COPY --from=build /draaljs-app /draaljs-app
 WORKDIR /draaljs-app
 ENV NODE_ENV production
+VOLUME ["/draaljs-app"]
 
 ENTRYPOINT ["node", "./app.js"]

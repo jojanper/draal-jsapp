@@ -111,7 +111,7 @@ class WebApplication {
      * Set up views for the application.
      */
     _setupView() {
-        if (!isProduction) {
+        if (!isProduction || process.env.ENABLE_STATIC_MEDIA) {
             this.app.use(express.static(path.join(__dirname, 'public')));
         }
 

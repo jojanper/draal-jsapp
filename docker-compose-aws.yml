@@ -1,6 +1,6 @@
 version: "2"
 services:
-  aws:
+  web:
     container_name: draaljs
     build:
       context: .
@@ -11,3 +11,16 @@ services:
      - .env-docker-aws
     environment:
       - PORT=3008
+    volumes:
+      - web:/draaljs-app
+  aws_nginx:
+    container_name: nginx
+    build:
+      context: ./config/nginx
+      dockerfile: Dockerfile-aws
+    links:
+      - web
+    volumes_from:
+      - web
+volumes:
+  web:

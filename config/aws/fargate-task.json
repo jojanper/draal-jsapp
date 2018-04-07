@@ -1,0 +1,58 @@
+{
+    "family": "draaljs-fargate",
+    "networkMode": "awsvpc",
+    "containerDefinitions": [
+        {
+            "name": "web",
+            "image": "<id>.dkr.ecr.us-east-1.amazonaws.com/draaljs-app",
+            "essential": true,
+            "environment" : [
+                { "name" : "PORT", "value" : "3008" },
+                { "name": "MONGODB_URI", "value": "mongodb://<user>:<pw>@<server>/draaljs"}
+            ],
+            "cpu": 256,
+            "memory": 512,
+            "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                    "awslogs-group": "awslogs-draaljs",
+                    "awslogs-region": "us-east-1",
+                    "awslogs-stream-prefix": "app"
+                }
+            }
+        },
+        {
+            "name": "nginx",
+            "image": "<id>.dkr.ecr.us-east-1.amazonaws.com/draaljs-nginx",
+            "portMappings": [
+                {
+                    "containerPort": 80,
+                    "hostPort": 80,
+                    "protocol": "tcp"
+                }
+            ],
+            "essential": true,
+            "volumesFrom": [
+                {
+                    "sourceContainer": "web"
+                }
+            ],
+            "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                    "awslogs-group": "awslogs-draaljs",
+                    "awslogs-region": "us-east-1",
+                    "awslogs-stream-prefix": "nginx"
+                }
+            },
+            "cpu": 256,
+            "memory": 512
+        }
+    ],
+    "requiresCompatibilities": [
+        "FARGATE"
+    ],
+    "executionRoleArn": "arn:aws:iam::<id>:role/ecsTaskExecutionRole",
+    "cpu": "512",
+    "memory": "1024"
+}
