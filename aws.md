@@ -43,7 +43,7 @@
     $ aws ecs create-cluster --cluster-name draaljs-cluster
     ```
 
-- Register task definition. Current task definition consists of 2 containers, nginx and app. Application container is responsible of all business related logic, everything else is left for the NGINX container (media serving, gzip encoding, etc)
+- Register task definition. Current task definition consists of 2 containers, nginx and app. Application container is responsible of all business related logic, everything else is left for the nginx container (media serving, gzip encoding, etc)
     ```
     $ aws ecs register-task-definition --cli-input-json file://<path-prefix>/draal-jsapp/config/aws/fargate-task.json
 
@@ -119,7 +119,7 @@ The [subnet and security groups]( https://docs.aws.amazon.com/AmazonVPC/latest/U
     $ aws ec2 describe-subnets --filters "Name=vpc-id,Values=vpc-344a294f" --query 'Subnets[*].{ID:SubnetId,CIDR:CidrBlock}'
     ```
 
-- You can choose which subnet to associate with the custom route table, for example, subnet-6696a659. This subnet will be your public subne
+- You can choose which subnet to associate with the custom route table, for example, subnet-6696a659. This subnet will be your public subnet
     ```
     $ aws ec2 associate-route-table  --subnet-id subnet-6696a659 --route-table-id rtb-4954cf35
     ```
