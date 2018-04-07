@@ -72,7 +72,7 @@
     $ aws ecs update-service --cluster draaljs-cluster --service draaljs-fargate-service --task-definition draaljs-fargate:1 --desired-count 1 --network-configuration "awsvpcConfiguration={subnets=[subnet-6696a659],securityGroups=[sg-a8f619e1],assignPublicIp=ENABLED}"
     ```
 
-The [subnet and security groups]( https://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/vpc-subnets-commands-example.html) can be created, for example using following steps
+The [subnet and security groups]( https://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/vpc-subnets-commands-example.html) can be created, for example, using following steps
 
 - Create a VPC with a 10.0.0.0/16 CIDR block
     ```
@@ -134,3 +134,16 @@ The [subnet and security groups]( https://docs.aws.amazon.com/AmazonVPC/latest/U
     $ aws ec2 create-security-group --group-name DraalAccess --description "Security group for Draal access" --vpc-id vpc-344a294f
     $ aws ec2 authorize-security-group-ingress --group-id sg-a8f619e1 --protocol tcp --port 80 --cidr 0.0.0.0/0
     ```
+
+### Some useful links
+
+- https://medium.com/containers-on-aws/building-a-socket-io-chat-app-and-deploying-it-using-aws-fargate-86fd7cbce13f
+- https://medium.com/containers-on-aws/scaling-a-realtime-chat-app-on-aws-using-socket-io-redis-and-aws-fargate-4ed63fb1b681
+
+
+- https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ECS_AWSCLI_Fargate.html
+- https://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/vpc-subnets-commands-example.html
+- https://docs.aws.amazon.com/AmazonECS/latest/developerguide/using_data_volumes.html
+
+
+- https://serverless.com/blog/serverless-application-for-long-running-process-fargate-lambda/

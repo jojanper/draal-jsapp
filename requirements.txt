@@ -1,4 +1,4 @@
-flake8==3.2.1
+flake8==3.5.0
 cov-core
 coverage
 nose2
