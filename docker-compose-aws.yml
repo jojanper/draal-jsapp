@@ -4,7 +4,7 @@ services:
     container_name: draaljs
     build:
       context: .
-      dockerfile: ./config/app/Dockerfile-prod
+      dockerfile: ./config/app/prod.Dockerfile
     expose:
       - "3008"
     env_file:
@@ -17,7 +17,7 @@ services:
     container_name: nginx
     build:
       context: ./config/nginx
-      dockerfile: Dockerfile-aws
+      dockerfile: aws.Dockerfile
     links:
       - web
     volumes_from:

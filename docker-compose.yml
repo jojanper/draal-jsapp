@@ -14,7 +14,7 @@ services:
     container_name: draaljs
     build:
       context: .
-      dockerfile: ./config/app/Dockerfile-prod
+      dockerfile: ./config/app/prod.Dockerfile
     expose:
       - "3008"
     volumes:
