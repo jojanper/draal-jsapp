@@ -4,11 +4,11 @@
     "containerDefinitions": [
         {
             "name": "web",
-            "image": "249541985964.dkr.ecr.us-east-1.amazonaws.com/draaljs-app",
+            "image": "<id>.dkr.ecr.us-east-1.amazonaws.com/draaljs-app",
             "essential": true,
             "environment" : [
                 { "name" : "PORT", "value" : "3008" },
-                { "name": "MONGODB_URI", "value": "mongodb://draaljs-prod:joueec52ppgpain2@ds133991.mlab.com:33991/draaljs"}
+                { "name": "MONGODB_URI", "value": "mongodb://<user>:<pw>@<server>/draaljs"}
             ],
             "cpu": 256,
             "memory": 512,
@@ -23,7 +23,7 @@
         },
         {
             "name": "nginx",
-            "image": "249541985964.dkr.ecr.us-east-1.amazonaws.com/draaljs-nginx",
+            "image": "<id>.dkr.ecr.us-east-1.amazonaws.com/draaljs-nginx",
             "portMappings": [
                 {
                     "containerPort": 80,
@@ -52,7 +52,7 @@
     "requiresCompatibilities": [
         "FARGATE"
     ],
-    "executionRoleArn": "arn:aws:iam::249541985964:role/ecsTaskExecutionRole",
+    "executionRoleArn": "arn:aws:iam::<id>:role/ecsTaskExecutionRole",
     "cpu": "512",
     "memory": "1024"
 }
