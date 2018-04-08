@@ -39,7 +39,7 @@ npm install
 ```
 npm start
 ```
-Open http://localhost:3000 in your browser.
+Open http://localhost:3002 in your browser.
 
 ### Run unit tests (using mocha, chai, supertest, istanbul)
 ```
@@ -211,6 +211,13 @@ docker rmi $(docker images -q)
 
 docker system prune
 ```
+
+---------
+
+## AWS deployment
+
+Example application deployment setup is outlined [here](
+https://github.com/jojanper/draal-jsapp/blob/master/docs/aws.md). The deployment uses AWS Fargate within Elastic Container Service. Currently only NGINX reverse proxy and actual application server are in use (no backend tasks processing available at the moment).
 
 ---------
 
