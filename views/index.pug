@@ -1,8 +1,18 @@
 extends layout
 
-block content
-  link(rel="stylesheet" href="/css/app.9d99ead63827c8b9dd27.css")
-  <dng-app>Loading...</dng-app>
-  script(type="text/javascript" src="/js/polyfills.9d99ead63827c8b9dd27.js")
-  script(type="text/javascript" src="/js/vendor.9d99ead63827c8b9dd27.js")
-  script(type="text/javascript" src="/js/app.9d99ead63827c8b9dd27.js")
+block head
+  meta(charset='utf-8' )
+  title('Draal App Playground using Angular')
+  base(href='/' )
+  meta(name='viewport' content='width=device-width,initial-scale=1' )
+  link(rel='icon' type='image/x-icon' href='/assets/img/favicon.ico' )
+  link(rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css' integrity='sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm' crossorigin='anonymous' )
+  link(rel='stylesheet' href='https://cdn.datatables.net/1.10.13/css/dataTables.bootstrap4.min.css' )
+  link(href='/frontend/styles.7ba14b13b22a7ed97f36.bundle.css' rel='stylesheet' )
+block body
+  <dng-app>Loading, please wait...</dng-app>
+  script(type='text/javascript' src='/frontend/inline.c50fff1ddaf3b0571c22.bundle.js' )
+  script(type='text/javascript' src='/frontend/polyfills.dee424c7bdb25a3a41d3.bundle.js' )
+  script(type='text/javascript' src='/frontend/scripts.5e76911e60d5988629f0.bundle.js' )
+  script(type='text/javascript' src='/frontend/vendor.064c4b2f02579e08d029.bundle.js' )
+  script(type='text/javascript' src='/frontend/main.1a934bebb614f7ce7708.bundle.js' )
