@@ -177,7 +177,7 @@ describe('User manager', () => {
 describe('User model', () => {
     it('model is updated', (done) => {
         // GIVEN user model
-        const user = new UserModel({email: 'one@test.com', password: 'pw'});
+        const user = new UserModel({ email: 'one@test.com', password: 'pw' });
         user.save().then(() => {
             const pw = user.password;
 
@@ -194,7 +194,7 @@ describe('User model', () => {
 
     it('new password is saved', (done) => {
         // GIVEN user model
-        const user = new UserModel({email: 'new-user@test.com', password: '123'});
+        const user = new UserModel({ email: 'new-user@test.com', password: '123' });
         user.save().then(() => {
             const pw = user.password;
 
@@ -218,7 +218,7 @@ describe('User model', () => {
         });
 
         // WHEN user passwords are compared
-        const user = new UserModel({email: 'one@test.com', password: 'pw'});
+        const user = new UserModel({ email: 'one@test.com', password: 'pw' });
         user.comparePassword('ab', 'ba').catch((err) => {
             // THEN it should return expect error
             expect(err).to.be.equal(msg);
@@ -253,5 +253,19 @@ describe('User model', () => {
         const data = user.loginResponse();
         expect(Object.keys(data).length).equal(5);
         expect(data).to.have.keys(['email', 'createdAt', 'updatedAt', 'expires', 'active']);
+    });
+
+    it('supports tokenResponse', () => {
+        const user = new UserModel({
+            active: false,
+            email: 'one@test.com',
+            password: 'pw',
+            createdAt: Date.now(),
+            updatedAt: Date.now()
+        });
+
+        const data = user.tokenResponse();
+        expect(Object.keys(data).length).equal(2);
+        expect(data).to.have.keys(['user', 'token']);
     });
 });

@@ -203,6 +203,28 @@ class SignIn extends BaseCtrl {
 }
 
 /**
+ * Get token for API requests.
+ */
+class APIToken extends SignIn {
+    static get CLASSINFO() {
+        return {
+            INFO: 'Get API token',
+            VERSION: version1,
+            NAME: 'token',
+            URLPREFIX: urlPrefix
+        };
+    }
+
+    async action() {
+        const user = await this._authenticate();
+        return new ApiResponse({
+            data: user.tokenResponse(),
+            messages: ['Token creation successful']
+        });
+    }
+}
+
+/**
  * User logout.
  */
 class SignOut extends BaseCtrl {
@@ -231,6 +253,9 @@ module.exports = [
     },
     {
         cls: SignIn
+    },
+    {
+        cls: APIToken
     },
     {
         cls: SignOut

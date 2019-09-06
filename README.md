@@ -156,6 +156,24 @@ curl -X POST -H "Content-Type: application/json" --data '{"query": "{user(id: \"
 
 ---------
 
+---------
+
+## API endpoints
+
+```
+curl POST -H "Content-Type: application/json" -H "Authorization: Bearer <api-token>" -v --data '{"email": "<email>", "password": "<password>"}' http://localhost:3000/api/auth/v1/login
+```
+
+```
+curl POST -H "Content-Type: application/json" -H "Authorization: Bearer <api-token>" -v --data '{"email": "<email>", "password": "<password>"}' http://localhost:3000/api/auth/v1/token
+```
+
+```
+curl POST -H "Content-Type: application/json" -H "Authorization: Bearer <api-token>" -v --data '' http://localhost:3000/api/auth/logout
+```
+
+---------
+
 ## Travis CI
 https://travis-ci.org/jojanper/draal-jsapp
 
