@@ -14,10 +14,9 @@ const ApiResponse = core.response;
  */
 function tokenAuth(req, res, next) {
     // Validate authentication token
-    passport.authenticate('jwt', { session: false }, (err, payload) => {
+    passport.authenticate('jwt', { session: false }, (err) => {
         // Token is valid, proceed further
-        if (!err && payload !== false && payload.user) {
-            req.user = payload.user;
+        if (!err && req.user) {
             return next();
         }
 
@@ -36,7 +35,7 @@ function tokenAuth(req, res, next) {
  * Login required middleware.
  */
 function isAuthenticated(req, res, next) {
-    // User already authenticated using session ID?
+    // Is user already authenticated using session ID
     if (req.isAuthenticated()) {
         return next();
     }

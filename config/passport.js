@@ -3,6 +3,12 @@ const passportJWT = require('passport-jwt');
 
 const User = require('../src/apps/user/models/user');
 
+/**
+ * Extract and return API token from HTTP authorization header.
+ * Look for 'Token' and 'Bearer' keyword in from of the token.
+ *
+ * @param {*} req Request object.
+ */
 function getTokenFromHeader(req) {
     if (req.headers.authorization) {
         const authorization = req.headers.authorization.split(' ');
@@ -39,13 +45,17 @@ function passportInit(passport) {
     const jwtOpts = {
         jwtFromRequest: getTokenFromHeader,
         secretOrKey: process.env.SESSION_SECRET,
+        passReqToCallback: true
     };
 
     // Validation for API token
-    passport.use(new passportJWT.Strategy(jwtOpts, (payload, done) => {
+    passport.use(new passportJWT.Strategy(jwtOpts, (req, payload, done) => {
         if (Date.now() > payload.expires) {
             return done('Token expired, please retrieve new token', null);
         }
+
+        // Assign user to request, this implicitly makes request authenticated
+        req.user = payload.user;
 
         return done(null, payload);
     }));
