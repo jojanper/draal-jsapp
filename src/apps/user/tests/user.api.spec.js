@@ -5,14 +5,14 @@ const { format } = require('util');
 const TasksLib = require('../../../tasks');
 const AccountProfile = require('../models/accountprofile');
 
-const credentials = {email: 'test@test.com', password: '123456'};
+const credentials = { email: 'test@test.com', password: '123456' };
 
 describe('User registration', () => {
     const api = '/api/auth/v1/signup';
     const activationApi = '/api/auth/v1/activate/%s';
 
     it('signup email is already reserved', () => {
-        const account = {email: 'test-reserved@test.com', password: '123456'};
+        const account = { email: 'test-reserved@test.com', password: '123456' };
 
         return new Promise((resolve, reject) => {
             appTestHelper.createUser(account, () => {
@@ -42,7 +42,7 @@ describe('User registration', () => {
                 .end(() => {
                     // AND activation key exists for the user
                     appTestHelper.getUserByEmail(credentials.email).then((user) => {
-                        AccountProfile.manager.execute('findOne', {user: user.id}).then((profile) => {
+                        AccountProfile.manager.execute('findOne', { user: user.id }).then((profile) => {
                             resolve(profile);
                         });
                     }).catch(err => reject(err));
@@ -139,7 +139,7 @@ describe('User registration', () => {
     });
 
     it('email parameter is missing', (done) => {
-        testrunner(testapp).post(api).send({email: 'testtest.com', password: '123456'}).expect(400)
+        testrunner(testapp).post(api).send({ email: 'testtest.com', password: '123456' }).expect(400)
             .end((err, res) => {
                 expect(res.body.errors.length).to.equal(1);
                 expect(res.body.errors[0]).to.equal('Input parameter email: Not an email address');
@@ -148,7 +148,7 @@ describe('User registration', () => {
     });
 
     it('password parameter is missing', (done) => {
-        testrunner(testapp).post(api).send({email: 'test@test.com'}).expect(400)
+        testrunner(testapp).post(api).send({ email: 'test@test.com' }).expect(400)
             .end((err, res) => {
                 expect(res.body.errors.length).to.equal(1);
                 expect(res.body.errors[0]).to.equal('Input parameter password: Must be present');
@@ -167,7 +167,7 @@ describe('User registration', () => {
     });
 
     it('email is invalid and and password parameter is missing', (done) => {
-        testrunner(testapp).post(api).send({email: 'testcom'}).expect(400)
+        testrunner(testapp).post(api).send({ email: 'testcom' }).expect(400)
             .end((err, res) => {
                 expect(res.body.errors.length).to.equal(2);
                 expect(res.body.errors[0]).to.equal('Input parameter email: Not an email address');
@@ -210,7 +210,7 @@ describe('User authentication', () => {
     });
 
     it('invalid email is entered', (done) => {
-        testrunner(testapp).post(api).send({email: 'test_@test.com', password: '123456'})
+        testrunner(testapp).post(api).send({ email: 'test_@test.com', password: '123456' })
             .expect(400)
             .end((err, res) => {
                 expect(res.body.errors[0]).to.equal(errText);
@@ -219,7 +219,7 @@ describe('User authentication', () => {
     });
 
     it('invalid password is entered', (done) => {
-        testrunner(testapp).post(api).send({email: 'test@test.com', password: '12345d6'})
+        testrunner(testapp).post(api).send({ email: 'test@test.com', password: '12345d6' })
             .expect(400)
             .end((err, res) => {
                 expect(res.body.errors[0]).to.equal(errText);
@@ -235,6 +235,64 @@ describe('User authentication', () => {
                 expect(res.body.errors[1]).to.equal('Input parameter password: Must be present');
                 done();
             });
+    });
+});
+
+describe('API token', () => {
+    const api = '/api/auth/v1/token';
+    const targetTestUrl = '/api/auth/logout';
+
+    const expiredToken = 'eyJhbGciOiJIUzI1NiJ9.eyJ1c2VyIjp7ImV4cGlyZXMiOjQzMjAwMDAwLCJhY3RpdmUi' +
+        'OnRydWUsInVwZGF0ZWRBdCI6IjIwMTctMTItMDFUMTA6MzI6MDAuMjg1WiIsImNyZWF0ZWRBdCI6IjIwMTctMT' +
+        'ItMDFUMTA6MTY6NTMuMDYxWiIsImVtYWlsIjoianVoYUBub2tpYS5jb20ifSwiZXhwaXJlcyI6MTU2Nzc5NjQ0' +
+        'OTY3NX0.qS5saJWoTtmOQWlQADAJi3Zs2-_RqUB3NPKFD8nsI0w';
+
+    let token;
+
+    beforeEach((done) => {
+        appTestHelper.activateUser(credentials.email, (user) => {
+            done();
+            this.user = user;
+            ({ token } = user.tokenResponse());
+        });
+    });
+
+    afterEach((done) => {
+        appTestHelper.deactivateUser(this.user, () => {
+            done();
+        });
+    });
+
+    it('creation succeeds', (done) => {
+        // GIVEN active user
+        // WHEN user retrieves API token
+        // THEN it should succeed
+        testrunner(testapp).post(api).send(credentials).expect(200)
+            .end((err, res) => {
+                expect(res.body.messages.length).to.equal(1);
+                expect(res.body.messages[0]).to.equal('Token creation successful');
+                expect(Object.keys(res.body.data)).to.have.all.members([
+                    'user', 'token'
+                ]);
+                done(err);
+            });
+    });
+
+    it('is missing from request', async () => {
+        await testrunner(testapp).post(targetTestUrl).send(credentials).expect(401);
+    });
+
+    it('has expired', async () => {
+        const res = await testrunner(testapp).post(targetTestUrl)
+            .set('Authorization', `Token ${expiredToken}`).send(credentials).expect(401);
+
+        expect(res.body.messages.length).to.equal(1);
+        expect(res.body.messages[0]).to.equal('Authorization token expired, please request new token');
+    });
+
+    it('is accepted for API call', async () => {
+        await testrunner(testapp).post(targetTestUrl)
+            .set('Authorization', `Token ${token}`).send(credentials).expect(200);
     });
 });
 

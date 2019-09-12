@@ -51,7 +51,7 @@ function passportInit(passport) {
     // Validation for API token
     passport.use(new passportJWT.Strategy(jwtOpts, (req, payload, done) => {
         if (Date.now() > payload.expires) {
-            return done('Token expired, please retrieve new token', null);
+            return done('Authorization token expired, please request new token', null);
         }
 
         // Assign user to request, this implicitly makes request authenticated

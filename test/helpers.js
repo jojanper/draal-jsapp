@@ -15,9 +15,9 @@ global.expect = chai.expect;
 global.appTestHelper = {
     User,
 
-    getUserByEmail: email => User.manager.execute('findOne', {email}),
+    getUserByEmail: email => User.manager.execute('findOne', { email }),
 
-    getUserById: id => User.manager.execute('findOne', {user: id}),
+    getUserById: id => User.manager.execute('findOne', { user: id }),
 
     addUser: (details, cb, activate) => {
         const user = new UserModel(details);
@@ -33,7 +33,7 @@ global.appTestHelper = {
     },
 
     activateUser: (email, cb) => {
-        User.manager.execute('findOne', {email}, (err, user) => {
+        User.manager.execute('findOne', { email }, (err, user) => {
             user.active = true;
             if (err) {
                 throw new Error(err);
@@ -48,13 +48,15 @@ global.appTestHelper = {
     },
 
     getUserAccount: (user) => {
-        const dbObj = UserAccount.manager.queryObj('findOne', {user: user.id});
+        const dbObj = UserAccount.manager.queryObj('findOne', { user: user.id });
         const query = dbObj.getQuery().populate('user');
         return dbObj.setQuery(query).exec();
     },
 
     getAccount: email => appTestHelper.getUserByEmail(email)
-        .then(user => appTestHelper.getUserAccount(user))
+        .then(user => appTestHelper.getUserAccount(user)),
+
+    promiseExec: promise => promise.then(data => [null, data]).catch(err => [err])
 };
 
 

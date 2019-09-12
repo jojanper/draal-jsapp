@@ -255,9 +255,6 @@ module.exports = [
         cls: SignIn
     },
     {
-        cls: APIToken
-    },
-    {
         cls: SignOut
     },
     {
@@ -265,5 +262,8 @@ module.exports = [
     },
     {
         cls: PwResetActivation
+    },
+    {
+        cls: APIToken
     }
 ];
