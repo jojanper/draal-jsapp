@@ -160,14 +160,19 @@ curl -X POST -H "Content-Type: application/json" --data '{"query": "{user(id: \"
 
 ## API endpoints
 
+Quick examples using `curl`.
+
+User login:
 ```
 curl POST -H "Content-Type: application/json" -H "Authorization: Bearer <api-token>" -v --data '{"email": "<email>", "password": "<password>"}' http://localhost:3000/api/auth/v1/login
 ```
 
+Get API token:
 ```
 curl POST -H "Content-Type: application/json" -H "Authorization: Bearer <api-token>" -v --data '{"email": "<email>", "password": "<password>"}' http://localhost:3000/api/auth/v1/token
 ```
 
+Use token in API request:
 ```
 curl POST -H "Content-Type: application/json" -H "Authorization: Bearer <api-token>" -v --data '' http://localhost:3000/api/auth/logout
 ```
