@@ -15,7 +15,8 @@ matrix:
       sudo: required
       language: generic
       before_install:
-        - brew update
+        #- brew update
+        - python -m pip install --upgrade virtualenv
         - virtualenv env -p python
         - source env/bin/activate
         - brew install mongodb
