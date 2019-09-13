@@ -14,11 +14,18 @@ matrix:
     - os: osx
       sudo: required
       language: generic
+      addons:
+        homebrew:
+          update: true
+          packages: python3
       before_install:
-        - brew update
-        - python -m pip install --upgrade virtualenv
-        - virtualenv env -p python
-        - source env/bin/activate
+        - python3 -m pip install --upgrade virtualenv
+        - virtualenv -p python3 --system-site-packages "$HOME/venv"
+        - source "$HOME/venv/bin/activate"
+        #- brew update
+        #- python -m pip install --upgrade virtualenv
+        #- virtualenv env -p python
+        #- source env/bin/activate
         #- brew install mongodb
         #- sudo mkdir -p /data/db
         #- brew services start mongodb
