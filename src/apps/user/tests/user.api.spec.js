@@ -284,7 +284,8 @@ describe('API token', () => {
 
     it('has expired', async () => {
         const res = await testrunner(testapp).post(targetTestUrl)
-            .set('Authorization', `Token ${expiredToken}`).send(credentials).expect(401);
+            .set('Authorization', `Token ${expiredToken}`).send(credentials)
+            .expect(401);
 
         expect(res.body.messages.length).to.equal(1);
         expect(res.body.messages[0]).to.equal('Authorization token expired, please request new token');
@@ -292,7 +293,8 @@ describe('API token', () => {
 
     it('is accepted for API call', async () => {
         await testrunner(testapp).post(targetTestUrl)
-            .set('Authorization', `Token ${token}`).send(credentials).expect(200);
+            .set('Authorization', `Token ${token}`).send(credentials)
+            .expect(200);
     });
 });
 
