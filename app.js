@@ -19,7 +19,7 @@ const isProduction = (process.env.NODE_ENV === 'production');
 
 // Load environment variables (API keys etc).
 const secretsFile = (isProduction) ? '.env.secrets' : '.env.test.secrets';
-dotenv.load({path: process.env.SECRETS_PATH || secretsFile});
+dotenv.config({ path: process.env.SECRETS_PATH || secretsFile });
 
 const draaljs = require('./src');
 const draaljsConfig = require('./config');
@@ -99,7 +99,7 @@ class WebApplication {
             resave: false,
             saveUninitialized: false,
             secret: process.env.SESSION_SECRET,
-            cookie: {maxAge},
+            cookie: { maxAge },
             store: new MongoStore({
                 url: draaljsConfig.mongo.dbURI,
                 autoReconnect: true
@@ -124,7 +124,7 @@ class WebApplication {
      */
     _setupParsers() {
         this.app.use(bodyParser.json());
-        this.app.use(bodyParser.urlencoded({extended: false}));
+        this.app.use(bodyParser.urlencoded({ extended: false }));
         this.app.use(cookieParser());
     }
 
@@ -179,18 +179,18 @@ class WebApplication {
 
             // Handle specific listen errors with friendly messages
             switch (error.code) {
-            case 'EACCES':
-                console.error(`${bind} requires elevated privileges`);
-                process.exit(1);
-                break;
+                case 'EACCES':
+                    console.error(`${bind} requires elevated privileges`);
+                    process.exit(1);
+                    break;
 
-            case 'EADDRINUSE':
-                console.error(`${bind} is already in use`);
-                process.exit(1);
-                break;
+                case 'EADDRINUSE':
+                    console.error(`${bind} is already in use`);
+                    process.exit(1);
+                    break;
 
-            default:
-                throw error;
+                default:
+                    throw error;
             }
         };
 

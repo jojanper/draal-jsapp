@@ -6,9 +6,11 @@ const chalk = require('chalk');
 
 const dbURI = process.env.MONGODB_URI || 'mongodb://localhost:27017/draaljs-app';
 
+const OPTIONS = { auto_reconnect: true, useNewUrlParser: true, useCreateIndex: true };
+
 function connect(mongoose, dbURI) {
     function connectWithRetry() {
-        return mongoose.connect(dbURI, { auto_reconnect: true, useNewUrlParser: true }, (err) => {
+        return mongoose.connect(dbURI, OPTIONS, (err) => {
             if (err) {
                 console.error(err);
                 console.error('Failed to connect to mongo on startup - retrying in 5 sec.');

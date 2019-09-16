@@ -1,5 +1,5 @@
 const util = require('util');
-const validator = require('express-validator/check');
+const validator = require('express-validator');
 
 
 const VALIDATORS = {
@@ -17,16 +17,16 @@ errorMessages[VALIDATORS.exists] = 'Must be present';
 
 const createValidatorChain = (chain, validator) => {
     switch (validator) {
-    case VALIDATORS.email:
-        // Simple email validator
-        return chain.isEmail().withMessage(errorMessages[validator]).trim().normalizeEmail();
+        case VALIDATORS.email:
+            // Simple email validator
+            return chain.isEmail().withMessage(errorMessages[validator]).trim().normalizeEmail();
 
-    case VALIDATORS.exists:
-        // Check that parameter exists
-        return chain.exists().withMessage(errorMessages[validator]);
+        case VALIDATORS.exists:
+            // Check that parameter exists
+            return chain.exists().withMessage(errorMessages[validator]);
 
-    default:
-        break;
+        default:
+            break;
     }
 
     return null;
