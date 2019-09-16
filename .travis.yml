@@ -27,11 +27,15 @@ matrix:
         #- virtualenv env -p python
         #- source env/bin/activate
         #- brew uninstall mongodb
-        - brew cask reinstall mongodb
-        - sudo mkdir -p /data/db
-        - brew services start mongodb
-        - which mongo
-        - which mongod
+        #- brew cask reinstall mongodb
+        #- sudo mkdir -p /data/db
+        #- brew link --overwrite mongodb
+        #- brew services start mongodb
+        #- which mongo
+        #- which mongod
+        - brew tap mongodb/brew
+        - brew install mongodb-community
+        - brew info mongodb-community
 env:
   - TRAVIS_NODE_VERSION="8.9.0"
 after_success:
