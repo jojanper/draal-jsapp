@@ -36,6 +36,7 @@ matrix:
         - brew tap mongodb/brew
         - brew install mongodb-community
         - brew info mongodb-community
+        - brew services start mongodb/brew/mongodb-community
 env:
   - TRAVIS_NODE_VERSION="8.9.0"
 after_success:
