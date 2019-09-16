@@ -57,7 +57,7 @@ class ValidatorAPI {
      */
     static getErrors(errors) {
         const reportedErrors = [];
-        Object.keys(errors).forEach((key) => {
+        Object.keys(errors).forEach(key => {
             const msg = util.format('Input parameter %s: %s', key, errors[key].msg);
             reportedErrors.push(msg);
         });
@@ -80,7 +80,7 @@ class ValidatorAPI {
             const cls = validator[this.options.api];
             chain = cls(this.options.field);
 
-            this.options.validators.forEach((validator) => {
+            this.options.validators.forEach(validator => {
                 chain = createValidatorChain(chain, validator);
             });
         }
