@@ -16,7 +16,7 @@ matrix:
       language: generic
       addons:
         homebrew:
-          update: true
+          #update: true
           packages: python3
       before_install:
         - python3 -m pip install --upgrade virtualenv
@@ -26,9 +26,11 @@ matrix:
         #- python -m pip install --upgrade virtualenv
         #- virtualenv env -p python
         #- source env/bin/activate
-        - brew cask install mongodb
+        #- brew cask install mongodb
         #- sudo mkdir -p /data/db
         #- brew services start mongodb
+        - which mongo
+        - which mongod
 env:
   - TRAVIS_NODE_VERSION="8.9.0"
 after_success:
