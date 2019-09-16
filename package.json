@@ -42,7 +42,7 @@
     "app-tarball": "bash config/app/tarball.sh"
   },
   "dependencies": {
-    "bcrypt": "1.0.3",
+    "bcrypt": "3.0.6",
     "body-parser": "^1.19.0",
     "chalk": "^2.4.2",
     "commander": "^2.20.0",

@@ -16,29 +16,17 @@ matrix:
       language: generic
       addons:
         homebrew:
-          #update: true
           packages: python3
       before_install:
         - python3 -m pip install --upgrade virtualenv
         - virtualenv -p python3 --system-site-packages "$HOME/venv"
         - source "$HOME/venv/bin/activate"
-        #- brew update
-        #- python -m pip install --upgrade virtualenv
-        #- virtualenv env -p python
-        #- source env/bin/activate
-        #- brew uninstall mongodb
-        #- brew cask reinstall mongodb
-        #- sudo mkdir -p /data/db
-        #- brew link --overwrite mongodb
-        #- brew services start mongodb
-        #- which mongo
-        #- which mongod
         - brew tap mongodb/brew
         - brew install mongodb-community
         - brew info mongodb-community
         - brew services start mongodb/brew/mongodb-community
 env:
-  - TRAVIS_NODE_VERSION="8.9.0"
+  - TRAVIS_NODE_VERSION="12.3.1"
 after_success:
   - npm run codecov
 install:
