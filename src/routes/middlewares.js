@@ -14,7 +14,7 @@ const ApiResponse = core.response;
  */
 function tokenAuth(req, res, next) {
     // Validate authentication token
-    passport.authenticate('jwt', { session: false }, (err) => {
+    passport.authenticate('jwt', { session: false }, err => {
         // Token is valid, proceed further
         if (!err && req.user) {
             return next();

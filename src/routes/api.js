@@ -12,7 +12,7 @@ const utilsLib = core.utils;
 const BaseCtrl = core.ctrl;
 const ApiResponse = core.response;
 
-module.exports = (prefix) => {
+module.exports = prefix => {
     router.get('', (req, res) => {
         const ctrl = new BaseCtrl(req, res);
         const data = utilsLib.serializeApiInfo(prefix, apiRoutes);

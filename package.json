@@ -72,8 +72,8 @@
     "chai": "^4.2.0",
     "codecov": "^3.5.0",
     "concurrently": "^3.6.1",
-    "eslint": "^4.19.1",
-    "eslint-config-airbnb-base": "^12.1.0",
+    "eslint": "^6.4.0",
+    "eslint-config-airbnb-base": "^14.0.0",
     "eslint-plugin-import": "^2.18.2",
     "htmlparser2": "^3.10.1",
     "istanbul": "^0.4.5",
@@ -90,6 +90,10 @@
   "eslintConfig": {
     "extends": "airbnb-base",
     "rules": {
+      "arrow-parens": [
+        "error",
+        "as-needed"
+      ],
       "comma-dangle": 0,
       "consistent-return": 0,
       "no-param-reassign": 0,

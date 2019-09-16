@@ -169,7 +169,7 @@ class WebApplication {
         /**
          * Event listener for HTTP server "error" event.
          */
-        const onError = (error) => {
+        const onError = error => {
             if (error.syscall !== 'listen') {
                 throw error;
             }
@@ -209,7 +209,7 @@ class WebApplication {
      * Listen socket connections from clients.
      */
     listenSocket() {
-        this.io.on('connect', (socket) => {
+        this.io.on('connect', socket => {
             draaljs.logger.debug(`Connected client on port ${this.app.get('port')}`);
             draaljs.socket(this.io, socket);
         });

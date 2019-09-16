@@ -24,7 +24,7 @@ global.appTestHelper = {
         if (activate) {
             user.active = true;
         }
-        user.save().then(() => cb(user)).catch((err) => { throw new Error(err); });
+        user.save().then(() => cb(user)).catch(err => { throw new Error(err); });
     },
 
     createUser: (details, cb) => {
@@ -47,7 +47,7 @@ global.appTestHelper = {
         user.save().then(() => cb(user));
     },
 
-    getUserAccount: (user) => {
+    getUserAccount: user => {
         const dbObj = UserAccount.manager.queryObj('findOne', { user: user.id });
         const query = dbObj.getQuery().populate('user');
         return dbObj.setQuery(query).exec();
@@ -69,11 +69,11 @@ function socketClient(event, data) {
         'force new connection': true
     };
 
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
         const client = io.connect(serverUrl, options);
 
         client.once('connect', () => {
-            client.once(event, (serverData) => {
+            client.once(event, serverData => {
                 resolve(Promise.resolve([serverData, () => {
                     client.disconnect();
                 }]));
