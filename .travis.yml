@@ -26,9 +26,9 @@ matrix:
         #- python -m pip install --upgrade virtualenv
         #- virtualenv env -p python
         #- source env/bin/activate
-        #- brew cask install mongodb
-        #- sudo mkdir -p /data/db
-        #- brew services start mongodb
+        - brew cask install mongodb
+        - sudo mkdir -p /data/db
+        - brew services start mongodb
         - which mongo
         - which mongod
 env:
