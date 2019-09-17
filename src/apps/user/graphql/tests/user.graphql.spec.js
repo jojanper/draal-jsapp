@@ -43,7 +43,7 @@ describe('GraphQL User schema', () => {
     });
 
     function verify(keys, refObj, targetObj) {
-        keys.forEach((key) => {
+        keys.forEach(key => {
             expect(refObj[key]).to.be.equal(targetObj[key]);
         });
     }
@@ -55,7 +55,7 @@ describe('GraphQL User schema', () => {
         userMock.expects('find').chain('exec').resolves([user]);
 
         // WHEN querying users
-        return graphql(schema, query).then((results) => {
+        return graphql(schema, query).then(results => {
             // THEN it should return expected users
             const { users } = results.data;
             expect(users.length).to.be.equal(1);
@@ -70,10 +70,10 @@ describe('GraphQL User schema', () => {
         userMock.expects('findOne').chain('exec').resolves(user);
 
         // WHEN querying user
-        return graphql(schema, query).then((result) => {
+        return graphql(schema, query).then(result => {
             // THEN it should return expected user
             const { user: userResponse } = result.data;
             verify(Object.keys(user), user, userResponse);
-        }).catch((err) => { throw new Error(err); });
+        }).catch(err => { throw new Error(err); });
     });
 });

@@ -15,16 +15,16 @@ class AccountProfileManager extends BaseManager {
 
     createProfile(user) {
         const key = crypto.createHash('sha256').update(user.email).digest('hex');
-        return this.getNewModel({user: user.id, activationKey: key}).save();
+        return this.getNewModel({ user: user.id, activationKey: key }).save();
     }
 
     activateUser(activationKey) {
         let currentAccount;
-        const dbObj = this.queryObj('findOne', {activationKey});
+        const dbObj = this.queryObj('findOne', { activationKey });
         const query = dbObj.getQuery().populate('user');
 
         return dbObj.setQuery(query).exec()
-            .then((account) => {
+            .then(account => {
                 if (!account) {
                     throw new APIError('Invalid account activation key');
                 }

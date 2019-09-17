@@ -42,9 +42,10 @@ userSchema.set('toObject', {
  * Serialize user data for login response.
  */
 userSchema.methods.loginResponse = function loginResponse() {
-    return Object.assign({
-        expires: parseInt(process.env.SESSION_EXPIRATION, 10)
-    }, this.toObject());
+    return {
+        expires: parseInt(process.env.SESSION_EXPIRATION, 10),
+        ...this.toObject()
+    };
 };
 
 /**

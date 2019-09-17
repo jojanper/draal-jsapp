@@ -191,7 +191,7 @@ class SignIn extends BaseCtrl {
 
     _login(user) {
         return new Promise((resolve, reject) => {
-            this.req.logIn(user, (err) => {
+            this.req.logIn(user, err => {
                 if (err) {
                     return reject(err);
                 }
