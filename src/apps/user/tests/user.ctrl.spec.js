@@ -6,7 +6,7 @@ const userDetails = {
 };
 
 describe('User login', () => {
-    it('reg.logIn fails', (done) => {
+    it('reg.logIn fails', done => {
         const req = {
             body: userDetails,
 
@@ -18,7 +18,7 @@ describe('User login', () => {
 
         appTestHelper.addUser(userDetails, () => {
             // WHEN user logs in
-            SignIn.apiEntry(SignIn)(req, null, (err) => {
+            SignIn.apiEntry(SignIn)(req, null, err => {
                 // THEN expected error should be returned
                 expect(err).to.be.equal('Failure');
                 done();

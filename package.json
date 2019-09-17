@@ -102,6 +102,7 @@
       "no-console": 0,
       "no-plusplus": 0,
       "object-curly-spacing": 0,
+      "max-classes-per-file": 0,
       "indent": [
         "error",
         4,
