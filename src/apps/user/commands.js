@@ -6,15 +6,15 @@ const mongoose = require('mongoose');
 const prettyjson = require('prettyjson');
 
 const draaljsConfig = require('../../../config');
-const {User, AccountProfile } = require('./models');
+const { User, AccountProfile } = require('./models');
 
 const options = {
     noColor: false
 };
 
 // Serialize and pretty print MongoDB documents
-const serialize = (items) => {
-    items.forEach((item) => {
+const serialize = items => {
+    items.forEach(item => {
         console.log(prettyjson.render(item.toObject(), options));
         console.log();
     });
@@ -23,7 +23,7 @@ const serialize = (items) => {
 };
 
 // Execute query and serialize it
-const execute = (fn) => {
+const execute = fn => {
     draaljsConfig.mongo.config(mongoose, () => {
         fn().then(serialize);
     });

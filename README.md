@@ -142,7 +142,7 @@ CELERY_ON=1 npm start
 ---------
 
 ## GraphQL
-GraphQL API endpoint is available in /api/graphql.
+GraphQL API endpoint is available in `/api/graphql`.
 
 To query users:
 ```
@@ -152,6 +152,27 @@ curl -X POST -H "Content-Type: application/json" --data '{"query": "{users{id,em
 To query a user:
 ```
 curl -X POST -H "Content-Type: application/json" --data '{"query": "{user(id: \"<user-id>\"){id,email}}"}' http://localhost:3000/api/graphql
+```
+
+---------
+
+## API endpoints
+
+Quick examples using `curl`.
+
+User login:
+```
+curl POST -H "Content-Type: application/json" -v --data '{"email": "<email>", "password": "<password>"}' http://localhost:3000/api/auth/v1/login
+```
+
+Get API token:
+```
+curl POST -H "Content-Type: application/json" -v --data '{"email": "<email>", "password": "<password>"}' http://localhost:3000/api/auth/v1/token
+```
+
+Use API token in HTTP request:
+```
+curl POST -H "Content-Type: application/json" -H "Authorization: Bearer <api-token>" -v --data '' http://localhost:3000/api/auth/logout
 ```
 
 ---------

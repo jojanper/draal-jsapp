@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const crypto = require('crypto');
+const jwt = require('jsonwebtoken');
 
 const core = require('../../../../core');
 
@@ -22,7 +23,7 @@ const userSchema = new mongoose.Schema({
         default: false
     }
 
-}, {timestamps: true});
+}, { timestamps: true });
 
 userSchema.set('toObject', {
     getters: true,
@@ -41,9 +42,30 @@ userSchema.set('toObject', {
  * Serialize user data for login response.
  */
 userSchema.methods.loginResponse = function loginResponse() {
-    return Object.assign({
-        expires: parseInt(process.env.SESSION_EXPIRATION, 10)
-    }, this.toObject());
+    return {
+        expires: parseInt(process.env.SESSION_EXPIRATION, 10),
+        ...this.toObject()
+    };
+};
+
+/**
+ * Serialize user data for API token response.
+ */
+userSchema.methods.tokenResponse = function tokenResponse() {
+    const user = this.loginResponse();
+
+    const payload = {
+        user,
+        expires: Date.now() + parseInt(process.env.TOKEN_EXPIRATION, 10),
+    };
+
+    // Generate a signed json web token
+    const token = jwt.sign(JSON.stringify(payload), process.env.SESSION_SECRET);
+
+    return {
+        user,
+        token
+    };
 };
 
 /**

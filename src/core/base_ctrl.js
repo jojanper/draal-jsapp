@@ -1,5 +1,5 @@
 const util = require('util');
-const validator = require('express-validator/check');
+const validator = require('express-validator');
 
 const APIError = require('./error');
 const ValidatorAPI = require('./validators');

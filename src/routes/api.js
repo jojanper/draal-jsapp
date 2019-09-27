@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const { graphqlExpress, graphiqlExpress } = require('graphql-server-express');
+const { graphqlExpress, graphiqlExpress } = require('apollo-server-express');
 const bodyParser = require('body-parser');
 
 const core = require('../core');
@@ -12,19 +12,19 @@ const utilsLib = core.utils;
 const BaseCtrl = core.ctrl;
 const ApiResponse = core.response;
 
-module.exports = (prefix) => {
+module.exports = prefix => {
     router.get('', (req, res) => {
         const ctrl = new BaseCtrl(req, res);
         const data = utilsLib.serializeApiInfo(prefix, apiRoutes);
-        ctrl.renderResponse(new ApiResponse({data}));
+        ctrl.renderResponse(new ApiResponse({ data }));
     });
 
     // GraphQL endpoint and interactive editor
     router.use('/graphql', bodyParser.json(), graphqlExpress(request => ({
         schema,
-        context: {user: (request.session.passport) ? request.session.passport.user : null}
+        context: { user: (request.session.passport) ? request.session.passport.user : null }
     })));
-    router.get('/graphiql', graphiqlExpress({endpointURL: `${prefix}/graphql`}));
+    router.get('/graphiql', graphiqlExpress({ endpointURL: `${prefix}/graphql` }));
 
     router.get('/error', () => {
         throw new APIError('API error occured');
