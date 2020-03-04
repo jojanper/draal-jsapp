@@ -70,7 +70,7 @@
   },
   "devDependencies": {
     "chai": "^4.2.0",
-    "codecov": "^3.5.0",
+    "codecov": "^3.6.5",
     "concurrently": "^3.6.1",
     "eslint": "^6.4.0",
     "eslint-config-airbnb-base": "^14.0.0",
