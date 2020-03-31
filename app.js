@@ -202,14 +202,14 @@ class WebApplication {
      * Create socket server for the application.
      */
     createSocket() {
-        this.io = socketIo(this.server);
+        this.io = socketIo.listen(this.server);
     }
 
     /**
      * Listen socket connections from clients.
      */
     listenSocket() {
-        this.io.on('connect', (socket) => {
+        this.io.sockets.on('connection', (socket) => {
             draaljs.logger.debug(`Connected client on port ${this.app.get('port')}`);
             draaljs.socket(this.io, socket);
         });
