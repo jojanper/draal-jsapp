@@ -191,13 +191,35 @@ class SignIn extends BaseCtrl {
 
     _login(user) {
         return new Promise((resolve, reject) => {
-            this.req.logIn(user, (err) => {
+            this.req.logIn(user, err => {
                 if (err) {
                     return reject(err);
                 }
 
                 resolve();
             });
+        });
+    }
+}
+
+/**
+ * Get token for API requests.
+ */
+class APIToken extends SignIn {
+    static get CLASSINFO() {
+        return {
+            INFO: 'Get API token',
+            VERSION: version1,
+            NAME: 'token',
+            URLPREFIX: urlPrefix
+        };
+    }
+
+    async action() {
+        const user = await this._authenticate();
+        return new ApiResponse({
+            data: user.tokenResponse(),
+            messages: ['Token creation successful']
         });
     }
 }
@@ -240,5 +262,8 @@ module.exports = [
     },
     {
         cls: PwResetActivation
+    },
+    {
+        cls: APIToken
     }
 ];

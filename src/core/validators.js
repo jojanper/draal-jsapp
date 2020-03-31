@@ -1,5 +1,5 @@
 const util = require('util');
-const validator = require('express-validator/check');
+const validator = require('express-validator');
 
 
 const VALIDATORS = {
@@ -17,16 +17,16 @@ errorMessages[VALIDATORS.exists] = 'Must be present';
 
 const createValidatorChain = (chain, validator) => {
     switch (validator) {
-    case VALIDATORS.email:
-        // Simple email validator
-        return chain.isEmail().withMessage(errorMessages[validator]).trim().normalizeEmail();
+        case VALIDATORS.email:
+            // Simple email validator
+            return chain.isEmail().withMessage(errorMessages[validator]).trim().normalizeEmail();
 
-    case VALIDATORS.exists:
-        // Check that parameter exists
-        return chain.exists().withMessage(errorMessages[validator]);
+        case VALIDATORS.exists:
+            // Check that parameter exists
+            return chain.exists().withMessage(errorMessages[validator]);
 
-    default:
-        break;
+        default:
+            break;
     }
 
     return null;
@@ -57,7 +57,7 @@ class ValidatorAPI {
      */
     static getErrors(errors) {
         const reportedErrors = [];
-        Object.keys(errors).forEach((key) => {
+        Object.keys(errors).forEach(key => {
             const msg = util.format('Input parameter %s: %s', key, errors[key].msg);
             reportedErrors.push(msg);
         });
@@ -80,7 +80,7 @@ class ValidatorAPI {
             const cls = validator[this.options.api];
             chain = cls(this.options.field);
 
-            this.options.validators.forEach((validator) => {
+            this.options.validators.forEach(validator => {
                 chain = createValidatorChain(chain, validator);
             });
         }

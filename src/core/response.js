@@ -1,9 +1,11 @@
 class Response {
+    /* eslint-disable indent */
     constructor({
         data = null, errors = null, messages = null, statusCode = null
     } = {
             data: null, errors: null, messages: null, statusCode: null
         }) {
+        /* eslint-enable indent */
         this._data = data;
         this._errors = errors;
         this._messages = messages;

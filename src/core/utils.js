@@ -7,10 +7,8 @@ const ValidatorAPI = require('./validators');
 
 const pause = duration => new Promise(res => setTimeout(res, duration));
 
-const retry = (retries, fn, delay = 500) =>
-    fn().catch(err => ((retries > 1) ?
-        pause(delay).then(() => retry(retries - 1, fn, delay * 2))
-        : Promise.reject(err)));
+const retry = (retries, fn, delay = 500) => fn().catch(err => ((retries > 1)
+    ? pause(delay).then(() => retry(retries - 1, fn, delay * 2)) : Promise.reject(err)));
 
 const DEFAULT_HTTP_METHOD = 'post';
 
@@ -38,7 +36,7 @@ module.exports = {
      * @returns {object} Router object.
      */
     setRoutes(router, routes, middlewares) {
-        routes.forEach((route) => {
+        routes.forEach(route => {
             // Path of HTTP request
             const args = [route.cls.url];
 
@@ -50,7 +48,7 @@ module.exports = {
             // Include input validations, if available
             const validatorOptions = route.cls.VALIDATORS;
             if (validatorOptions && validatorOptions.length) {
-                validatorOptions.forEach((option) => {
+                validatorOptions.forEach(option => {
                     const obj = new ValidatorAPI(option);
                     args.push(obj.validator);
                 });

@@ -5,14 +5,14 @@ const { format } = require('util');
 const TasksLib = require('../../../tasks');
 const AccountProfile = require('../models/accountprofile');
 
-const credentials = {email: 'test@test.com', password: '123456'};
+const credentials = { email: 'test@test.com', password: '123456' };
 
 describe('User registration', () => {
     const api = '/api/auth/v1/signup';
     const activationApi = '/api/auth/v1/activate/%s';
 
     it('signup email is already reserved', () => {
-        const account = {email: 'test-reserved@test.com', password: '123456'};
+        const account = { email: 'test-reserved@test.com', password: '123456' };
 
         return new Promise((resolve, reject) => {
             appTestHelper.createUser(account, () => {
@@ -25,10 +25,10 @@ describe('User registration', () => {
                         }
                     });
             });
-        }).then((res) => {
+        }).then(res => {
             const msg = 'Account with test-reserved@test.com email address already exists';
             expect(res.body.errors[0]).to.equal(msg);
-        }).catch((err) => { throw new Error(err); });
+        }).catch(err => { throw new Error(err); });
     });
 
     it('signup succeeds', () => {
@@ -41,19 +41,19 @@ describe('User registration', () => {
             testrunner(testapp).post(api).send(credentials).expect(200)
                 .end(() => {
                     // AND activation key exists for the user
-                    appTestHelper.getUserByEmail(credentials.email).then((user) => {
-                        AccountProfile.manager.execute('findOne', {user: user.id}).then((profile) => {
+                    appTestHelper.getUserByEmail(credentials.email).then(user => {
+                        AccountProfile.manager.execute('findOne', { user: user.id }).then(profile => {
                             resolve(profile);
                         });
                     }).catch(err => reject(err));
                 });
-        }).then((profile) => {
+        }).then(profile => {
             expect(profile.activationKey.length).to.be.equal(64);
             expect(spyCall.getCalls().length).to.be.equal(1);
-        }).catch((err) => { throw new Error(err); });
+        }).catch(err => { throw new Error(err); });
     });
 
-    it('invalid account activation key is used', (done) => {
+    it('invalid account activation key is used', done => {
         const url = format(activationApi, '1233');
         testrunner(testapp).post(url).send().expect(404)
             .end((err, res) => {
@@ -63,22 +63,22 @@ describe('User registration', () => {
     });
 
     function activate(userEmail, statusCode, cb) {
-        appTestHelper.getAccount(userEmail).then((account) => {
+        appTestHelper.getAccount(userEmail).then(account => {
             const url = format(activationApi, account.activationKey);
             testrunner(testapp).post(url).send().expect(statusCode)
                 .end((err, res) => {
                     cb(err, res);
                 });
-        }).catch((err) => { throw new Error(err); });
+        }).catch(err => { throw new Error(err); });
     }
 
-    it('account is activated', (done) => {
+    it('account is activated', done => {
         // GIVEN registered user
         // WHEN account is activated
         // THEN it should succeed
-        activate(credentials.email, 200, (err) => {
+        activate(credentials.email, 200, err => {
             appTestHelper.getAccount(credentials.email)
-                .then((account) => {
+                .then(account => {
                     // THEN user status should be active
                     expect(account.user.active).to.be.true;
 
@@ -90,7 +90,7 @@ describe('User registration', () => {
         });
     });
 
-    it('account activated multiple times', (done) => {
+    it('account activated multiple times', done => {
         // GIVEN already activated user
         // WHEN account is again activated
         // THEN it should fail
@@ -101,7 +101,7 @@ describe('User registration', () => {
         });
     });
 
-    it('account activation expired', (done) => {
+    it('account activation expired', done => {
         appTestHelper.getAccount(credentials.email)
             // GIVEN expired activation key
             .then(account => account.setExpired().save())
@@ -116,10 +116,10 @@ describe('User registration', () => {
             });
     });
 
-    it('late account activation', (done) => {
+    it('late account activation', done => {
         appTestHelper.getAccount(credentials.email)
             .then(account => account.setExpired().save())
-            .then((account) => {
+            .then(account => {
                 // GIVEN too much time has passed since account creation
                 const date = new Date(account.user.createdAt);
                 const delta = 1e3 * 24 * 3600 * 8;
@@ -138,8 +138,8 @@ describe('User registration', () => {
             });
     });
 
-    it('email parameter is missing', (done) => {
-        testrunner(testapp).post(api).send({email: 'testtest.com', password: '123456'}).expect(400)
+    it('email parameter is missing', done => {
+        testrunner(testapp).post(api).send({ email: 'testtest.com', password: '123456' }).expect(400)
             .end((err, res) => {
                 expect(res.body.errors.length).to.equal(1);
                 expect(res.body.errors[0]).to.equal('Input parameter email: Not an email address');
@@ -147,8 +147,8 @@ describe('User registration', () => {
             });
     });
 
-    it('password parameter is missing', (done) => {
-        testrunner(testapp).post(api).send({email: 'test@test.com'}).expect(400)
+    it('password parameter is missing', done => {
+        testrunner(testapp).post(api).send({ email: 'test@test.com' }).expect(400)
             .end((err, res) => {
                 expect(res.body.errors.length).to.equal(1);
                 expect(res.body.errors[0]).to.equal('Input parameter password: Must be present');
@@ -156,7 +156,7 @@ describe('User registration', () => {
             });
     });
 
-    it('email and password parameters are missing', (done) => {
+    it('email and password parameters are missing', done => {
         testrunner(testapp).post(api).send().expect(400)
             .end((err, res) => {
                 expect(res.body.errors.length).to.equal(2);
@@ -166,8 +166,8 @@ describe('User registration', () => {
             });
     });
 
-    it('email is invalid and and password parameter is missing', (done) => {
-        testrunner(testapp).post(api).send({email: 'testcom'}).expect(400)
+    it('email is invalid and and password parameter is missing', done => {
+        testrunner(testapp).post(api).send({ email: 'testcom' }).expect(400)
             .end((err, res) => {
                 expect(res.body.errors.length).to.equal(2);
                 expect(res.body.errors[0]).to.equal('Input parameter email: Not an email address');
@@ -181,20 +181,20 @@ describe('User authentication', () => {
     const api = '/api/auth/v1/login';
     const errText = 'Invalid credentials';
 
-    beforeEach((done) => {
-        appTestHelper.activateUser(credentials.email, (user) => {
+    beforeEach(done => {
+        appTestHelper.activateUser(credentials.email, user => {
             done();
             this.user = user;
         });
     });
 
-    afterEach((done) => {
+    afterEach(done => {
         appTestHelper.deactivateUser(this.user, () => {
             done();
         });
     });
 
-    it('login succeeds', (done) => {
+    it('login succeeds', done => {
         // GIVEN active user
         // WHEN user does login
         // THEN it should succeed
@@ -209,8 +209,8 @@ describe('User authentication', () => {
             });
     });
 
-    it('invalid email is entered', (done) => {
-        testrunner(testapp).post(api).send({email: 'test_@test.com', password: '123456'})
+    it('invalid email is entered', done => {
+        testrunner(testapp).post(api).send({ email: 'test_@test.com', password: '123456' })
             .expect(400)
             .end((err, res) => {
                 expect(res.body.errors[0]).to.equal(errText);
@@ -218,8 +218,8 @@ describe('User authentication', () => {
             });
     });
 
-    it('invalid password is entered', (done) => {
-        testrunner(testapp).post(api).send({email: 'test@test.com', password: '12345d6'})
+    it('invalid password is entered', done => {
+        testrunner(testapp).post(api).send({ email: 'test@test.com', password: '12345d6' })
             .expect(400)
             .end((err, res) => {
                 expect(res.body.errors[0]).to.equal(errText);
@@ -227,7 +227,7 @@ describe('User authentication', () => {
             });
     });
 
-    it('email and password parameters are missing', (done) => {
+    it('email and password parameters are missing', done => {
         testrunner(testapp).post(api).send({}).expect(400)
             .end((err, res) => {
                 expect(res.body.errors.length).to.equal(2);
@@ -238,26 +238,86 @@ describe('User authentication', () => {
     });
 });
 
+describe('API token', () => {
+    const api = '/api/auth/v1/token';
+    const targetTestUrl = '/api/auth/logout';
+
+    const expiredToken = 'eyJhbGciOiJIUzI1NiJ9.eyJ1c2VyIjp7ImV4cGlyZXMiOjQzMjAwMDAwLCJhY3RpdmUi'
+        + 'OnRydWUsInVwZGF0ZWRBdCI6IjIwMTctMTItMDFUMTA6MzI6MDAuMjg1WiIsImNyZWF0ZWRBdCI6IjIwMTctMT'
+        + 'ItMDFUMTA6MTY6NTMuMDYxWiIsImVtYWlsIjoianVoYUBub2tpYS5jb20ifSwiZXhwaXJlcyI6MTU2Nzc5NjQ0'
+        + 'OTY3NX0.qS5saJWoTtmOQWlQADAJi3Zs2-_RqUB3NPKFD8nsI0w';
+
+    let token;
+
+    beforeEach(done => {
+        appTestHelper.activateUser(credentials.email, user => {
+            done();
+            this.user = user;
+            ({ token } = user.tokenResponse());
+        });
+    });
+
+    afterEach(done => {
+        appTestHelper.deactivateUser(this.user, () => {
+            done();
+        });
+    });
+
+    it('creation succeeds', done => {
+        // GIVEN active user
+        // WHEN user retrieves API token
+        // THEN it should succeed
+        testrunner(testapp).post(api).send(credentials).expect(200)
+            .end((err, res) => {
+                expect(res.body.messages.length).to.equal(1);
+                expect(res.body.messages[0]).to.equal('Token creation successful');
+                expect(Object.keys(res.body.data)).to.have.all.members([
+                    'user', 'token'
+                ]);
+                done(err);
+            });
+    });
+
+    it('is missing from request', async () => {
+        await testrunner(testapp).post(targetTestUrl).send(credentials).expect(401);
+    });
+
+    it('has expired', async () => {
+        const res = await testrunner(testapp).post(targetTestUrl)
+            .set('Authorization', `Token ${expiredToken}`).send(credentials)
+            .expect(401);
+
+        expect(res.body.messages.length).to.equal(1);
+        expect(res.body.messages[0]).to.equal('Authorization token expired, please request new token');
+    });
+
+    it('is accepted for API call', async () => {
+        await testrunner(testapp).post(targetTestUrl)
+            .set('Authorization', `Token ${token}`).send(credentials)
+            .expect(200);
+    });
+});
+
 describe('User logout', () => {
     const api = '/api/auth/logout';
 
-    it('logout fails', (done) => {
+    it('logout fails', done => {
         // GIVEN user is not logged in
         // WHEN logging out
         // THEN it should fail
         testrunner(testapp).post(api).send().expect(401, done);
     });
 
-    it('logout succeeds', (done) => {
+    it('logout succeeds', done => {
         const app = testrunner.agent(testapp);
 
         // GIVEN user has logged in
         // GIVEN active user
-        appTestHelper.activateUser(credentials.email, (user) => {
+        appTestHelper.activateUser(credentials.email, user => {
             app.post('/api/auth/v1/login').send(credentials).expect(200).end(() => {
                 // WHEN logging out
                 // THEN it should succeed
-                app.post(api).send().expect(200).end((err) => {
+                app.post(api).send().expect(200).end(err => {
                     appTestHelper.deactivateUser(user, () => {
                         done(err);
                     });

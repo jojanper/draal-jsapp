@@ -14,15 +14,19 @@ matrix:
     - os: osx
       sudo: required
       language: generic
+      addons:
+        homebrew:
+          packages: python3
       before_install:
-        - brew update
-        - virtualenv env -p python
-        - source env/bin/activate
-        - brew install mongodb
-        - sudo mkdir -p /data/db
-        - brew services start mongodb
+        - python3 -m pip install --upgrade virtualenv
+        - virtualenv -p python3 --system-site-packages "$HOME/venv"
+        - source "$HOME/venv/bin/activate"
+        - brew tap mongodb/brew
+        - brew install mongodb-community
+        - brew info mongodb-community
+        - brew services start mongodb/brew/mongodb-community
 env:
-  - TRAVIS_NODE_VERSION="8.9.0"
+  - TRAVIS_NODE_VERSION="12.3.1"
 after_success:
   - npm run codecov
 install:

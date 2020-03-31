@@ -14,7 +14,7 @@ const userDetails = {
 
 function userMgrCreateUser() {
     describe('createUser', () => {
-        it('save fails', (done) => {
+        it('save fails', done => {
             const errMsg = 'Error message';
             const userMock = sinon.mock(new UserModel(userDetails));
 
@@ -22,7 +22,7 @@ function userMgrCreateUser() {
             userMock.expects('save').chain('exec').rejects(errMsg);
 
             // WHEN creating user
-            User.manager.createUser(userMock.object).catch((err) => {
+            User.manager.createUser(userMock.object).catch(err => {
                 userMock.verify();
                 userMock.restore();
 
@@ -33,7 +33,7 @@ function userMgrCreateUser() {
             });
         });
 
-        it('password hashify fails', (done) => {
+        it('password hashify fails', done => {
             const error = new Error('Error');
             const userMock = sinon.mock(new UserModel(userDetails));
 
@@ -43,7 +43,7 @@ function userMgrCreateUser() {
             });
 
             // WHEN creating new user
-            User.manager.createUser(userMock.object).catch((err) => {
+            User.manager.createUser(userMock.object).catch(err => {
                 userMock.verify();
                 userMock.restore();
                 bcrypt.hash.restore();
@@ -63,17 +63,17 @@ function userMgrCreateUser() {
             // GIVEN user query fails
             userMock.expects('findOne').chain('exec').rejects(errMsg);
 
-            return new Promise((resolve) => {
+            return new Promise(resolve => {
                 // WHEN creating user
-                User.manager.createUser(user).catch((err) => {
+                User.manager.createUser(user).catch(err => {
                     userMock.verify();
                     userMock.restore();
                     resolve(err);
                 });
-            }).then((err) => {
+            }).then(err => {
                 // THEN it should return expected error
                 expect(err.name).to.be.equal(errMsg);
-            }).catch((err) => { throw new Error(err); });
+            }).catch(err => { throw new Error(err); });
         });
     });
 }
@@ -88,7 +88,7 @@ function userMgrCreatePasswordResetToken() {
             userMock.expects('save').chain('exec').rejects(errMsg);
 
             // WHEN creating user
-            return userMock.object.createPwResetToken().catch((err) => {
+            return userMock.object.createPwResetToken().catch(err => {
                 userMock.verify();
                 userMock.restore();
 
@@ -107,7 +107,7 @@ function userMgrCreatePasswordResetToken() {
             });
 
             // WHEN creating user
-            return user.createPwResetToken().catch((err) => {
+            return user.createPwResetToken().catch(err => {
                 bcrypt.hash.restore();
 
                 // THEN it should return expected error
@@ -124,25 +124,22 @@ function userMgrFindLoginUser() {
 
             // GIVEN user password comparison fails
             const user = new UserModel(userDetails);
-            user.comparePassword = () =>
-                new Promise((resolve, reject) => {
-                    reject(errMsg);
-                });
+            user.comparePassword = () => new Promise((resolve, reject) => reject(errMsg));
 
             const userMock = sinon.mock(User.model);
             userMock.expects('findOne').chain('exec').resolves(user);
 
-            return new Promise((resolve) => {
+            return new Promise(resolve => {
                 // WHEN querying login user
-                User.manager.findLoginUser(user.email, user.password).catch((err) => {
+                User.manager.findLoginUser(user.email, user.password).catch(err => {
                     userMock.verify();
                     userMock.restore();
                     resolve(err);
                 });
-            }).then((err) => {
+            }).then(err => {
                 // THEN it should return expected error
                 expect(err).to.be.equal(errMsg);
-            }).catch((err) => { throw new Error(err); });
+            }).catch(err => { throw new Error(err); });
         });
 
         it('login user query fails', () => {
@@ -153,17 +150,17 @@ function userMgrFindLoginUser() {
             const userMock = sinon.mock(User.model);
             userMock.expects('findOne').chain('exec').rejects(errMsg);
 
-            return new Promise((resolve) => {
+            return new Promise(resolve => {
                 // WHEN querying login user
-                User.manager.findLoginUser(user.email, user.password).catch((err) => {
+                User.manager.findLoginUser(user.email, user.password).catch(err => {
                     userMock.verify();
                     userMock.restore();
                     resolve(err);
                 });
-            }).then((err) => {
+            }).then(err => {
                 // THEN it should return expected error
                 expect(err.name).to.be.equal(errMsg);
-            }).catch((err) => { throw new Error(err); });
+            }).catch(err => { throw new Error(err); });
         });
     });
 }
@@ -175,9 +172,9 @@ describe('User manager', () => {
 });
 
 describe('User model', () => {
-    it('model is updated', (done) => {
+    it('model is updated', done => {
         // GIVEN user model
-        const user = new UserModel({email: 'one@test.com', password: 'pw'});
+        const user = new UserModel({ email: 'one@test.com', password: 'pw' });
         user.save().then(() => {
             const pw = user.password;
 
@@ -192,9 +189,9 @@ describe('User model', () => {
         }).catch(err => done(err));
     });
 
-    it('new password is saved', (done) => {
+    it('new password is saved', done => {
         // GIVEN user model
-        const user = new UserModel({email: 'new-user@test.com', password: '123'});
+        const user = new UserModel({ email: 'new-user@test.com', password: '123' });
         user.save().then(() => {
             const pw = user.password;
 
@@ -209,7 +206,7 @@ describe('User model', () => {
         });
     });
 
-    it('password comparison fails', (done) => {
+    it('password comparison fails', done => {
         const msg = 'Error';
 
         // GIVEN password comparison fails
@@ -218,8 +215,8 @@ describe('User model', () => {
         });
 
         // WHEN user passwords are compared
-        const user = new UserModel({email: 'one@test.com', password: 'pw'});
-        user.comparePassword('ab', 'ba').catch((err) => {
+        const user = new UserModel({ email: 'one@test.com', password: 'pw' });
+        user.comparePassword('ab', 'ba').catch(err => {
             // THEN it should return expect error
             expect(err).to.be.equal(msg);
             bcrypt.compare.restore();
@@ -253,5 +250,19 @@ describe('User model', () => {
         const data = user.loginResponse();
         expect(Object.keys(data).length).equal(5);
         expect(data).to.have.keys(['email', 'createdAt', 'updatedAt', 'expires', 'active']);
+    });
+
+    it('supports tokenResponse', () => {
+        const user = new UserModel({
+            active: false,
+            email: 'one@test.com',
+            password: 'pw',
+            createdAt: Date.now(),
+            updatedAt: Date.now()
+        });
+
+        const data = user.tokenResponse();
+        expect(Object.keys(data).length).equal(2);
+        expect(data).to.have.keys(['user', 'token']);
     });
 });

@@ -17,7 +17,7 @@ describe('activateUser', () => {
     it('save fails', () => {
         const errMsg = 'Save failed';
         const user = new UserModel(userDetails);
-        const account = new AccountModel({user, activationKey: '123'});
+        const account = new AccountModel({ user, activationKey: '123' });
         const userMock = sinon.mock(user);
 
         const accountMock = sinon.mock(AccountModel);
@@ -26,9 +26,9 @@ describe('activateUser', () => {
         // GIVEN user save fails
         userMock.expects('save').chain('exec').rejects(errMsg);
 
-        return new Promise((resolve) => {
+        return new Promise(resolve => {
             // WHEN creating user
-            AccountProfile.manager.activateUser('123').catch((err) => {
+            AccountProfile.manager.activateUser('123').catch(err => {
                 userMock.verify();
                 userMock.restore();
 
@@ -37,10 +37,10 @@ describe('activateUser', () => {
 
                 resolve(err);
             });
-        }).then((err) => {
+        }).then(err => {
             // THEN it should return expected error
             expect(err.name).to.be.equal(errMsg);
-        }).catch((err) => { throw new Error(err); });
+        }).catch(err => { throw new Error(err); });
     });
 });
 
@@ -51,7 +51,7 @@ describe('AccountProfile model', () => {
 
     it('supports toObject', () => {
         const user = new UserModel(userDetails);
-        const account = new AccountModel({user, activationKey: '123'});
+        const account = new AccountModel({ user, activationKey: '123' });
 
         const data = account.toObject();
         expect(Object.keys(data).length).equal(4);

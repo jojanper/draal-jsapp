@@ -14,8 +14,8 @@ class UserManager extends BaseManager {
     }
 
     createUser(user) {
-        return this.execute('findOne', {email: user.email})
-            .then((existingUser) => {
+        return this.execute('findOne', { email: user.email })
+            .then(existingUser => {
                 if (existingUser) {
                     const msg = format('Account with %s email address already exists', user.email);
                     throw new APIError(msg);
@@ -27,7 +27,7 @@ class UserManager extends BaseManager {
     }
 
     findUser(email, active = undefined) {
-        const data = {email: email.toLowerCase()};
+        const data = { email: email.toLowerCase() };
         if (active !== undefined) {
             data.active = active;
         }
@@ -36,18 +36,17 @@ class UserManager extends BaseManager {
     }
 
     findLoginUser(email, password) {
-        return this.findUser(email, true)
-            .then((user) => {
-                if (!user) {
-                    throw new APIError(`Email ${email} not found`);
-                }
+        return this.findUser(email, true).then(user => {
+            if (!user) {
+                throw new APIError(`Email ${email} not found`);
+            }
 
-                return user.comparePassword(password);
-            });
+            return user.comparePassword(password);
+        });
     }
 
     _getUser(email) {
-        return this.findUser(email).then((user) => {
+        return this.findUser(email).then(user => {
             if (!user) {
                 throw new APIError(`Email ${email} not found`);
             }

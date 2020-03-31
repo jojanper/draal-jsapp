@@ -41,8 +41,7 @@ if (process.env.DRAALJS_LOGGER_DISABLE_FILES !== 0) {
     }));
 }
 
-const formatter = info =>
-    `{"timestamp": "${info.timestamp}", "level": "${info.level}", "message": "${info.message}"}`;
+const formatter = info => `{"timestamp": "${info.timestamp}", "level": "${info.level}", "message": "${info.message}"}`;
 
 // Main logger
 const logger = winston.createLogger({

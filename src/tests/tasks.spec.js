@@ -31,21 +31,21 @@ class MockCeleryClient {
 describe('Celery tasks', () => {
     const mockClient = new MockCeleryClient();
 
-    beforeEach((done) => {
+    beforeEach(done => {
         process.env.CELERY_ON = true;
         sinon.stub(celery, 'createClient').callsFake(() => mockClient);
         done();
     });
 
-    afterEach((done) => {
+    afterEach(done => {
         celery.createClient.restore();
         delete process.env.CELERY_ON;
         done();
     });
 
     function connect() {
-        return new Promise((resolve) => {
-            CeleryClient.connect((client) => {
+        return new Promise(resolve => {
+            CeleryClient.connect(client => {
                 resolve(client);
             });
         });
@@ -56,9 +56,9 @@ describe('Celery tasks', () => {
         CeleryClient.close().then(() => done());
     }
 
-    it('supports sendRegistrationEmail', (done) => {
+    it('supports sendRegistrationEmail', done => {
         // GIVEN Celery tasks execution is available
-        connect().then((client) => {
+        connect().then(client => {
             const call = sinon.spy(client, 'call');
 
             // WHEN task is executed
@@ -79,9 +79,9 @@ describe('Celery tasks', () => {
         });
     }).timeout(3000);
 
-    it('supports sendPasswordResetEmail', (done) => {
+    it('supports sendPasswordResetEmail', done => {
         // GIVEN Celery tasks execution is available
-        connect().then((client) => {
+        connect().then(client => {
             const call = sinon.spy(client, 'call');
 
             // WHEN task is executed
