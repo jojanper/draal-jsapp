@@ -112,7 +112,9 @@ const parser = new htmlparser.Parser({
         }
     },
 	ontext: (text) => {
-        currentObj.setContent(text);
+        if (text.trim()) {
+            currentObj.setContent(text);
+        }
     },
 	onclosetag: (tagname) => {
         // Finished parsing the target element
