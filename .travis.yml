@@ -19,9 +19,7 @@ matrix:
           packages: python3
       before_install:
         - python3 -m pip install --upgrade virtualenv
-        - python3 -m pip install flake8
-        - python3 -m pip install nose2
-        - python3 -m pip install mock
+        - python3 -m pip install -r requirements.txt
         - virtualenv -p python3 --system-site-packages "$HOME/venv"
         - source "$HOME/venv/bin/activate"
         - brew tap mongodb/brew
