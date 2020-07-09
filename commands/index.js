@@ -5,7 +5,6 @@ const path = require('path');
 const program = require('commander');
 const shelljs = require('shelljs');
 
-
 const POSTFIX = 'execs';
 
 // Read all modules and initialize commander
@@ -14,7 +13,6 @@ shelljs.ls(path.join(__dirname, POSTFIX))
         // eslint-disable-next-line global-require, import/no-dynamic-require
         require(`./${POSTFIX}/${file}`)(program);
     });
-
 
 program.on('command:*', () => {
     console.error('Invalid command: %s\nSee --help for a list of available commands.', program.args.join(' '));

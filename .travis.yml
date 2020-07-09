@@ -11,6 +11,7 @@ matrix:
       before_install:
         - docker --version;
         - docker-compose --version;
+        - sudo apt-get install ffmpeg
     - os: osx
       sudo: required
       language: generic
@@ -23,7 +24,7 @@ matrix:
         - virtualenv -p python3 --system-site-packages "$HOME/venv"
         - source "$HOME/venv/bin/activate"
         - brew tap mongodb/brew
-        - brew install mongodb-community
+        - brew install mongodb-community ffmpeg
         - brew info mongodb-community
         - brew services start mongodb/brew/mongodb-community
 env:

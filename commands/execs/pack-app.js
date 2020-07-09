@@ -20,11 +20,11 @@ async function packApp(cmdOptions) {
         '^/nodemon.json',
         '^/pm2.config.js$',
         '^/TODO',
-        '^/.*\.yml$',
-        '^/.*\.md$',
-        '^/.*\.tar$',
-        '^/.*\.txt$',
-        '^/.*\.spec.js$',
+        '^/.*.yml$',
+        '^/.*.md$',
+        '^/.*.tar$',
+        '^/.*.txt$',
+        '^/.*.spec.js$',
         '^/angular-app',
         '^/commands',
         '^/config/app',
@@ -39,7 +39,6 @@ async function packApp(cmdOptions) {
         '^/docker-logs',
         '^/logs',
         '^/pytasks',
-        '^/scripts',
         '^/test',
         '^/virtualenv*'
     ].map(item => `--ignore=${item}`).join(' ');
@@ -72,5 +71,8 @@ module.exports = program => {
         .command('pack-app')
         .description('Package application')
         .option('--platform <platform>', 'Target platform', 'linux')
-        .action(options => packApp(options).catch(code => process.exit(code)));
+        .action(options => packApp(options).catch(code => {
+            console.error(code);
+            process.exit(1);
+        }));
 };

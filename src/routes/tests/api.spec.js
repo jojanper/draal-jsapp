@@ -5,19 +5,6 @@ describe('GET /api', () => {
             done(err);
         });
     });
-
-    it('upload is supported', done => {
-        const imgPath = '/home/jojanper/Pictures/Heart.jpg';
-
-        const request = testrunner(testapp).post('/api/app/media-upload').attach('file', imgPath);
-
-        request.expect(200).end((err, res) => {
-            //expect(res.body.data.length).to.be.equal(9);
-            //done(err);
-            console.log(res.body);
-            done();
-        });
-    });
 });
 
 describe('API error handling', () => {

@@ -1,11 +1,9 @@
-/**
- * Create client template.
- */
+/* eslint-disable no-use-before-define, no-restricted-syntax */
 const fs = require('fs');
+const util = require('util');
 const path = require('path');
-const format = require('util').format;
-const htmlparser = require("htmlparser2");
-
+const { format } = require('util');
+const htmlparser = require('htmlparser2');
 
 /**
  * Base class for serializing parsed HTML elements.
@@ -28,7 +26,9 @@ class BaseHtmlElementSerializer {
 
         // Element attributes
         for (const attr in this.attr) {
-            html = format('%s%s=\'%s\' ', html, attr, this.attr[attr]);
+            if (attr) {
+                html = format('%s%s=\'%s\' ', html, attr, this.attr[attr]);
+            }
         }
 
         // Element content
@@ -47,10 +47,6 @@ class BaseHtmlElementSerializer {
  * Serialize dng-app element.
  */
 class DngAppSerializer extends BaseHtmlElementSerializer {
-    constructor(name, attr, content) {
-        super(name, attr, content);
-    }
-
     serialize() {
         return format('<%s>%s</%s>', this.name, this.content, this.name);
     }
@@ -96,7 +92,6 @@ const template = [
     ''
 ];
 
-
 let targetIndex = 0;
 let currentObj = null;
 
@@ -111,12 +106,12 @@ const parser = new htmlparser.Parser({
             currentObj.setParentTag(name, attribs);
         }
     },
-    ontext: (text) => {
+    ontext: text => {
         if (text.trim()) {
             currentObj.setContent(text);
         }
     },
-    onclosetag: (tagname) => {
+    onclosetag: tagname => {
         // Finished parsing the target element
         if (parseTags[targetIndex] === tagname) {
             targetIndex++;
@@ -135,7 +130,7 @@ const parser = new htmlparser.Parser({
         }
 
         // Write the template
-        fs.writeFile(path.join('views', 'index.pug'), template.join('\n'), (err) => {
+        fs.writeFile(path.join('views', 'index.pug'), template.join('\n'), err => {
             if (err) throw err;
             console.log('The file has been saved!');
         });
@@ -143,22 +138,33 @@ const parser = new htmlparser.Parser({
 }, { decodeEntities: true });
 
 const FAVICON_IN = 'href="assets/img/favicon.ico"';
-const FAVICON_OUT = 'href="frontend/assets/img/favicon.ico"';
 
-// Read the frontend template and parse the data
-const filepath = path.join('public', 'frontend', 'index.html');
-fs.readFile(filepath, (err, data) => {
-    if (err) {
-        console.log(err);
-        return;
-    }
+async function buildTemplate(options) {
+    const FAVICON_OUT = `href="${options.favicon}/assets/img/favicon.ico"`;
+    const promise = util.promisify(fs.readFile);
+
+    const data = await promise(options.html);
 
     let html = data.toString();
 
     // Correct favicon path
-    html = html.replace(FAVICON_IN, FAVICON_OUT);
+    if (options.favicon) {
+        html = html.replace(FAVICON_IN, FAVICON_OUT);
+    }
 
     // Pass data to HTML parser
     parser.write(html);
     parser.end();
-});
+}
+
+module.exports = program => {
+    program
+        .command('build-template')
+        .description('Build index.pug template from index.html')
+        .option('--html <html>', 'Location of index.html', path.join('public', 'index.html'))
+        .option('--favicon <href>', 'favicon href', null)
+        .action(options => buildTemplate(options).catch(code => {
+            console.error(code);
+            process.exit(1);
+        }));
+};
