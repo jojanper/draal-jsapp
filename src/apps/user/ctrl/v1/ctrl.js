@@ -5,7 +5,7 @@ const core = require('../../../../core');
 const { User, AccountProfile } = require('../../models');
 const TasksLib = require('../../../../tasks');
 
-const APIError = core.error;
+const { APIError } = core.error;
 const ValidatorAPI = core.validators;
 const BaseCtrl = core.ctrl;
 const ApiResponse = core.response;
@@ -17,7 +17,6 @@ const version1 = 1;
 
 // API URL prefix
 const urlPrefix = 'auth';
-
 
 /**
  * Create a new local account.

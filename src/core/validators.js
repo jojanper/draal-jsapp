@@ -1,7 +1,6 @@
 const util = require('util');
 const validator = require('express-validator');
 
-
 const VALIDATORS = {
     email: 'email',
     exists: 'exists'
@@ -13,7 +12,6 @@ const VALIDATORS = {
 const errorMessages = {};
 errorMessages[VALIDATORS.email] = 'Not an email address';
 errorMessages[VALIDATORS.exists] = 'Must be present';
-
 
 const createValidatorChain = (chain, validator) => {
     switch (validator) {

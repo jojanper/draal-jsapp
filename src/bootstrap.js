@@ -5,20 +5,25 @@ const core = require('./core');
 const routes = require('./routes');
 const { logger } = require('./logger');
 
-
 const BaseCtrl = core.ctrl;
 const ApiResponse = core.response;
 const utilsLib = core.utils;
 
 const apiPrefix = '/api';
 
-
 // Middleware for handling application errors
 function apiMiddlewareErrorHandler(err, req, res, next) {
     if (err.name === 'APIError') {
         const ctrl = new BaseCtrl(req, res, next);
         const errors = (err.message.constructor === Array) ? err.message : [err.message];
-        ctrl.renderResponse(new ApiResponse({errors, statusCode: 400}));
+        ctrl.renderResponse(new ApiResponse({ errors, statusCode: 400 }));
+        return;
+    }
+
+    if (err.name === 'APICmdError') {
+        const ctrl = new BaseCtrl(req, res, next);
+        const cmdErrors = (err.message.constructor === Array) ? err.message : [err.message];
+        ctrl.renderResponse(new ApiResponse({ cmdErrors, statusCode: 400 }));
         return;
     }
 

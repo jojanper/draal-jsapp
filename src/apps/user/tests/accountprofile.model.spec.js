@@ -12,7 +12,6 @@ const userDetails = {
     password: 'test'
 };
 
-
 describe('activateUser', () => {
     it('save fails', () => {
         const errMsg = 'Save failed';

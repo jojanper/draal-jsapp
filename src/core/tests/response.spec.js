@@ -1,9 +1,8 @@
 const ApiResponse = require('../response');
 
-
 describe('ApiResponse', () => {
     it('jsonResponse', () => {
-        let obj = new ApiResponse({errors: ['a']});
+        let obj = new ApiResponse({ errors: ['a'] });
         let response = obj.jsonResponse;
 
         expect(response.errors.length).to.equal(1);

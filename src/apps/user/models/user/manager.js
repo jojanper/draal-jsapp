@@ -4,9 +4,8 @@ const core = require('../../../../core');
 const User = require('./model');
 const AccountProfile = require('../accountprofile');
 
-const APIError = core.error;
+const { APIError } = core.error;
 const BaseManager = core.manager;
-
 
 class UserManager extends BaseManager {
     constructor() {

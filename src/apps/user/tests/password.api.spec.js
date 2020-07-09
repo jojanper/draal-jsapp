@@ -4,9 +4,7 @@ const UtilsLib = require('../../../core').utils;
 const TasksLib = require('../../../tasks');
 
 const credentials = { email: 'test-123456@test.com', password: '123456' };
-
 const resetApi = '/api/auth/v1/password-reset';
-
 
 describe('Password reset request', () => {
     const api = '/api/auth/v1/password-reset-request';

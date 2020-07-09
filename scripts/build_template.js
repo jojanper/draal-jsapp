@@ -101,7 +101,7 @@ let targetIndex = 0;
 let currentObj = null;
 
 const parser = new htmlparser.Parser({
-	onopentag: (name, attribs) => {
+    onopentag: (name, attribs) => {
         // Append element to current object
         if (currentObj) {
             currentObj.setData(name, attribs);
@@ -111,12 +111,12 @@ const parser = new htmlparser.Parser({
             currentObj.setParentTag(name, attribs);
         }
     },
-	ontext: (text) => {
+    ontext: (text) => {
         if (text.trim()) {
             currentObj.setContent(text);
         }
     },
-	onclosetag: (tagname) => {
+    onclosetag: (tagname) => {
         // Finished parsing the target element
         if (parseTags[targetIndex] === tagname) {
             targetIndex++;
@@ -140,7 +140,10 @@ const parser = new htmlparser.Parser({
             console.log('The file has been saved!');
         });
     }
-}, {decodeEntities: true});
+}, { decodeEntities: true });
+
+const FAVICON_IN = 'href="assets/img/favicon.ico"';
+const FAVICON_OUT = 'href="frontend/assets/img/favicon.ico"';
 
 // Read the frontend template and parse the data
 const filepath = path.join('public', 'frontend', 'index.html');
@@ -150,7 +153,12 @@ fs.readFile(filepath, (err, data) => {
         return;
     }
 
+    let html = data.toString();
+
+    // Correct favicon path
+    html = html.replace(FAVICON_IN, FAVICON_OUT);
+
     // Pass data to HTML parser
-    parser.write(data.toString());
+    parser.write(html);
     parser.end();
 });

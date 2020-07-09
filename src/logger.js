@@ -4,13 +4,13 @@
 const winston = require('winston');
 const path = require('path');
 const fs = require('fs');
-
+const tempDirectory = require('temp-dir');
 
 // 50 MB
 const maxsize = 50 * 1024 * 1024;
 
-console.log(`Logger prefix path: ${process.env.DRAALJS_LOGGER_PREFIX}`);
-const logPrefix = process.env.DRAALJS_LOGGER_PREFIX || path.join(__dirname, '..', 'logs');
+console.log(`Logger prefix path: ${process.env.APP_LOGGER_PREFIX}`);
+const logPrefix = process.env.APP_LOGGER_PREFIX || path.join(tempDirectory, 'app-logs');
 
 // Make sure the log folder exists
 if (!fs.existsSync(logPrefix)) {
@@ -28,8 +28,8 @@ if (process.env.NODE_ENV !== 'production') {
 // Write to all logs with level `debug` and below to `combined.log`
 // Write all logs error (and below) to `error.log`.
 //
-console.log(`Logger file creation state: ${process.env.DRAALJS_LOGGER_DISABLE_FILES}`);
-if (process.env.DRAALJS_LOGGER_DISABLE_FILES !== 0) {
+console.log(`Logger file creation state: ${process.env.APP_LOGGER_DISABLE_FILES}`);
+if (process.env.APP_LOGGER_DISABLE_FILES !== 0) {
     transports.push(new winston.transports.File({
         filename: path.join(logPrefix, 'app-error.log'),
         level: 'error',

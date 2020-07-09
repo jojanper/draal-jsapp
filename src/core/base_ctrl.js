@@ -1,9 +1,8 @@
 const util = require('util');
 const validator = require('express-validator');
 
-const APIError = require('./error');
+const { APIError } = require('./error');
 const ValidatorAPI = require('./validators');
-
 
 class BaseCtrl {
     /**
@@ -69,18 +68,39 @@ class BaseCtrl {
     }
 
     renderResponse(response) {
-        let data = {};
+        if (!response) {
+            this.res.json({});
+            this.res.end();
+            return;
+        }
 
-        if (response) {
+        if (!response.hasFile) {
             if (response.statusCode) {
                 this.res.status(response.statusCode);
             }
 
-            data = response.jsonResponse;
+            this.res.json(response.jsonResponse);
+            this.res.end();
+            return;
         }
 
-        this.res.json(data);
-        this.res.end();
+        this.res[this.hasDownloadQuery ? 'download' : 'sendFile'](response.fileResponse);
+    }
+
+    get hasDownloadQuery() {
+        return this.getQueryParam('download');
+    }
+
+    hasQueryParam(param) {
+        return Object.prototype.hasOwnProperty.call(this.req.query, param);
+    }
+
+    getQueryParam(param) {
+        return decodeURIComponent(this.req.query[param]);
+    }
+
+    getParam(param) {
+        return this.req.params[param];
     }
 
     static apiEntry() {

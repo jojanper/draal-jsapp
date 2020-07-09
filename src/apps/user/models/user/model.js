@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 
 const core = require('../../../../core');
 
-const APIError = core.error;
+const { APIError } = core.error;
 const UtilsLib = core.utils;
 const promiseExec = UtilsLib.promiseExecution;
 

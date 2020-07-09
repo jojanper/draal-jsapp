@@ -74,4 +74,25 @@ describe('utilsLib', () => {
                 expect(err.name).to.be.equal(errMsg.name);
             });
     });
+
+    it('supports retry', async () => {
+        let count = 0;
+
+        // Data is ready after 2 timeout rounds
+        const response = await UtilsLib.retry(10, () => {
+            if (count > 1) {
+                return 111;
+            }
+
+            count++;
+            return null;
+        });
+
+        expect(count).to.equal(2);
+        expect(response).to.equal(111);
+
+        // Data is ready immediately
+        const response2 = await UtilsLib.retry(undefined, () => 112);
+        expect(response2).to.equal(112);
+    });
 });

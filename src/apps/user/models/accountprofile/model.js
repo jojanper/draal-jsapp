@@ -2,7 +2,6 @@ const mongoose = require('mongoose');
 
 const UtilsLib = require('../../../../core').utils;
 
-
 const ProfileStatuses = {
     active: 'Active',
     activated: 'Activated',

@@ -24,7 +24,6 @@ const schema = makeExecutableSchema({
     }
 });
 
-
 describe('GraphQL User schema', () => {
     let userMock;
 

@@ -3,11 +3,10 @@ const io = require('socket.io-client');
 const User = require('../src/apps/user/models/user');
 const UserAccount = require('../src/apps/user/models/accountprofile');
 
-
 const UserModel = User.model;
 
 global.chai = require('chai');
-global.testapp = require('../app.js');
+global.testapp = require('../app.js').app;
 global.testrunner = require('supertest');
 
 global.expect = chai.expect;
@@ -58,7 +57,6 @@ global.appTestHelper = {
 
     promiseExec: promise => promise.then(data => [null, data]).catch(err => [err])
 };
-
 
 const port = process.env.PORT || '3000';
 const serverUrl = `http://localhost:${port}`;

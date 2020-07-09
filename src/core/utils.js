@@ -1,17 +1,87 @@
+const childProcess = require('child_process');
+const fs = require('fs');
 const bcrypt = require('bcrypt');
 const util = require('util');
 
-const APIError = require('./error');
+const { APIError, APICmdError } = require('./error');
 const ValidatorAPI = require('./validators');
-
-
-const pause = duration => new Promise(res => setTimeout(res, duration));
-
-const retry = (retries, fn, delay = 500) => fn().catch(err => ((retries > 1)
-    ? pause(delay).then(() => retry(retries - 1, fn, delay * 2)) : Promise.reject(err)));
 
 const DEFAULT_HTTP_METHOD = 'post';
 
+const pause = duration => new Promise(res => setTimeout(res, duration));
+
+const retryPromise = (retries, fn, delay = 500) => fn().catch(err => ((retries > 1)
+    ? pause(delay).then(() => retryPromise(retries - 1, fn, delay * 2)) : Promise.reject(err)));
+
+function promiseExecution(promise) {
+    return promise.then(data => [null, data]).catch(err => [err]);
+}
+
+function execute(cmd, cb, cbErr, options) {
+    return new Promise((resolve, reject) => {
+        const child = childProcess.exec(cmd, options || {});
+
+        // Live console output
+        child.stdout.on('data', cb);
+
+        child.stderr.on('data', cbErr);
+
+        child.on('exit', code => {
+            if (code !== 0) {
+                return reject(code);
+            }
+
+            resolve(code);
+        });
+    });
+}
+
+async function getExecData(cmd, options) {
+    let error = false;
+    let cmdData = '';
+    const errMsg = [];
+
+    const execData = await promiseExecution(execute(cmd, data => {
+        cmdData += data;
+    }, data => {
+        // Check if underlying command failed due to unhandled (node) promise rejection
+        if (data.indexOf('UnhandledPromise') > 0) {
+            error = true;
+        }
+
+        errMsg.push(data.trim());
+    }), options);
+
+    if (execData[0] || error) {
+        // Collect enough error info for the user
+        const messages = [
+            `Failed to execute: ${cmd}`,
+        ];
+        errMsg.forEach(msg => messages.push(msg));
+
+        // Error will be handled in the middleware
+        throw new APICmdError(messages);
+    }
+
+    return cmdData;
+}
+
+const readJson = async filepath => {
+    const readFn = util.promisify(fs.readFile);
+    const [err, data] = await promiseExecution(readFn(filepath));
+
+    if (err) {
+        return null;
+    }
+
+    return JSON.parse(data.toString('utf-8'));
+};
+
+async function fileExists(filePath) {
+    const promise = util.promisify(fs.access)(filePath, fs.constants.F_OK);
+    const response = await promiseExecution(promise);
+    return !response[0];
+}
 
 module.exports = {
     /**
@@ -85,7 +155,7 @@ module.exports = {
      *
      * @returns {object} Promise.
      */
-    retryPromise: retry,
+    retryPromise,
 
     /**
      * Determine time threshold that can be used for user related activities
@@ -154,7 +224,35 @@ module.exports = {
      *
      * @returns {array} Error data as first item, success data as second item.
      */
-    promiseExecution(promise) {
-        return promise.then(data => [null, data]).catch(err => [err]);
-    }
+    promiseExecution,
+
+    retry(timeout, dataCb) {
+        return new Promise(resolve => {
+            timeout = timeout || 100;
+
+            if (dataCb() !== null) {
+                resolve(dataCb());
+                return;
+            }
+
+            const retryFn = () => setTimeout(() => {
+                const obj = dataCb();
+
+                if (obj === null) {
+                    retryFn();
+                    return;
+                }
+
+                resolve(obj);
+            }, timeout);
+
+            retryFn();
+        });
+    },
+
+    getExecData,
+
+    readJson,
+
+    fileExists
 };
