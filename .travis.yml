@@ -40,10 +40,10 @@ install:
   - node --version
   - npm --version
   - npm install
-  - python --version
-  - pip --version
   - which python
   - which pip
+  - python --version
+  - pip --version
   - npm run pip-install
 script:
   - npm run cibuild

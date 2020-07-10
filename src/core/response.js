@@ -23,7 +23,7 @@ class Response {
     }
 
     get hasFile() {
-        return this._file;
+        return this._file ? true : false;
     }
 
     get fileResponse() {
