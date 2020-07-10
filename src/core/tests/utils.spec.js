@@ -95,4 +95,20 @@ describe('utilsLib', () => {
         const response2 = await UtilsLib.retry(undefined, () => 112);
         expect(response2).to.equal(112);
     });
+
+    it('supports readJson', async () => {
+        let data = await UtilsLib.readJson(`${__dirname}/../../../package.json`);
+        expect(data.version.split('.').length).to.equal(3);
+
+        data = await UtilsLib.readJson('foo.bar');
+        expect(data).to.equal(null);
+    });
+
+    it('supports fileExist', async () => {
+        let status = await UtilsLib.fileExists(`${__dirname}/../../../package.json`);
+        expect(status).to.be.true;
+
+        status = await UtilsLib.fileExists('foo.bar');
+        expect(status).to.be.false;
+    });
 });
