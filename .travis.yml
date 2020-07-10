@@ -41,6 +41,9 @@ install:
   - npm --version
   - npm install
   - python --version
+  - pip --version
+  - which python
+  - which pip
   - npm run pip-install
 script:
   - npm run cibuild
