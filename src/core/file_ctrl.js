@@ -22,9 +22,11 @@ class BaseFileCtrl extends BaseCtrl {
         const form = new formidable.IncomingForm();
 
         form.parse(this.req, (err, fields, files) => {
-            console.log(err);
-            if (err) {
+            const filesKeys = Object.keys(files);
+
+            if (err || filesKeys.length === 0) {
                 logger.error(err);
+                logger.error(`Number of files uploaded: ${filesKeys.length}`);
                 this.next(new APIError('File upload failed'));
                 return;
             }

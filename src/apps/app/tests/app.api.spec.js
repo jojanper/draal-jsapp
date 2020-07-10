@@ -14,6 +14,14 @@ describe('App API', () => {
         });
     });
 
+    it('media file upload fails', done => {
+        const request = testrunner(testapp).post(uploadApi);
+        request.expect(400).end((err, res) => {
+            expect(res.body.errors.length > 0).to.be.true;
+            done(err);
+        });
+    });
+
     it('app metadata query is supported', done => {
         testrunner(testapp).get(metaApi).expect(200)
             .end((err, res) => {
