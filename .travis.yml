@@ -24,7 +24,8 @@ matrix:
         - virtualenv -p python3 --system-site-packages "$HOME/venv"
         - source "$HOME/venv/bin/activate"
         - brew tap mongodb/brew
-        - brew install mongodb-community ffmpeg
+        - brew install mongodb-community
+        - brew install homebrew-ffmpeg/ffmpeg/ffmpeg
         - brew info mongodb-community
         - brew services start mongodb/brew/mongodb-community
 env:
