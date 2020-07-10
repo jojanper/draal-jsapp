@@ -23,6 +23,7 @@ class Response {
     }
 
     get hasFile() {
+        /* eslint-disable-next-line no-unneeded-ternary */
         return this._file ? true : false;
     }
 

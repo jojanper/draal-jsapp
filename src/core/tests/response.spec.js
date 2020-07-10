@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-expressions */
 const ApiResponse = require('../response');
 
 describe('ApiResponse', () => {
