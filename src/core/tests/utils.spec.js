@@ -30,6 +30,18 @@ class MockApp {
 }
 
 describe('utilsLib', () => {
+    it('supports isString', () => {
+        expect(UtilsLib.isString({})).to.be.false;
+        expect(UtilsLib.isString('fas')).to.be.true;
+    });
+
+    it('supports isObject', () => {
+        const obj = { a: 1 };
+        expect(UtilsLib.isObject(obj)).to.be.true;
+        expect(UtilsLib.isObject('fas')).to.be.false;
+        expect(UtilsLib.isObject([])).to.be.false;
+    });
+
     it('supports isDevelopment', () => {
         let app = new MockApp('development');
         expect(UtilsLib.isDevelopment(app)).to.be.true;
@@ -110,5 +122,20 @@ describe('utilsLib', () => {
 
         status = await UtilsLib.fileExists('foo.bar');
         expect(status).to.be.false;
+    });
+
+    it('supports getExecData', async () => {
+        // 'ls' command execution succeeds
+        let data = await UtilsLib.getExecData('ls');
+        expect(data.length > 1).to.be.true;
+
+        // Failed command execution
+        try {
+            data = await UtilsLib.getExecData('foobar');
+        } catch (err) {
+            // Error message is available
+            expect(err.message.length).to.equal(2);
+            return Promise.resolve();
+        }
     });
 });

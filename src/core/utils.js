@@ -1,3 +1,4 @@
+/* eslint-disable no-unneeded-ternary */
 const childProcess = require('child_process');
 const fs = require('fs');
 const bcrypt = require('bcrypt');
@@ -34,53 +35,6 @@ function execute(cmd, cb, cbErr, options) {
             resolve(code);
         });
     });
-}
-
-async function getExecData(cmd, options) {
-    let error = false;
-    let cmdData = '';
-    const errMsg = [];
-
-    const execData = await promiseExecution(execute(cmd, data => {
-        cmdData += data;
-    }, data => {
-        // Check if underlying command failed due to unhandled (node) promise rejection
-        if (data.indexOf('UnhandledPromise') > 0) {
-            error = true;
-        }
-
-        errMsg.push(data.trim());
-    }), options);
-
-    if (execData[0] || error) {
-        // Collect enough error info for the user
-        const messages = [
-            `Failed to execute: ${cmd}`,
-        ];
-        errMsg.forEach(msg => messages.push(msg));
-
-        // Error will be handled in the middleware
-        throw new APICmdError(messages);
-    }
-
-    return cmdData;
-}
-
-const readJson = async filepath => {
-    const readFn = util.promisify(fs.readFile);
-    const [err, data] = await promiseExecution(readFn(filepath));
-
-    if (err) {
-        return null;
-    }
-
-    return JSON.parse(data.toString('utf-8'));
-};
-
-async function fileExists(filePath) {
-    const promise = util.promisify(fs.access)(filePath, fs.constants.F_OK);
-    const response = await promiseExecution(promise);
-    return !response[0];
 }
 
 module.exports = {
@@ -226,6 +180,15 @@ module.exports = {
      */
     promiseExecution,
 
+    /**
+     * Execute specified function until it succeeds. Function is assumed to fail when
+     * it returns null, non-null value indicates success.
+     *
+     * @param {*} timeout Timeout for execution retry, in milliseconds.
+     * @param {*} dataCb Function to execute, no input parameters accepted.
+     *
+     * @returns Promise that resolves to whatever the executing function is returning on success.
+     */
     retry(timeout, dataCb) {
         return new Promise(resolve => {
             timeout = timeout || 100;
@@ -250,9 +213,91 @@ module.exports = {
         });
     },
 
-    getExecData,
+    /**
+     * Execute given shell command.
+     *
+     * @param {*} cmd Command to execute.
+     * @param {*} options Command options.
+     *
+     * @returns Data from stdout.
+     * @throws {APICmdError} Command execution failed.
+     */
+    async getExecData(cmd, options) {
+        let error = false;
+        let cmdData = '';
+        const errMsg = [];
 
-    readJson,
+        const execData = await promiseExecution(execute(cmd, data => {
+            cmdData += data;
+        }, data => {
+            // Check if underlying command failed due to unhandled (node) promise rejection
+            if (data.indexOf('UnhandledPromise') > 0) {
+                error = true;
+            }
 
-    fileExists
+            errMsg.push(data.trim());
+        }), options);
+
+        if (execData[0] || error) {
+            // Collect enough error info for the user
+            const messages = [
+                `Failed to execute: ${cmd}`,
+            ];
+            errMsg.forEach(msg => messages.push(msg));
+
+            // Error will be handled in the middleware
+            throw new APICmdError(messages);
+        }
+
+        return cmdData;
+    },
+
+    /**
+     * Read specified file as JSON.
+     *
+     * @param {*} filepath Name of JSON file.
+     *
+     * @returns JSON data, null on failure.
+     */
+    async readJson(filepath) {
+        const readFn = util.promisify(fs.readFile);
+        const [err, data] = await promiseExecution(readFn(filepath));
+
+        if (err) {
+            return null;
+        }
+
+        return JSON.parse(data.toString('utf-8'));
+    },
+
+    /**
+     * Check if specified file exists.
+     *
+     * @param {*} filePath Name of file.
+     *
+     * @returns Promise that resolves to true if file exists and false if file does not exist.
+     */
+    async fileExists(filePath) {
+        const promise = util.promisify(fs.access)(filePath, fs.constants.F_OK);
+        const response = await promiseExecution(promise);
+        return !response[0];
+    },
+
+    /**
+     * Is specified parameter a string.
+     *
+     * @param {*} str Input object.
+     *
+     * @returns true if string, false otherwise.
+     */
+    isString: str => (typeof str === 'string' || str instanceof String),
+
+    /**
+     * Is specified parameter an object.
+     *
+     * @param {*} obj Input object.
+     *
+     * @returns true if object, false otherwise.
+     */
+    isObject: obj => (((typeof obj === 'object') && obj !== null && !Array.isArray(obj)) ? true : false)
 };
