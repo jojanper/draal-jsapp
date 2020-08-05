@@ -1,3 +1,4 @@
+/* eslint-disable class-methods-use-this */
 const util = require('util');
 const validator = require('express-validator');
 
@@ -101,6 +102,10 @@ class BaseCtrl {
 
     getParam(param) {
         return this.req.params[param];
+    }
+
+    error(error) {
+        throw new APIError(error);
     }
 
     static apiEntry() {

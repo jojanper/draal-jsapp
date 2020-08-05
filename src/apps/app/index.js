@@ -33,8 +33,12 @@ class AppMetaData extends BaseCtrl {
     }
 }
 
+const CMDMAP = {
+    ffprobe: 'ffprobe -show_streams $file'
+};
+
 /**
- * Parse uploaded license file.
+ * Parse uploaded file.
  */
 class MediaFileUpload extends BaseFileCtrl {
     static get CLASSINFO() {
@@ -48,9 +52,37 @@ class MediaFileUpload extends BaseFileCtrl {
     }
 
     async action() {
-        const cmd = [`ffprobe -show_streams ${this.files[0].path}`].join(' && ');
-        const cmdData = await getExecData(cmd);
+        const cmdData = await getExecData(this.getCommand());
         return new ApiResponse({ cmdData });
+    }
+
+    getCommand() {
+        const cmd = this.hasQueryParam('cmd') ? this.getQueryParam('cmd') : 'ffprobe';
+        if (!Object.prototype.hasOwnProperty.call(CMDMAP, cmd)) {
+            return this.error(`Invalid command query: ${cmd}`);
+        }
+
+        return CMDMAP[cmd].replace('$file', `${this.files[0].path}`);
+    }
+}
+
+/**
+ * Download file.
+ */
+class MediaFileDownload extends BaseCtrl {
+    static get CLASSINFO() {
+        return {
+            INFO: 'Download media files',
+            NAME: 'media-download/:media',
+            URLPREFIX,
+            METHOD: 'get'
+        };
+    }
+
+    async action() {
+        const media = this.getParam('media');
+        const imgPath = `${__dirname}/../../../${media}`;
+        return new ApiResponse({ file: imgPath });
     }
 }
 
@@ -61,5 +93,8 @@ module.exports = [
     },
     {
         cls: MediaFileUpload
+    },
+    {
+        cls: MediaFileDownload
     }
 ];

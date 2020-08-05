@@ -299,5 +299,10 @@ module.exports = {
      *
      * @returns true if object, false otherwise.
      */
-    isObject: obj => (((typeof obj === 'object') && obj !== null && !Array.isArray(obj)) ? true : false)
+    isObject: obj => (((typeof obj === 'object') && obj !== null && !Array.isArray(obj)) ? true : false),
+
+    /**
+     * Return name prefix for backend API calls.
+     */
+    getApiPrefix: () => process.env.APIPREFIX || '/api',
 };

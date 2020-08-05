@@ -9,7 +9,7 @@ const BaseCtrl = core.ctrl;
 const ApiResponse = core.response;
 const utilsLib = core.utils;
 
-const apiPrefix = '/api';
+const apiPrefix = utilsLib.getApiPrefix();
 
 // Middleware for handling application errors
 function apiMiddlewareErrorHandler(err, req, res, next) {
