@@ -6,7 +6,12 @@ const chalk = require('chalk');
 
 const dbURI = process.env.MONGODB_URI || 'mongodb://localhost:27017/draaljs-app';
 
-const OPTIONS = { auto_reconnect: true, useNewUrlParser: true, useCreateIndex: true };
+const OPTIONS = {
+    auto_reconnect: true,
+    useNewUrlParser: true,
+    useCreateIndex: true,
+    useUnifiedTopology: true
+};
 
 function connect(mongoose, dbURI) {
     function connectWithRetry() {

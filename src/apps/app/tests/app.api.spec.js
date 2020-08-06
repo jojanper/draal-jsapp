@@ -22,9 +22,8 @@ describe('App API', () => {
         const img = await readFile(imgPath);
 
         const request = testrunner(testapp).get(downloadApi);
-        await request.expect(200).end((err, res) => {
-            expect(res.body.toString()).equal(img.toString());
-        });
+        const res = await request.expect(200);
+        expect(res.body.toString()).equal(img.toString());
     });
 
     it('invalid command query for media file upload', done => {
