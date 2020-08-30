@@ -3,7 +3,8 @@ const validator = require('express-validator');
 
 const VALIDATORS = {
     email: 'email',
-    exists: 'exists'
+    exists: 'exists',
+    optional: 'optional'
 };
 
 /*
@@ -22,6 +23,10 @@ const createValidatorChain = (chain, validator) => {
         case VALIDATORS.exists:
             // Check that parameter exists
             return chain.exists().withMessage(errorMessages[validator]);
+
+        case VALIDATORS.optional:
+            // Pass optional parameter
+            return chain.optional();
 
         default:
             break;
