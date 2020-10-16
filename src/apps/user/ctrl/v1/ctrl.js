@@ -48,8 +48,8 @@ class SignUp extends BaseCtrl {
 
     async action() {
         const user = new UserModel({
-            email: this.req.body.email,
-            password: this.req.body.password
+            email: this.getPostParam('email'),
+            password: this.getPostParam('password')
         });
 
         const account = await User.manager.createUser(user);
@@ -81,7 +81,7 @@ class PwResetRequest extends BaseCtrl {
     }
 
     async action() {
-        const promise = User.manager.passwordResetToken(this.req.body.email);
+        const promise = User.manager.passwordResetToken(this.getPostParam('email'));
         const [user, token] = await promise;
         TasksLib.sendPasswordResetEmail(user.email, token);
     }

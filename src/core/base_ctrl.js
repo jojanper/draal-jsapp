@@ -104,6 +104,10 @@ class BaseCtrl {
         return this.req.params[param];
     }
 
+    getPostParam(param) {
+        return this.req.body[param];
+    }
+
     error(error) {
         throw new APIError(error);
     }
