@@ -40,6 +40,7 @@ install:
   - node --version
   - npm --version
   - npm install
+  - ls -al /Users/travis/venv/bin
   - which python
   - which pip
   - python --version
