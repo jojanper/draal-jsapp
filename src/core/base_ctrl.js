@@ -65,7 +65,7 @@ class BaseCtrl {
             .then(response => this.renderResponse(response))
             .catch(err => this.next(err));
 
-        return this;
+        return obj;
     }
 
     renderResponse(response) {
@@ -117,7 +117,7 @@ class BaseCtrl {
         return (req, res, next) => new Cls(req, res, next).execute();
     }
 
-    static serialize(urlPrefix, defaultMethod) {
+    static serialize(urlPrefix, defaultMethod = 'post') {
         const info = this.CLASSINFO;
 
         const data = {

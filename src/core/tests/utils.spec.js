@@ -3,21 +3,7 @@ const bcrypt = require('bcrypt');
 const sinon = require('sinon');
 
 const UtilsLib = require('../utils');
-const BaseCtrl = require('../base_ctrl');
-
-/**
- * Create API entry point for testing.
- */
-class TestCtrl extends BaseCtrl {
-    static get CLASSINFO() {
-        return {
-            INFO: 'User sign-up',
-            VERSION: 1,
-            NAME: 'signup',
-            URLPREFIX: '/test-url'
-        };
-    }
-}
+const { TestCtrl } = require('./ctrl.test');
 
 class MockApp {
     constructor(mode) {
