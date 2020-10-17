@@ -22,15 +22,15 @@ matrix:
       before_install:
         - python3 -m pip install --upgrade virtualenv
         - python3 -m pip install -r requirements.txt
-        - virtualenv -p python3 --system-site-packages "$HOME/venv"
-        - source "$HOME/venv/bin/activate"
+        #- virtualenv -p python3 --system-site-packages "$HOME/venv"
+        #- source "$HOME/venv/bin/activate"
         - brew tap mongodb/brew
         - brew install mongodb-community
         - brew install homebrew-ffmpeg/ffmpeg/ffmpeg
         - brew info mongodb-community
         - brew services start mongodb/brew/mongodb-community
-        - ls -al /Users/travis/venv/bin
-        - ls -al /usr/local/opt/python/bin
+        #- ls -al /Users/travis/venv/bin
+        #- ls -al /usr/local/opt/python/bin
 env:
   - TRAVIS_NODE_VERSION="12.3.1"
 after_success:
@@ -43,7 +43,7 @@ install:
   - node --version
   - npm --version
   - npm install
-  - source "$HOME/venv/bin/activate"
+  #- source "$HOME/venv/bin/activate"
   - which python3
   - which pip
   - python3 --version
