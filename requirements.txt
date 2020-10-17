@@ -4,5 +4,5 @@ coverage
 nose2
 mock
 
-celery==4.1.0
+celery==4.1.1
 django==1.11.29

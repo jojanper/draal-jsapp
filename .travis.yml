@@ -29,6 +29,7 @@ matrix:
         - brew info mongodb-community
         - brew services start mongodb/brew/mongodb-community
         - ls -al /Users/travis/venv/bin
+        - ls -al /usr/local/opt/python/bin
 env:
   - TRAVIS_NODE_VERSION="12.3.1"
 after_success:
@@ -41,9 +42,10 @@ install:
   - node --version
   - npm --version
   - npm install
-  - which python
+  - source "$HOME/venv/bin/activate"
+  - which python3
   - which pip
-  - python --version
+  - python3 --version
   - pip --version
   - npm run pip-install
 script:

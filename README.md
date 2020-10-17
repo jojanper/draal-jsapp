@@ -106,7 +106,7 @@ prerequisites for backend tasks development have been installed, the installatio
 sudo apt-get install python3-pip (optional)
 sudo pip3 install virtualenv (optional)
 npm run virtualenv-install
-source virtualenv2.7/draal/bin/activate
+source virtualenv/draal/bin/activate
 ```
 
 This will install python dependencies as virtualenv under current folder.

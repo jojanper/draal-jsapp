@@ -5,7 +5,7 @@ async function prepareVirtualenv(options) {
     const commands = [
         format('mkdir -p %s', options.folder),
         format('cd %s', options.folder),
-        format('virtualenv -p %s --no-site-packages %s', options.python, options.project),
+        format('virtualenv -p %s --system-site-packages %s', options.python, options.project),
         'cd ..',
         format('. ./%s/%s/bin/activate', options.folder, options.project),
         'npm run pip-install'
@@ -20,8 +20,8 @@ module.exports = program => {
     program
         .command('virtualenv')
         .description('Prepare virtualenv')
-        .option('--python <python>', 'Python path', '/usr/bin/python2.7')
-        .option('--folder <folder>', 'Virtual folder name', 'virtualenv2.7')
+        .option('--python <python>', 'Python path', '/usr/bin/python3')
+        .option('--folder <folder>', 'Virtual folder name', 'virtualenv')
         .option('--project <project>', 'Project name under virtualenv folder', 'draal')
         .action(options => prepareVirtualenv(options).catch(code => {
             console.error(code);
