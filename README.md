@@ -27,7 +27,6 @@
   - [OS X installation](https://docs.mongodb.com/manual/tutorial/install-mongodb-on-os-x/)
 - For backend tasks development:
   - [Python](https://www.python.org/)
-      - Tested with version 2.7
   - [RabbitMQ](https://www.rabbitmq.com/)
 
 ### Install dependencies
