@@ -1,3 +1,4 @@
+/* eslint-disable */
 'use strict'
 var sinon = require('sinon')
 var mongoose = require('mongoose')
@@ -43,7 +44,7 @@ function chainMethod(type, object) {
 function makeChainable(mock, object, mockType) {
   var expectsMethod = mock.expects
 
-  mock.expects = function(method) {
+  mock.expects = function (method) {
     mockType = mockType || getMethodType(method)
     var expectation = expectsMethod.apply(mock, arguments)
     expectation.owner = mock
