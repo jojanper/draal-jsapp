@@ -1,6 +1,6 @@
 const sinon = require('sinon');
 require('mongoose');
-require('sinon-mongoose');
+require('../../../../test/sinon-mongoose');
 
 const { User, AccountProfile } = require('../models');
 
@@ -11,7 +11,6 @@ const userDetails = {
     email: 'test-account@test.com',
     password: 'test'
 };
-
 
 describe('activateUser', () => {
     it('save fails', () => {

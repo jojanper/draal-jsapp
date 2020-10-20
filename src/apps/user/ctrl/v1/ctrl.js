@@ -5,7 +5,7 @@ const core = require('../../../../core');
 const { User, AccountProfile } = require('../../models');
 const TasksLib = require('../../../../tasks');
 
-const APIError = core.error;
+const { APIError } = core.error;
 const ValidatorAPI = core.validators;
 const BaseCtrl = core.ctrl;
 const ApiResponse = core.response;
@@ -17,7 +17,6 @@ const version1 = 1;
 
 // API URL prefix
 const urlPrefix = 'auth';
-
 
 /**
  * Create a new local account.
@@ -49,8 +48,8 @@ class SignUp extends BaseCtrl {
 
     async action() {
         const user = new UserModel({
-            email: this.req.body.email,
-            password: this.req.body.password
+            email: this.getPostParam('email'),
+            password: this.getPostParam('password')
         });
 
         const account = await User.manager.createUser(user);
@@ -82,7 +81,7 @@ class PwResetRequest extends BaseCtrl {
     }
 
     async action() {
-        const promise = User.manager.passwordResetToken(this.req.body.email);
+        const promise = User.manager.passwordResetToken(this.getPostParam('email'));
         const [user, token] = await promise;
         TasksLib.sendPasswordResetEmail(user.email, token);
     }

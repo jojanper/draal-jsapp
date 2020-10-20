@@ -7,7 +7,7 @@ const { apiRoutes } = require('../apps');
 const { isAuthenticated } = require('./middlewares');
 const { schema } = require('../graphql');
 
-const APIError = core.error;
+const { APIError } = core.error;
 const utilsLib = core.utils;
 const BaseCtrl = core.ctrl;
 const ApiResponse = core.response;

@@ -1,7 +1,7 @@
 const bcrypt = require('bcrypt');
 const sinon = require('sinon');
 require('mongoose');
-require('sinon-mongoose');
+require('../../../../test/sinon-mongoose');
 
 const { User } = require('../models');
 

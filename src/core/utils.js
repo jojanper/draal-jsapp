@@ -1,17 +1,41 @@
+/* eslint-disable no-unneeded-ternary */
+const childProcess = require('child_process');
+const fs = require('fs');
 const bcrypt = require('bcrypt');
 const util = require('util');
 
-const APIError = require('./error');
+const { APIError, APICmdError } = require('./error');
 const ValidatorAPI = require('./validators');
-
-
-const pause = duration => new Promise(res => setTimeout(res, duration));
-
-const retry = (retries, fn, delay = 500) => fn().catch(err => ((retries > 1)
-    ? pause(delay).then(() => retry(retries - 1, fn, delay * 2)) : Promise.reject(err)));
 
 const DEFAULT_HTTP_METHOD = 'post';
 
+const pause = duration => new Promise(res => setTimeout(res, duration));
+
+const retryPromise = (retries, fn, delay = 500) => fn().catch(err => ((retries > 1)
+    ? pause(delay).then(() => retryPromise(retries - 1, fn, delay * 2)) : Promise.reject(err)));
+
+function promiseExecution(promise) {
+    return promise.then(data => [null, data]).catch(err => [err]);
+}
+
+function execute(cmd, cb, cbErr, options) {
+    return new Promise((resolve, reject) => {
+        const child = childProcess.exec(cmd, options || {});
+
+        // Live console output
+        child.stdout.on('data', cb);
+
+        child.stderr.on('data', cbErr);
+
+        child.on('exit', code => {
+            if (code !== 0) {
+                return reject(code);
+            }
+
+            resolve(code);
+        });
+    });
+}
 
 module.exports = {
     /**
@@ -85,7 +109,7 @@ module.exports = {
      *
      * @returns {object} Promise.
      */
-    retryPromise: retry,
+    retryPromise,
 
     /**
      * Determine time threshold that can be used for user related activities
@@ -154,7 +178,131 @@ module.exports = {
      *
      * @returns {array} Error data as first item, success data as second item.
      */
-    promiseExecution(promise) {
-        return promise.then(data => [null, data]).catch(err => [err]);
-    }
+    promiseExecution,
+
+    /**
+     * Execute specified function until it succeeds. Function is assumed to fail when
+     * it returns null, non-null value indicates success.
+     *
+     * @param {*} timeout Timeout for execution retry, in milliseconds.
+     * @param {*} dataCb Function to execute, no input parameters accepted.
+     *
+     * @returns Promise that resolves to whatever the executing function is returning on success.
+     */
+    retry(timeout, dataCb) {
+        return new Promise(resolve => {
+            timeout = timeout || 100;
+
+            if (dataCb() !== null) {
+                resolve(dataCb());
+                return;
+            }
+
+            const retryFn = () => setTimeout(() => {
+                const obj = dataCb();
+
+                if (obj === null) {
+                    retryFn();
+                    return;
+                }
+
+                resolve(obj);
+            }, timeout);
+
+            retryFn();
+        });
+    },
+
+    /**
+     * Execute given shell command.
+     *
+     * @param {*} cmd Command to execute.
+     * @param {*} options Command options.
+     *
+     * @returns Data from stdout.
+     * @throws {APICmdError} Command execution failed.
+     */
+    async getExecData(cmd, options) {
+        let error = false;
+        let cmdData = '';
+        const errMsg = [];
+
+        const execData = await promiseExecution(execute(cmd, data => {
+            cmdData += data;
+        }, data => {
+            // Check if underlying command failed due to unhandled (node) promise rejection
+            if (data.indexOf('UnhandledPromise') > 0) {
+                error = true;
+            }
+
+            errMsg.push(data.trim());
+        }), options);
+
+        if (execData[0] || error) {
+            // Collect enough error info for the user
+            const messages = [
+                `Failed to execute: ${cmd}`,
+            ];
+            errMsg.forEach(msg => messages.push(msg));
+
+            // Error will be handled in the middleware
+            throw new APICmdError(messages);
+        }
+
+        return cmdData;
+    },
+
+    /**
+     * Read specified file as JSON.
+     *
+     * @param {*} filepath Name of JSON file.
+     *
+     * @returns JSON data, null on failure.
+     */
+    async readJson(filepath) {
+        const readFn = util.promisify(fs.readFile);
+        const [err, data] = await promiseExecution(readFn(filepath));
+
+        if (err) {
+            return null;
+        }
+
+        return JSON.parse(data.toString('utf-8'));
+    },
+
+    /**
+     * Check if specified file exists.
+     *
+     * @param {*} filePath Name of file.
+     *
+     * @returns Promise that resolves to true if file exists and false if file does not exist.
+     */
+    async fileExists(filePath) {
+        const promise = util.promisify(fs.access)(filePath, fs.constants.F_OK);
+        const response = await promiseExecution(promise);
+        return !response[0];
+    },
+
+    /**
+     * Is specified parameter a string.
+     *
+     * @param {*} str Input object.
+     *
+     * @returns true if string, false otherwise.
+     */
+    isString: str => (typeof str === 'string' || str instanceof String),
+
+    /**
+     * Is specified parameter an object.
+     *
+     * @param {*} obj Input object.
+     *
+     * @returns true if object, false otherwise.
+     */
+    isObject: obj => (((typeof obj === 'object') && obj !== null && !Array.isArray(obj)) ? true : false),
+
+    /**
+     * Return name prefix for backend API calls.
+     */
+    getApiPrefix: () => process.env.APIPREFIX || '/api',
 };

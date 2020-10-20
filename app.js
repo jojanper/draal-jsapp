@@ -14,15 +14,18 @@ const MongoStore = require('connect-mongo')(session);
 const dotenv = require('dotenv');
 const chalk = require('chalk');
 const socketIo = require('socket.io');
+const compression = require('compression');
 
 const isProduction = (process.env.NODE_ENV === 'production');
 
 // Load environment variables (API keys etc).
 const secretsFile = (isProduction) ? '.env.secrets' : '.env.test.secrets';
-dotenv.config({ path: process.env.SECRETS_PATH || secretsFile });
+const secretsFilePath = path.join(__dirname, secretsFile);
+dotenv.config({ path: process.env.SECRETS_PATH || secretsFilePath });
 
 const draaljs = require('./src');
 const draaljsConfig = require('./config');
+const { retry } = require('./src/core').utils;
 
 const maxAge = parseInt(process.env.SESSION_EXPIRATION, 10);
 
@@ -48,18 +51,22 @@ class WebApplication {
      * Get port from environment.
      */
     static get port() {
-        return normalizePort(process.env.PORT || '3000');
+        return normalizePort(process.env.PORT || '0');
     }
 
     constructor() {
         // HTTP server object
-        this.server = null;
+        this._server = null;
 
         // Socket server
         this.io = null;
 
         // Express application
         this.app = express();
+    }
+
+    get server() {
+        return this._server;
     }
 
     /**
@@ -91,8 +98,22 @@ class WebApplication {
         // See https://www.twilio.com/blog/2017/11/securing-your-express-app.html
         this.app.use(helmet());
 
-        if (!isProduction) {
-            this.app.use(morgan('dev'));
+        // Morgan logging
+        if (process.env.MORGAN_FORMAT) {
+            this.app.use(morgan(process.env.MORGAN_FORMAT || 'dev'));
+        }
+
+        // Compress content in production setup
+        if (process.env.ENABLE_COMPRESSION) {
+            this.app.use(compression());
+        }
+
+        // Set up static media serving, if needed
+        if (!isProduction || process.env.ENABLE_STATIC_MEDIA) {
+            const postfixPath = process.env.STATIC_MEDIA_POSTFIX_FOLDER || '';
+            this.app.use(express.static(path.join(__dirname, 'public', postfixPath), {
+                maxAge: '30d'
+            }));
         }
 
         this.app.use(session({
@@ -111,10 +132,6 @@ class WebApplication {
      * Set up views for the application.
      */
     _setupView() {
-        if (!isProduction || process.env.ENABLE_STATIC_MEDIA) {
-            this.app.use(express.static(path.join(__dirname, 'public')));
-        }
-
         this.app.set('views', path.join(__dirname, 'views'));
         this.app.set('view engine', 'pug');
     }
@@ -149,7 +166,7 @@ class WebApplication {
      * Bind and listen for connections on the specified host and port.
      */
     listen() {
-        this.server = this.app.listen(WebApplication.port, () => {
+        this._server = this.app.listen(WebApplication.port, () => {
             console.log(
                 '%s App is running at http://localhost:%d in %s mode',
                 chalk.green('✓'), this.app.get('port'), this.app.get('env')
@@ -242,4 +259,9 @@ process.on('SIGINT', () => {
         .then(() => process.exit(0));
 });
 
-module.exports = app.getApp();
+module.exports = {
+    app: app.getApp(),
+
+    // HTTP server handle will be available once it's ready -> return Promise
+    server: timeout => retry(timeout, () => app.server)
+};

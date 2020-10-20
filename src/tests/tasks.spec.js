@@ -4,7 +4,6 @@ const celery = require('node-celery');
 const CeleryClient = require('../../config').celery;
 const TasksLib = require('../tasks');
 
-
 class MockCeleryClient {
     constructor() {
         this.calls = 0;

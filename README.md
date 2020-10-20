@@ -27,7 +27,6 @@
   - [OS X installation](https://docs.mongodb.com/manual/tutorial/install-mongodb-on-os-x/)
 - For backend tasks development:
   - [Python](https://www.python.org/)
-      - Tested with version 2.7
   - [RabbitMQ](https://www.rabbitmq.com/)
 
 ### Install dependencies
@@ -106,7 +105,7 @@ prerequisites for backend tasks development have been installed, the installatio
 sudo apt-get install python3-pip (optional)
 sudo pip3 install virtualenv (optional)
 npm run virtualenv-install
-source virtualenv2.7/draal/bin/activate
+source virtualenv/draal/bin/activate
 ```
 
 This will install python dependencies as virtualenv under current folder.

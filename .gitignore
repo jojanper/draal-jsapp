@@ -10,3 +10,4 @@ virtualenv*
 logs
 *-logs
 *.tar
+builds

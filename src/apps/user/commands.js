@@ -29,11 +29,9 @@ const execute = fn => {
     });
 };
 
-
 program.command('getUsers').description('List users').action(() => {
     execute(() => User.manager.execute('find'));
 });
-
 
 program.command('getAccountProfiles').description('List account profiles').action(() => {
     execute(() => {
