@@ -1,4 +1,5 @@
 /* eslint-disable */
+// https://github.com/mir4ef/sinon-mongoose/blob/feature/sinon-v8-compatible/lib/index.js
 'use strict'
 var sinon = require('sinon')
 var mongoose = require('mongoose')
