@@ -104,7 +104,7 @@
     "codecov": "^3.7.1",
     "commander": "^6.1.0",
     "concurrently": "^5.1.0",
-    "electron": "^9.0.3",
+    "electron": "^9.4.0",
     "electron-packager": "^14.2.1",
     "electron-installer-debian": "^3.0.0",
     "electron-installer-dmg": "^3.0.0",
