@@ -9,6 +9,7 @@
     "url": "https://github.com/jojanper/draal-jsapp/issues"
   },
   "license": "MIT",
+  "bin": "app.js",
   "main": "main.js",
   "productName": "Draal UI with Node",
   "description": "Draal UI with Node",
@@ -27,6 +28,7 @@
     "pack-app:osx": "npm run pack-app -- --platform=osx",
     "pack-app:osx-dmg": "npm run pack-app -- --platform=osx && npm run dmg-install",
     "pack-app:win": "npm run pack-app -- --platform=win",
+    "pack-app-pkg:linux": "pkg -t latest-linux-x64 .",
     "prod-monitor": "pm2 monit",
     "prod-upgrade": "npm run prod-stop && npm run app-update && npm run prod-start",
     "prod-status": "pm2 list",
@@ -77,7 +79,6 @@
     "connect-mongo": "^3.2.0",
     "cookie-parser": "^1.4.5",
     "dotenv": "^8.2.0",
-    "electron-is-dev": "^1.2.0",
     "express": "^4.17.1",
     "express-session": "^1.17.0",
     "express-validator": "^6.4.0",
@@ -90,6 +91,7 @@
     "mongoose": "^5.9.7",
     "morgan": "^1.10.0",
     "node-celery": "^0.2.8",
+    "open": "^7.4.2",
     "passport": "^0.4.1",
     "passport-jwt": "^4.0.0",
     "passport-local": "^1.0.0",
@@ -118,6 +120,7 @@
     "mocha": "^7.2.0",
     "nodemon": "^2.0.2",
     "nyc": "^15.0.0",
+    "pkg": "^4.4.9",
     "rimraf": "^3.0.2",
     "shelljs": "^0.8.3",
     "sinon": "^9.2.0",
@@ -181,5 +184,19 @@
   },
   "engines": {
     "node": ">= 12.0.0"
+  },
+  "pkg": {
+    "scripts": [
+      "config/**/*.js",
+      "src/**",
+      "app.js"
+    ],
+    "assets": [
+      "node_modules/open/xdg-open",
+      "public/**/**",
+      ".env.secrets",
+      "favicon.png",
+      "views/**"
+    ]
   }
 }

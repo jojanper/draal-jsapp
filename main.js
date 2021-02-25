@@ -1,8 +1,17 @@
 /* eslint-disable no-unused-vars */
 const {
-    app, BrowserWindow, ipcMain, dialog, nativeImage
+    app, BrowserWindow, ipcMain, dialog, nativeImage, remote
 } = require('electron');
-const isDev = require('electron-is-dev');
+
+// https://github.com/sindresorhus/electron-is-dev/blob/main/index.js
+function isElectronDev() {
+    const app2 = app || remote.app;
+    const isEnvSet = 'ELECTRON_IS_DEV' in process.env;
+    const getFromEnv = parseInt(process.env.ELECTRON_IS_DEV, 10) === 1;
+    return isEnvSet ? getFromEnv : !app2.isPackaged;
+}
+
+const isDev = isElectronDev();
 
 // This will start the Node HTTP server
 const server = require('./app');

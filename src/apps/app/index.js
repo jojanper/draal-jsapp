@@ -86,6 +86,28 @@ class MediaFileDownload extends BaseCtrl {
     }
 }
 
+/**
+ * Close server.
+ */
+class CloseServer extends BaseCtrl {
+    static get CLASSINFO() {
+        return {
+            INFO: 'Close server',
+            NAME: 'close',
+            METHOD: 'post',
+            URLPREFIX
+        };
+    }
+
+    action() {
+        if (process.pkg) {
+            setTimeout(() => process.kill(process.pid, 'SIGINT'), 50);
+        }
+
+        return Promise.resolve();
+    }
+}
+
 // Export controllers
 module.exports = [
     {
@@ -96,5 +118,8 @@ module.exports = [
     },
     {
         cls: MediaFileDownload
+    },
+    {
+        cls: CloseServer
     }
 ];

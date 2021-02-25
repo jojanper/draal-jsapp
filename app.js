@@ -15,6 +15,12 @@ const dotenv = require('dotenv');
 const chalk = require('chalk');
 const socketIo = require('socket.io');
 const compression = require('compression');
+const open = require('open');
+
+// Set explicitly production mode if executed under pkg
+if (process.pkg) {
+    process.env.NODE_ENV = 'production';
+}
 
 const isProduction = (process.env.NODE_ENV === 'production');
 
@@ -77,6 +83,20 @@ class WebApplication {
     }
 
     /**
+     * Return used application port.
+     */
+    get appPort() {
+        return this.server.address().port;
+    }
+
+    /**
+     * Get application parameter.
+     */
+    getParam(param) {
+        return this.app.get(param);
+    }
+
+    /**
      * Create and setup the Express application.
      */
     createApp() {
@@ -111,6 +131,7 @@ class WebApplication {
         // Set up static media serving, if needed
         if (!isProduction || process.env.ENABLE_STATIC_MEDIA) {
             const postfixPath = process.env.STATIC_MEDIA_POSTFIX_FOLDER || '';
+            console.log('postfixPath', postfixPath);
             this.app.use(express.static(path.join(__dirname, 'public', postfixPath), {
                 maxAge: '30d'
             }));
@@ -166,13 +187,7 @@ class WebApplication {
      * Bind and listen for connections on the specified host and port.
      */
     listen() {
-        this._server = this.app.listen(WebApplication.port, () => {
-            console.log(
-                '%s App is running at http://localhost:%d in %s mode',
-                chalk.green('✓'), this.app.get('port'), this.app.get('env')
-            );
-            console.log('  Press CTRL-C to stop\n');
-        });
+        this._server = this.app.listen(WebApplication.port);
 
         /**
          * Event listener for HTTP server "listening" event.
@@ -236,13 +251,33 @@ class WebApplication {
 // Create application
 const app = new WebApplication().createApp();
 
+// HTTP server handle will be available once it's ready -> return Promise
+const server = timeout => retry(timeout, () => app.server);
+
 // Setup up backend tasks handler
 const celerySetup = () => {
-    draaljsConfig.celery.connect(() => {
-        // Application is now ready.
+    draaljsConfig.celery.connect(async () => {
+        // Start application
         app.listen();
+
+        // Wait until server is up and running and port is known
+        await server();
+
+        const url = `http://localhost:${app.appPort}`;
+        console.log(
+            '%s App is running at %s in %s mode',
+            chalk.green('✓'), url, app.getParam('env')
+        );
+        console.log('  Press CTRL-C to stop\n');
+
         app.createSocket();
         app.listenSocket();
+
+        // Open browser for the user, otherwise user does not know the
+        // port where the server is running.
+        if (process.pkg) {
+            open(url);
+        }
     });
 };
 
@@ -261,7 +296,5 @@ process.on('SIGINT', () => {
 
 module.exports = {
     app: app.getApp(),
-
-    // HTTP server handle will be available once it's ready -> return Promise
-    server: timeout => retry(timeout, () => app.server)
+    server,
 };
