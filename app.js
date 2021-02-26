@@ -17,9 +17,12 @@ const socketIo = require('socket.io');
 const compression = require('compression');
 const open = require('open');
 
+let { SECRETS_PATH } = process.env;
+
 // Set explicitly production mode if executed under pkg
 if (process.pkg) {
     process.env.NODE_ENV = 'production';
+    SECRETS_PATH = path.join(__dirname, SECRETS_PATH);
 }
 
 const isProduction = (process.env.NODE_ENV === 'production');
@@ -27,7 +30,7 @@ const isProduction = (process.env.NODE_ENV === 'production');
 // Load environment variables (API keys etc).
 const secretsFile = (isProduction) ? '.env.secrets' : '.env.test.secrets';
 const secretsFilePath = path.join(__dirname, secretsFile);
-dotenv.config({ path: process.env.SECRETS_PATH || secretsFilePath });
+dotenv.config({ path: SECRETS_PATH || secretsFilePath });
 
 const draaljs = require('./src');
 const draaljsConfig = require('./config');
@@ -103,7 +106,6 @@ class WebApplication {
         this.app.set('port', WebApplication.port);
 
         this._setupPlugins();
-        this._setupView();
         this._setupParsers();
         this._setupAuth();
         this._setupAppLogic();
@@ -131,7 +133,6 @@ class WebApplication {
         // Set up static media serving, if needed
         if (!isProduction || process.env.ENABLE_STATIC_MEDIA) {
             const postfixPath = process.env.STATIC_MEDIA_POSTFIX_FOLDER || '';
-            console.log('postfixPath', postfixPath);
             this.app.use(express.static(path.join(__dirname, 'public', postfixPath), {
                 maxAge: '30d'
             }));
@@ -147,14 +148,6 @@ class WebApplication {
                 autoReconnect: true
             })
         }));
-    }
-
-    /**
-     * Set up views for the application.
-     */
-    _setupView() {
-        this.app.set('views', path.join(__dirname, 'views'));
-        this.app.set('view engine', 'pug');
     }
 
     /**

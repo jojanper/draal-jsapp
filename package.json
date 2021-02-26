@@ -9,7 +9,7 @@
     "url": "https://github.com/jojanper/draal-jsapp/issues"
   },
   "license": "MIT",
-  "bin": "app.js",
+  "bin": "app-pkg.js",
   "main": "main.js",
   "productName": "Draal UI with Node",
   "description": "Draal UI with Node",
@@ -96,7 +96,6 @@
     "passport-jwt": "^4.0.0",
     "passport-local": "^1.0.0",
     "prettyjson": "^1.2.1",
-    "pug": "^3.0.0",
     "socket.io": "^2.3.0",
     "temp-dir": "^2.0.0",
     "winston": "^3.2.1"
@@ -189,14 +188,12 @@
     "scripts": [
       "config/**/*.js",
       "src/**",
-      "app.js"
+      "app.js",
+      "app-pkg.js"
     ],
     "assets": [
-      "node_modules/open/xdg-open",
       "public/**/**",
-      ".env.secrets",
-      "favicon.png",
-      "views/**"
+      ".env.pkg"
     ]
   }
 }
