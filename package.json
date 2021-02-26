@@ -16,19 +16,14 @@
   "scripts": {
     "app-update": "npm run git-update && npm i --production",
     "commands": "node commands",
-    "debian-install": "electron-installer-debian --src builds/draaljsapp-linux-x64/ --arch amd64 --config config/electron/debian.json",
+    "debian-install": "electron-installer-debian",
     "dev-start": "pm2 start pm2.config.js --env production --only draaljsapp-dev",
     "dev-stop": "pm2 stop draaljsapp-dev",
-    "dmg-install": "electron-installer-dmg builds/draaljsapp-darwin-x64/draaljsapp.app draaljsapp --out=./builds --overwrite --icon='./config/electron/favicon.icns'",
     "git-update": "git fetch origin && git checkout master && git reset --hard origin/master",
-    "osx-install": "npm run zip-app -- --folder=builds/draaljsapp-darwin-x64",
     "start:electron": "electron .",
     "pack-app": "npm run commands -- pack-app",
-    "pack-app:linux": "npm run pack-app && npm run debian-install",
-    "pack-app:osx": "npm run pack-app -- --platform=osx",
-    "pack-app:osx-dmg": "npm run pack-app -- --platform=osx && npm run dmg-install",
-    "pack-app:win": "npm run pack-app -- --platform=win",
-    "pack-app-pkg:linux": "pkg -t latest-linux-x64 .",
+    "pack-app:linux": "npm run pack-app",
+    "pkg": "pkg",
     "prod-monitor": "pm2 monit",
     "prod-upgrade": "npm run prod-stop && npm run app-update && npm run prod-start",
     "prod-status": "pm2 list",
@@ -195,5 +190,22 @@
       "public/**/**",
       ".env.pkg"
     ]
+  },
+  "package": {
+    "type": "pkg",
+    "types": {
+      "electron": {
+        "linux": {
+          "ext": "deb",
+          "name": "amd64"
+        }
+      },
+      "pkg": {
+        "linux": {
+          "ext": "zip",
+          "name": "linux-x64"
+        }
+      }
+    }
   }
 }

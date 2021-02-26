@@ -66,7 +66,7 @@ app.on('activate', () => {
     }
 });
 
-ipcMain.on('openModal', (event, name) => {
+ipcMain.on('open-modal', (event, name) => {
     dialog.showOpenDialog(mainWindow, {
         properties: ['openFile']
     }).then(data => {
@@ -79,7 +79,7 @@ ipcMain.on('openModal', (event, name) => {
     });
 });
 
-ipcMain.on('saveModal', (event, name) => {
+ipcMain.on('save-modal', (event, name) => {
     dialog.showSaveDialog(mainWindow, {}).then(data => {
         if (!data.canceled) {
             mainWindow.webContents.send('save-file', {

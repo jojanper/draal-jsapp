@@ -26,6 +26,7 @@ module.exports = program => {
     program
         .command('create-release')
         .description('Create release')
+        .storeOptionsAsProperties(true)
         .option('--version <version>', 'Release version', version)
         .option('--branch <branch>', 'Release branch', 'master')
         .option('--type <type>', 'Release type', 'license')
