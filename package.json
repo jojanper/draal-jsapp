@@ -13,6 +13,9 @@
   "main": "main.js",
   "productName": "Draal UI with Node",
   "description": "Draal UI with Node",
+  "os": [
+    "linux"
+  ],
   "scripts": {
     "app-update": "npm run git-update && npm i --production",
     "commands": "node commands",
@@ -29,7 +32,6 @@
     "prod-status": "pm2 list",
     "prod-start": "pm2 start pm2.config.js --env production --only draaljsapp",
     "prod-stop": "pm2 stop draaljsapp",
-    "windows-install": "npm run zip-app -- --folder=builds/draaljsapp-win32-x64",
     "zip-app": "npm run commands -- zip-app",
     "cibuild": "npm run lint && npm test",
     "codecov": "codecov --disable=gcov --root=./coverage",
@@ -95,16 +97,18 @@
     "temp-dir": "^2.0.0",
     "winston": "^3.2.1"
   },
+  "optionalDependencies": {
+    "electron-store": "^7.0.2"
+  },
   "devDependencies": {
+    "adm-zip": "^0.5.3",
     "chai": "^4.2.0",
     "codecov": "^3.7.1",
     "commander": "^6.1.0",
     "concurrently": "^5.1.0",
-    "electron": "^9.0.3",
+    "electron": "^11.3.0",
     "electron-packager": "^14.2.1",
     "electron-installer-debian": "^3.0.0",
-    "electron-installer-dmg": "^3.0.0",
-    "electron-winstaller": "^4.0.0",
     "eslint": "^7.11.0",
     "eslint-config-airbnb-base": "^14.1.0",
     "eslint-plugin-import": "^2.20.2",
@@ -192,20 +196,6 @@
     ]
   },
   "package": {
-    "type": "pkg",
-    "types": {
-      "electron": {
-        "linux": {
-          "ext": "deb",
-          "name": "amd64"
-        }
-      },
-      "pkg": {
-        "linux": {
-          "ext": "zip",
-          "name": "linux-x64"
-        }
-      }
-    }
+    "type": "pkg"
   }
 }

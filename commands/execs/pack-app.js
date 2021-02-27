@@ -1,5 +1,4 @@
 const { execute } = require('../utils');
-
 const packageJson = require('../../package.json');
 
 const BIN = 'node_modules/electron-packager/bin/electron-packager.js';
@@ -8,6 +7,7 @@ const BUILD_PATH = `builds/${packageJson.name}-${process.platform}-x64/`;
 
 // Package application as pkg
 async function packPkgApp(cmdOptions) {
+    // Available targets for each support platform
     const targets = {
         linux: 'node12-linux-x64'
     };
