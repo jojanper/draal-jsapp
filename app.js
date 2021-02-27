@@ -22,7 +22,7 @@ let { SECRETS_PATH } = process.env;
 // Set explicitly production mode if executed under pkg
 if (process.pkg) {
     process.env.NODE_ENV = 'production';
-    SECRETS_PATH = path.join(__dirname, SECRETS_PATH);
+    SECRETS_PATH = path.join(__dirname, '.env.pkg');
 }
 
 const isProduction = (process.env.NODE_ENV === 'production');
