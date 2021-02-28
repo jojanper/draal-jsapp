@@ -1,0 +1,140 @@
+{
+    "header": {
+        "selectLanguage": "Vaihda kieli",
+        "languageSelections": [
+            {
+                "title": "Englanti",
+                "lang": "en"
+            }
+        ],
+        "newVersion": "Uusi versio saatavilla"
+    },
+    "homepage": {
+        "message": "Tervetuloa Epsilon sovellukseen"
+    },
+    "audioPage": {
+        "deleteItem": "Poista",
+        "exportItem": "Ota mukaan audio metan export tiedostoon"
+    },
+    "configuratorPage": {
+        "title": "Lomakkeen luonti",
+        "confPanelTitle": "Luo lomake mallia käyttäen",
+        "downloadLink": "Download",
+        "createRec": "Lähetä",
+        "clearForm": "Tyhjennä"
+    },
+    "dogApiPage": {
+        "quickHelp": "Pikaopas",
+        "helpContentTitle": "Lyhyt kuvaus ja ohje",
+        "helpContent": "Katsele erirotuisien koirien kuvia. Valitse ensin koirarodun ryhmä ja sen jälkeen mahdollisesti tarkempi rotu jälkimmäisestä valikosta. Koirarotujen nimet valikoissa ovat englanniksi.",
+        "breedPlaceHolder": "Valitse rotu",
+        "breedLabel": "Koirarotu",
+        "subBreedPlaceHolder": "Valitse tarkempi rotu",
+        "subBreedLabel": "Tarkempi rotu"
+    },
+    "fileUtils": {
+        "title": "Median tiedot",
+        "text": "Näytä tarkemmat tiedot. Pudota mediatiedosto allaolevan ikonin päälle"
+    },
+    "form": {
+        "remoteInputDropTitle": "Pudota tiedosto tänne"
+    },
+    "timeline": {
+        "unsaved": "Tallentamattomia muutoksia",
+        "save": "Tallenna muutokset",
+        "new": "Uusi tapahtuma",
+        "zoomin": "Lähennä",
+        "zoomout": "Loitonna",
+        "lengthMenu": "Aseta aikajanan pituus",
+        "info": "Pikaopas"
+    },
+    "$vuetify": {
+        "badge": "Badge",
+        "close": "Close",
+        "dataIterator": {
+            "noResultsText": "No matching records found",
+            "loadingText": "Loading items..."
+        },
+        "dataTable": {
+            "itemsPerPageText": "Rows per page:",
+            "ariaLabel": {
+                "sortDescending": "Sorted descending.",
+                "sortAscending": "Sorted ascending.",
+                "sortNone": "Not sorted.",
+                "activateNone": "Activate to remove sorting.",
+                "activateDescending": "Activate to sort descending.",
+                "activateAscending": "Activate to sort ascending."
+            },
+            "sortBy": "Sort by"
+        },
+        "dataFooter": {
+            "itemsPerPageText": "Items per page:",
+            "itemsPerPageAll": "All",
+            "nextPage": "Next page",
+            "prevPage": "Previous page",
+            "firstPage": "First page",
+            "lastPage": "Last page",
+            "pageText": "{0}-{1} of {2}"
+        },
+        "datePicker": {
+            "itemsSelected": "{0} selected",
+            "nextMonthAriaLabel": "Next month",
+            "nextYearAriaLabel": "Next year",
+            "prevMonthAriaLabel": "Previous month",
+            "prevYearAriaLabel": "Previous year"
+        },
+        "noDataText": "No data available",
+        "carousel": {
+            "prev": "Previous visual",
+            "next": "Next visual",
+            "ariaLabel": {
+                "delimiter": "Carousel slide {0} of {1}"
+            }
+        },
+        "calendar": {
+            "moreEvents": "{0} more"
+        },
+        "fileInput": {
+            "counter": "{0} files",
+            "counterSize": "{0} files ({1} in total)"
+        },
+        "timePicker": {
+            "am": "AM",
+            "pm": "PM"
+        },
+        "pagination": {
+            "ariaLabel": {
+                "wrapper": "Pagination Navigation",
+                "next": "Next page",
+                "previous": "Previous page",
+                "page": "Goto Page {0}",
+                "currentPage": "Current Page, Page {0}"
+            }
+        }
+    },
+    "validation": {
+        "alpha": "{_field_} voi sisältää vain kirjaimia",
+        "alpha_dash": "{_field_} voi sisältää vain kirajimia, numeroita, ja tavu-, tai alaviivoja",
+        "alpha_num": "{_field_} voi sisältää vain kirjaimia ja numeroita",
+        "between": "Kentän {_field_} tulee olla {min} ja {max} väliltä",
+        "confirmed": "{_field_} ei vastannut {target}",
+        "digits": "{_field_} tulee olla numeerinen ja tarkalleen {length} merkkiä",
+        "dimensions": "{_field_} tulee olla {width} pikseliä kertaa {height} pikseliä",
+        "email": "{_field_} tulee olla kelvollinen sähköpostiosoite",
+        "excluded": "{_field_} tulee olla kelvollinen arvo",
+        "ext": "{_field_} tulee olla kelvollinen tiedosto",
+        "image": "{_field_} tulee olla kelvollinen kuva",
+        "max": "{_field_} ei saa olla pidempi kuin {length} merkkiä",
+        "mimes": "{_field_} tulee olla kelvollinen tiedostotyyppi",
+        "min": "{_field_} tulee olla vähintään {length} merkkiä",
+        "numeric": "{_field_} voi sisältää vain numeroita",
+        "oneOf": "{_field_} tulee olla kelvollinen arvo",
+        "regex": "{_field_} tulee olla kelvollinen säännöllinen lauseke",
+        "required": "Pakollinen",
+        "required_if": "Pakollinen",
+        "size": "{_field_} tulee olla vähemmän kuin {size}kB",
+        "wavaudio": "Ei WAV tiedosto",
+        "jsonfile": "Ei JSON tiedosto",
+        "filequery": "Täytä puuttuvat tiedot alapuolella"
+    }
+}

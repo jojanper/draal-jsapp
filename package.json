@@ -44,7 +44,8 @@
     "docker-rm": "docker rm draaljs",
     "docker-stop-webserver": "docker stop nginx",
     "docker-rm-webserver": "docker rm nginx",
-    "ngapp-prepare": "rimraf angular-app/dist && mkdir -p angular-app/dist && mkdir -p public/frontend",
+    "ng-app-prepare": "rimraf angular-app/dist && mkdir -p angular-app/dist && mkdir -p public/ng",
+    "epsilon-app-prepare": "rimraf epsilon/dist && mkdir -p epsilon/dist && mkdir -p public/epsilon",
     "fullstack-dev": "npm run ngapp-prepare && concurrently --names backend,frontend,template \"npm start\" \"cd angular-app && npm run dev-watch -- --deploy-url /frontend/\" \"npm run client-watch\"",
     "fullstack-prod": "npm run ngapp-prepare && concurrently --names backend,frontend,template \"npm start\" \"cd angular-app && npm run prod-watch -- --deploy-url /frontend/\" \"npm run client-watch\"",
     "lint": "eslint *.js ./config/*.js ./src/** ./test/** ./commands/**",
@@ -62,11 +63,16 @@
     "pylint": "flake8 --config=.flake8 -v pytasks",
     "pytests": "nose2 -s . -v --with-coverage --coverage-report term-missing --coverage pytasks",
     "app-tarball": "bash config/app/tarball.sh",
-    "ng-client-copy": "rm -Rf public/frontend/* & cp -r -u angular-app/dist/* public/frontend/",
+    "ng-client-copy": "rm -Rf public/ng/* & cp -r -u angular-app/dist/* public/ng/",
+    "epsilon-client-copy": "rm -Rf public/epsilon/* & cp -r -u epsilon/dist/* public/epsilon/",
     "ng-build-prod": "cd angular-app && npm run build -- --delete-output-path=true && cd ..",
+    "epsilon-build-prod": "cd epsilon && npm run build && cd ..",
     "ng-app-prod": "npm run ng-build-prod && npm run ng-client-copy",
+    "epsilon-app-prod": "npm run epsilon-build-prod && npm run epsilon-client-copy",
     "ng-build-prod-frontend": "cd angular-app && npm run build -- --delete-output-path=true --deploy-url /frontend/",
-    "ng-app-prod-frontend": "npm run ng-build-prod-frontend && npm run ng-client-copy && npm run client-template"
+    "ng-app-prod-frontend": "npm run ng-build-prod-frontend && npm run ng-client-copy && npm run client-template",
+    "ng-app:build-prod": "npm run ng-app-prepare && npm run ng-app-prod",
+    "epsilon-app:build-prod": "npm run epsilon-app-prepare && npm run epsilon-app-prod"
   },
   "dependencies": {
     "bcrypt": "5.0.0",
@@ -191,7 +197,7 @@
       "app-pkg.js"
     ],
     "assets": [
-      "public/**/**",
+      "public/epsilon/**/**",
       ".env.pkg"
     ]
   },
