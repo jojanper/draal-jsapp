@@ -55,9 +55,6 @@ describe('App API', () => {
     });
 
     it('app is closed', done => {
-        testrunner(testapp).post(closeApi).expect(200).end((err, res) => {
-            console.log(res);
-            done(err);
-        });
+        testrunner(testapp).post(closeApi).expect(200).end(done);
     });
 });

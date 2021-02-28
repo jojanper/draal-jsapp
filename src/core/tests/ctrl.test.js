@@ -15,7 +15,6 @@ class TestCtrl extends BaseCtrl {
     }
 
     async action() {
-        console.log('ACTION');
         return 'success';
     }
 }

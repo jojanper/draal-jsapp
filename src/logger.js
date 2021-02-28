@@ -19,14 +19,23 @@ if (!fs.existsSync(logPrefix)) {
 
 const transports = [];
 
+const formatter = info => `{"timestamp": "${info.timestamp}", "level": "${info.level}", "message": "${info.message}"}`;
+
 // Console logger not used in production
 if (process.env.NODE_ENV !== 'production') {
-    transports.push(new winston.transports.Console());
+    transports.push(new winston.transports.Console({
+        format: winston.format.combine(
+            winston.format.colorize(),
+            winston.format.json(),
+            winston.format.timestamp(),
+            winston.format.printf(formatter)
+        )
+    }));
 }
 
 //
-// Write to all logs with level `debug` and below to `combined.log`
-// Write all logs error (and below) to `error.log`.
+// Write to all logs with level `debug` and below to `app-debug.log`
+// Write all logs error (and below) to `app-error.log`.
 //
 console.log(`Logger file creation state: ${process.env.APP_LOGGER_DISABLE_FILES}`);
 if (process.env.APP_LOGGER_DISABLE_FILES !== 0) {
@@ -40,8 +49,6 @@ if (process.env.APP_LOGGER_DISABLE_FILES !== 0) {
         maxsize
     }));
 }
-
-const formatter = info => `{"timestamp": "${info.timestamp}", "level": "${info.level}", "message": "${info.message}"}`;
 
 // Main logger
 const logger = winston.createLogger({

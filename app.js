@@ -122,7 +122,11 @@ class WebApplication {
 
         // Morgan logging
         if (process.env.MORGAN_FORMAT) {
-            this.app.use(morgan(process.env.MORGAN_FORMAT || 'dev'));
+            this.app.use(morgan(process.env.MORGAN_FORMAT || 'dev', {
+                stream: {
+                    write: msg => draaljs.logger.info(msg.trim())
+                }
+            }));
         }
 
         // Compress content in production setup
@@ -199,18 +203,18 @@ class WebApplication {
                 throw error;
             }
 
-            const { port } = WebApplication.port;
+            const port = this.appPort;
             const bind = typeof port === 'string' ? `Pipe ${port}` : `Port ${port}`;
 
             // Handle specific listen errors with friendly messages
             switch (error.code) {
                 case 'EACCES':
-                    console.error(`${bind} requires elevated privileges`);
+                    draaljs.logger.error(`${bind} requires elevated privileges`);
                     process.exit(1);
                     break;
 
                 case 'EADDRINUSE':
-                    console.error(`${bind} is already in use`);
+                    draaljs.logger.error(`${bind} is already in use`);
                     process.exit(1);
                     break;
 
@@ -249,12 +253,9 @@ const server = timeout => retry(timeout, () => app.server);
 
 // Setup up backend tasks handler
 const celerySetup = () => {
-    draaljsConfig.celery.connect(async () => {
+    draaljsConfig.celery.connect(() => {
         // Start application
         app.listen();
-
-        // Wait until server is up and running and port is known
-        await server();
 
         const url = `http://localhost:${app.appPort}`;
         console.log(
