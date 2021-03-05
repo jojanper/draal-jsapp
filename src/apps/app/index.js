@@ -1,12 +1,15 @@
 /* eslint-disable class-methods-use-this */
-const core = require('../../core');
+const os = require('os');
+const path = require('path');
 
+const core = require('../../core');
 const { version } = require('../../../package.json');
 
 const BaseCtrl = core.ctrl;
 const BaseFileCtrl = core.fileCtrl;
 const ApiResponse = core.response;
 const { getExecData } = core.utils;
+const { APIError } = core.error;
 
 // API URL prefix
 const URLPREFIX = 'app';
@@ -25,10 +28,48 @@ class AppMetaData extends BaseCtrl {
     }
 
     async action() {
+        const tempfile = path.resolve(os.tmpdir(), 'test.mp4');
+
         return new ApiResponse({
             data: {
-                version
+                version,
+                tempfile
             }
+        });
+    }
+}
+
+/**
+ * Command execution.
+ */
+class CommandExecution extends BaseCtrl {
+    static get CLASSINFO() {
+        return {
+            INFO: 'Command execution',
+            NAME: 'enc',
+            URLPREFIX,
+            METHOD: 'get'
+        };
+    }
+
+    async action() {
+        if (!this.hasQueryParam('cmd')) {
+            throw new APIError('No cmd query parameter found');
+        }
+
+        if (!this.hasQueryParam('output')) {
+            throw new APIError('No output query parameter found');
+        }
+
+        const cmd = this.getQueryParam('cmd');
+
+        // Execute command, the actual command is given as query parameter
+        const output = this.getQueryParam('output');
+        await getExecData(`${cmd} ${output}`);
+
+        // Success, return the output file as response
+        return new ApiResponse({
+            file: output.slice(1, -1) // Remove double quotes around the name
         });
     }
 }
@@ -112,6 +153,9 @@ class CloseServer extends BaseCtrl {
 module.exports = [
     {
         cls: AppMetaData
+    },
+    {
+        cls: CommandExecution
     },
     {
         cls: MediaFileUpload

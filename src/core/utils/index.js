@@ -3,9 +3,11 @@ const childProcess = require('child_process');
 const fs = require('fs');
 const bcrypt = require('bcrypt');
 const util = require('util');
+const path = require('path');
 
-const { APIError, APICmdError } = require('./error');
-const ValidatorAPI = require('./validators');
+const { APIError, APICmdError } = require('../error');
+const ValidatorAPI = require('../validators');
+const Wave = require('./wave');
 
 const DEFAULT_HTTP_METHOD = 'post';
 
@@ -20,7 +22,9 @@ function promiseExecution(promise) {
 
 function execute(cmd, cb, cbErr, options) {
     return new Promise((resolve, reject) => {
-        const child = childProcess.exec(cmd, options || {});
+        options = options || {};
+        const execOptions = { ...options, windowsHide: true };
+        const child = childProcess.exec(cmd, execOptions);
 
         // Live console output
         child.stdout.on('data', cb);
@@ -35,6 +39,55 @@ function execute(cmd, cb, cbErr, options) {
             resolve(code);
         });
     });
+}
+
+async function asyncFilter(array, predicate) {
+    const results = await Promise.all(array.map(predicate));
+    return array.filter((_v, index) => results[index]);
+}
+
+async function isDirectory(file) {
+    const promise = util.promisify(fs.stat);
+    const [err, stat] = await promiseExecution(promise(file));
+    return !err && stat.isDirectory();
+}
+
+async function getFilteredFiles(files, pathPrefix, { postfix }) {
+    let isDir = await isDirectory(pathPrefix);
+    const subPrefix = isDir && !pathPrefix.endsWith(path.sep) ? path.sep : '';
+
+    const data = await asyncFilter(files, async file => {
+        if (postfix && file.endsWith(postfix)) {
+            return true;
+        }
+
+        isDir = await isDirectory(`${pathPrefix}${subPrefix}${file}`);
+        if (isDir) {
+            return true;
+        }
+
+        return !postfix;
+    });
+
+    return data.map(file => `${pathPrefix}${subPrefix}${file}`);
+}
+
+async function getFileListing(pathPrefix, options) {
+    let prefix = pathPrefix;
+    const promise = util.promisify(fs.readdir);
+    let [err, files] = await promiseExecution(promise(pathPrefix));
+
+    if (err !== null) {
+        const pathPrefixUpper = path.dirname(pathPrefix);
+
+        [err, files] = await promiseExecution(promise(pathPrefixUpper));
+        if (err === null) {
+            prefix = `${pathPrefixUpper}${path.sep}`;
+            files = files.filter(file => `${prefix}${file}`.indexOf(pathPrefix) > -1);
+        }
+    }
+
+    return (err === null) ? getFilteredFiles(files, prefix, options) : [];
 }
 
 module.exports = {
@@ -305,4 +358,9 @@ module.exports = {
      * Return name prefix for backend API calls.
      */
     getApiPrefix: () => process.env.APIPREFIX || '/api',
+
+    Wave,
+
+    getFilteredFiles,
+    getFileListing
 };
