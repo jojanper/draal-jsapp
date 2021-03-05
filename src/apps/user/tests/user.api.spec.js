@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-expressions */
 const sinon = require('sinon');
 const { format } = require('util');
+const jwt = require('jsonwebtoken');
 
 const TasksLib = require('../../../tasks');
 const AccountProfile = require('../models/accountprofile');
@@ -242,18 +243,25 @@ describe('API token', () => {
     const api = '/api/auth/v1/token';
     const targetTestUrl = '/api/auth/logout';
 
-    const expiredToken = 'eyJhbGciOiJIUzI1NiJ9.eyJ1c2VyIjp7ImV4cGlyZXMiOjQzMjAwMDAwLCJhY3RpdmUi'
-        + 'OnRydWUsInVwZGF0ZWRBdCI6IjIwMTctMTItMDFUMTA6MzI6MDAuMjg1WiIsImNyZWF0ZWRBdCI6IjIwMTctMT'
-        + 'ItMDFUMTA6MTY6NTMuMDYxWiIsImVtYWlsIjoianVoYUBub2tpYS5jb20ifSwiZXhwaXJlcyI6MTU2Nzc5NjQ0'
-        + 'OTY3NX0.qS5saJWoTtmOQWlQADAJi3Zs2-_RqUB3NPKFD8nsI0w';
+    const tokenCredentials = appTestHelper.credentials;
 
     let token;
+    let expiredToken;
 
     beforeEach(done => {
-        appTestHelper.activateUser(credentials.email, user => {
-            done();
+        console.log('ACTIVATE');
+        appTestHelper.activateUser(tokenCredentials.email, user => {
+            console.log(user);
             this.user = user;
             ({ token } = user.tokenResponse());
+
+            const payload = {
+                user: user.loginResponse(),
+                expires: Date.now() - parseInt(process.env.TOKEN_EXPIRATION, 10),
+            };
+            expiredToken = jwt.sign(JSON.stringify(payload), process.env.SESSION_SECRET);
+
+            done();
         });
     });
 
@@ -267,7 +275,7 @@ describe('API token', () => {
         // GIVEN active user
         // WHEN user retrieves API token
         // THEN it should succeed
-        testrunner(testapp).post(api).send(credentials).expect(200)
+        testrunner(testapp).post(api).send(tokenCredentials).expect(200)
             .end((err, res) => {
                 expect(res.body.messages.length).to.equal(1);
                 expect(res.body.messages[0]).to.equal('Token creation successful');
@@ -279,12 +287,12 @@ describe('API token', () => {
     });
 
     it('is missing from request', async () => {
-        await testrunner(testapp).post(targetTestUrl).send(credentials).expect(401);
+        await testrunner(testapp).post(targetTestUrl).send(tokenCredentials).expect(401);
     });
 
     it('has expired', async () => {
         const res = await testrunner(testapp).post(targetTestUrl)
-            .set('Authorization', `Token ${expiredToken}`).send(credentials)
+            .set('Authorization', `Token ${expiredToken}`).send(tokenCredentials)
             .expect(401);
 
         expect(res.body.messages.length).to.equal(1);
@@ -293,7 +301,7 @@ describe('API token', () => {
 
     it('is accepted for API call', async () => {
         await testrunner(testapp).post(targetTestUrl)
-            .set('Authorization', `Token ${token}`).send(credentials)
+            .set('Authorization', `Token ${token}`).send(tokenCredentials)
             .expect(200);
     });
 });

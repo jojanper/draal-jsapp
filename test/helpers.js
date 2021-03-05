@@ -12,6 +12,8 @@ global.testrunner = require('supertest');
 global.expect = chai.expect;
 
 global.appTestHelper = {
+    credentials: { email: 'test-token@test.com', password: '1234567' },
+
     User,
 
     getUserByEmail: email => User.manager.execute('findOne', { email }),

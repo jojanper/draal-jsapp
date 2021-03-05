@@ -48,7 +48,7 @@ describe('App API', () => {
     it('app metadata query is supported', done => {
         testrunner(testapp).get(metaApi).expect(200).end((err, res) => {
             expect(Object.keys(res.body.data)).to.have.all.members([
-                'version'
+                'version', 'tempfile'
             ]);
             done(err);
         });
