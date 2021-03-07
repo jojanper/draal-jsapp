@@ -81,7 +81,7 @@ async function fileExists(filePath) {
 /**
  * Filter specified files (string) array using given filtering conditions.
  */
-async function getFilteredFiles(files, pathPrefix, { postfix, basename }) {
+async function getFilteredFiles(files, pathPrefix, { postfix, basename, onlydir }) {
     // Is base path actually a directory
     let isDir = await isDirectory(pathPrefix);
 
@@ -90,6 +90,12 @@ async function getFilteredFiles(files, pathPrefix, { postfix, basename }) {
 
     // Filter files
     const data = await asyncFilter(files, async file => {
+        // Include only directories
+        if (onlydir) {
+            isDir = await isDirectory(`${pathPrefix}${subPrefix}${file}`);
+            return isDir;
+        }
+
         // Include if file ends with one of the specified patterns
         const isExt = postfix.some(item => file.endsWith(item));
         if (isExt) {
@@ -193,6 +199,7 @@ async function getRecursiveFileListing(pathPrefix, { postfix, basename, basedir 
  * @param {*} options.postfix File ending pattern.
  * @param {*} options.basename File starting pattern.
  * @param {*} options.basedir Base path must be path to a directory.
+ * @param {*} options.onlydir Include only directories in the results.
  * @returns Promise that resolves to filtered files array.
  */
 async function getFileListing(pathPrefix, options) {
