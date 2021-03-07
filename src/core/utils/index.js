@@ -67,6 +67,18 @@ async function isDirectory(file) {
 }
 
 /**
+ * Check if specified file exists.
+ *
+ * @param {*} filePath Name of file.
+ * @returns Promise that resolves to true if file exists and false if file does not exist.
+ */
+async function fileExists(filePath) {
+    const promise = util.promisify(fs.access)(filePath, fs.constants.F_OK);
+    const response = await promiseExecution(promise);
+    return !response[0];
+}
+
+/**
  * Filter specified files (string) array using given filtering conditions.
  */
 async function getFilteredFiles(files, pathPrefix, { postfix, basename }) {
@@ -79,16 +91,16 @@ async function getFilteredFiles(files, pathPrefix, { postfix, basename }) {
     // Filter files
     const data = await asyncFilter(files, async file => {
         // Include if file ends with one of the specified patterns
-        for (let i = 0; i < postfix.length; i++) {
-            if (file.endsWith(postfix[i])) {
-                return true;
-            }
+        const isExt = postfix.some(item => file.endsWith(item));
+        if (isExt) {
+            return true;
         }
 
         // Include if file basename starts with specified pattern
-        if (basename) {
+        if (basename.length) {
             const filename = path.basename(file);
-            if (filename.startsWith(basename)) {
+            const isBase = basename.some(item => filename.startsWith(item));
+            if (isBase) {
                 return true;
             }
         }
@@ -131,21 +143,27 @@ async function getNonRecursiveFileListing(pathPrefix, options) {
  * Get files listing from specified base path, subdir content is included.
  */
 async function getRecursiveFileListing(pathPrefix, { postfix, basename }) {
+    // Make sure path is valid
+    const exists = await fileExists(pathPrefix);
+    if (!exists) {
+        return [];
+    }
+
     let api = new Fdir();
 
-    if (postfix || basename) {
+    if (postfix.length || basename.length) {
         api = api.filter(file => {
             // Include if file ends with one of the specified patterns
-            for (let i = 0; i < postfix.length; i++) {
-                if (file.endsWith(postfix[i])) {
-                    return true;
-                }
+            const isExt = postfix.some(item => file.endsWith(item));
+            if (isExt) {
+                return true;
             }
 
             // Include if file basename starts with specified pattern
-            if (basename) {
+            if (basename.length) {
                 const filename = path.basename(file);
-                if (filename.startsWith(basename)) {
+                const isBase = basename.some(item => filename.startsWith(item));
+                if (isBase) {
                     return true;
                 }
             }
@@ -155,7 +173,6 @@ async function getRecursiveFileListing(pathPrefix, { postfix, basename }) {
     }
 
     api = api.withFullPaths().crawl(pathPrefix);
-
     const [err, data] = await promiseExecution(api.withPromise());
     return (err === null) ? data : [];
 }
@@ -412,18 +429,7 @@ module.exports = {
         return JSON.parse(data.toString('utf-8'));
     },
 
-    /**
-     * Check if specified file exists.
-     *
-     * @param {*} filePath Name of file.
-     *
-     * @returns Promise that resolves to true if file exists and false if file does not exist.
-     */
-    async fileExists(filePath) {
-        const promise = util.promisify(fs.access)(filePath, fs.constants.F_OK);
-        const response = await promiseExecution(promise);
-        return !response[0];
-    },
+    fileExists,
 
     /**
      * Is specified parameter a string.

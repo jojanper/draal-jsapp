@@ -64,7 +64,7 @@ class FileListing extends BaseCtrl {
         const files = await getFileListing(this.getQueryParam('path'), {
             recursive: this.hasQueryParam('recursive'),
             postfix: this.hasQueryParam('ext') ? this.getQueryParam('ext').split(',') : [],
-            basename: this.hasQueryParam('base') ? this.getQueryParam('base') : null
+            basename: this.hasQueryParam('base') ? this.getQueryParam('base').split(',') : []
         });
 
         return new ApiResponse({ data: files });
