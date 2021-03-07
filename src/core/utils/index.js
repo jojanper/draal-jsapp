@@ -142,11 +142,19 @@ async function getNonRecursiveFileListing(pathPrefix, options) {
 /**
  * Get files listing from specified base path, subdir content is included.
  */
-async function getRecursiveFileListing(pathPrefix, { postfix, basename }) {
+async function getRecursiveFileListing(pathPrefix, { postfix, basename, basedir }) {
     // Make sure path is valid
     const exists = await fileExists(pathPrefix);
     if (!exists) {
         return [];
+    }
+
+    // Base path must be a directory
+    if (basedir) {
+        const isDir = await isDirectory(pathPrefix);
+        if (!isDir) {
+            return [];
+        }
     }
 
     let api = new Fdir();
@@ -184,6 +192,7 @@ async function getRecursiveFileListing(pathPrefix, { postfix, basename }) {
  * @param {*} pathPrefix Base path of the files.
  * @param {*} options.postfix File ending pattern.
  * @param {*} options.basename File starting pattern.
+ * @param {*} options.basedir Base path must be path to a directory.
  * @returns Promise that resolves to filtered files array.
  */
 async function getFileListing(pathPrefix, options) {
