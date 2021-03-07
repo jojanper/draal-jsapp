@@ -15,13 +15,22 @@ const dotenv = require('dotenv');
 const chalk = require('chalk');
 const socketIo = require('socket.io');
 const compression = require('compression');
+const open = require('open');
+
+let { SECRETS_PATH } = process.env;
+
+// Set explicitly production mode if executed under pkg
+if (process.pkg) {
+    process.env.NODE_ENV = 'production';
+    SECRETS_PATH = path.join(__dirname, '.env.pkg');
+}
 
 const isProduction = (process.env.NODE_ENV === 'production');
 
 // Load environment variables (API keys etc).
 const secretsFile = (isProduction) ? '.env.secrets' : '.env.test.secrets';
 const secretsFilePath = path.join(__dirname, secretsFile);
-dotenv.config({ path: process.env.SECRETS_PATH || secretsFilePath });
+dotenv.config({ path: SECRETS_PATH || secretsFilePath });
 
 const draaljs = require('./src');
 const draaljsConfig = require('./config');
@@ -77,13 +86,26 @@ class WebApplication {
     }
 
     /**
+     * Return used application port.
+     */
+    get appPort() {
+        return this.server.address().port;
+    }
+
+    /**
+     * Get application parameter.
+     */
+    getParam(param) {
+        return this.app.get(param);
+    }
+
+    /**
      * Create and setup the Express application.
      */
     createApp() {
         this.app.set('port', WebApplication.port);
 
         this._setupPlugins();
-        this._setupView();
         this._setupParsers();
         this._setupAuth();
         this._setupAppLogic();
@@ -100,7 +122,11 @@ class WebApplication {
 
         // Morgan logging
         if (process.env.MORGAN_FORMAT) {
-            this.app.use(morgan(process.env.MORGAN_FORMAT || 'dev'));
+            this.app.use(morgan(process.env.MORGAN_FORMAT || 'dev', {
+                stream: {
+                    write: msg => draaljs.logger.info(msg.trim())
+                }
+            }));
         }
 
         // Compress content in production setup
@@ -126,14 +152,6 @@ class WebApplication {
                 autoReconnect: true
             })
         }));
-    }
-
-    /**
-     * Set up views for the application.
-     */
-    _setupView() {
-        this.app.set('views', path.join(__dirname, 'views'));
-        this.app.set('view engine', 'pug');
     }
 
     /**
@@ -166,13 +184,7 @@ class WebApplication {
      * Bind and listen for connections on the specified host and port.
      */
     listen() {
-        this._server = this.app.listen(WebApplication.port, () => {
-            console.log(
-                '%s App is running at http://localhost:%d in %s mode',
-                chalk.green('✓'), this.app.get('port'), this.app.get('env')
-            );
-            console.log('  Press CTRL-C to stop\n');
-        });
+        this._server = this.app.listen(WebApplication.port);
 
         /**
          * Event listener for HTTP server "listening" event.
@@ -191,18 +203,18 @@ class WebApplication {
                 throw error;
             }
 
-            const { port } = WebApplication.port;
+            const port = this.appPort;
             const bind = typeof port === 'string' ? `Pipe ${port}` : `Port ${port}`;
 
             // Handle specific listen errors with friendly messages
             switch (error.code) {
                 case 'EACCES':
-                    console.error(`${bind} requires elevated privileges`);
+                    draaljs.logger.error(`${bind} requires elevated privileges`);
                     process.exit(1);
                     break;
 
                 case 'EADDRINUSE':
-                    console.error(`${bind} is already in use`);
+                    draaljs.logger.error(`${bind} is already in use`);
                     process.exit(1);
                     break;
 
@@ -236,13 +248,30 @@ class WebApplication {
 // Create application
 const app = new WebApplication().createApp();
 
+// HTTP server handle will be available once it's ready -> return Promise
+const server = timeout => retry(timeout, () => app.server);
+
 // Setup up backend tasks handler
 const celerySetup = () => {
     draaljsConfig.celery.connect(() => {
-        // Application is now ready.
+        // Start application
         app.listen();
+
+        const url = `http://localhost:${app.appPort}`;
+        console.log(
+            '%s App is running at %s in %s mode',
+            chalk.green('✓'), url, app.getParam('env')
+        );
+        console.log('  Press CTRL-C to stop\n');
+
         app.createSocket();
         app.listenSocket();
+
+        // Open browser for the user, otherwise user does not know the
+        // port where the server is running.
+        if (process.pkg) {
+            open(url);
+        }
     });
 };
 
@@ -261,7 +290,5 @@ process.on('SIGINT', () => {
 
 module.exports = {
     app: app.getApp(),
-
-    // HTTP server handle will be available once it's ready -> return Promise
-    server: timeout => retry(timeout, () => app.server)
+    server,
 };

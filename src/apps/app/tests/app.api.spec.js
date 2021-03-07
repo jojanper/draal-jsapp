@@ -7,6 +7,7 @@ describe('App API', () => {
     const uploadApi = '/api/app/media-upload';
     const downloadApi = '/api/app/media-download/favicon.png';
     const metaApi = '/api/app/metadata';
+    const closeApi = '/api/app/close';
 
     it('media file upload is supported', done => {
         const request = testrunner(testapp).post(uploadApi).attach('file', imgPath);
@@ -47,9 +48,13 @@ describe('App API', () => {
     it('app metadata query is supported', done => {
         testrunner(testapp).get(metaApi).expect(200).end((err, res) => {
             expect(Object.keys(res.body.data)).to.have.all.members([
-                'version'
+                'version', 'tempfile'
             ]);
             done(err);
         });
+    });
+
+    it('app is closed', done => {
+        testrunner(testapp).post(closeApi).expect(200).end(done);
     });
 });

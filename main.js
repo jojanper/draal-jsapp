@@ -1,21 +1,29 @@
-/* eslint-disable no-unused-vars */
 const {
-    app, BrowserWindow, ipcMain, dialog, nativeImage
+    app, BrowserWindow, ipcMain, dialog, nativeImage, Menu
 } = require('electron');
-const isDev = require('electron-is-dev');
+
+const packageJson = require('./package.json');
+const { isElectronDev, getMenuTemplate, AppStore } = require('./src/electron');
+
+const isDev = isElectronDev();
+const store = new AppStore(packageJson);
 
 // This will start the Node HTTP server
 const server = require('./app');
 
+Menu.setApplicationMenu(Menu.buildFromTemplate(getMenuTemplate()));
+
 let mainWindow;
 
 async function createWindow() {
+    let { width, height } = store.getWindowBounds();
+
     // Wait until HTTP server is ready and port number is available
     const httpServer = await server.server();
 
     mainWindow = new BrowserWindow({
-        width: 1024,
-        height: 1024,
+        width,
+        height,
         webPreferences: {
             nodeIntegration: false
         },
@@ -27,6 +35,11 @@ async function createWindow() {
 
     mainWindow.on('closed', () => {
         mainWindow = null;
+    });
+
+    mainWindow.on('resize', () => {
+        ({ width, height } = mainWindow.getBounds());
+        store.setWindowBounds(width, height);
     });
 
     if (isDev) {
@@ -57,7 +70,7 @@ app.on('activate', () => {
     }
 });
 
-ipcMain.on('openModal', (event, name) => {
+ipcMain.on('open-modal', (event, name) => {
     dialog.showOpenDialog(mainWindow, {
         properties: ['openFile']
     }).then(data => {
@@ -70,7 +83,7 @@ ipcMain.on('openModal', (event, name) => {
     });
 });
 
-ipcMain.on('saveModal', (event, name) => {
+ipcMain.on('save-modal', (event, name) => {
     dialog.showSaveDialog(mainWindow, {}).then(data => {
         if (!data.canceled) {
             mainWindow.webContents.send('save-file', {

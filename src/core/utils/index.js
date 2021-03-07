@@ -3,9 +3,12 @@ const childProcess = require('child_process');
 const fs = require('fs');
 const bcrypt = require('bcrypt');
 const util = require('util');
+const path = require('path');
+const { fdir: Fdir } = require('fdir');
 
-const { APIError, APICmdError } = require('./error');
-const ValidatorAPI = require('./validators');
+const { APIError, APICmdError } = require('../error');
+const ValidatorAPI = require('../validators');
+const Wave = require('./wave');
 
 const DEFAULT_HTTP_METHOD = 'post';
 
@@ -20,7 +23,9 @@ function promiseExecution(promise) {
 
 function execute(cmd, cb, cbErr, options) {
     return new Promise((resolve, reject) => {
-        const child = childProcess.exec(cmd, options || {});
+        options = options || {};
+        const execOptions = { ...options, windowsHide: true };
+        const child = childProcess.exec(cmd, execOptions);
 
         // Live console output
         child.stdout.on('data', cb);
@@ -35,6 +40,176 @@ function execute(cmd, cb, cbErr, options) {
             resolve(code);
         });
     });
+}
+
+/**
+ * Async array filtering.
+ *
+ * @param {*} array Data to filter.
+ * @param {*} predicate Async filter function.
+ * @returns Promise that resolves to filtered array.
+ */
+async function asyncFilter(array, predicate) {
+    const results = await Promise.all(array.map(predicate));
+    return array.filter((_v, index) => results[index]);
+}
+
+/**
+ * Check if specified file path is directory.
+ *
+ * @param {*} file File path.
+ * @returns Promise that resolves to directory status.
+ */
+async function isDirectory(file) {
+    const promise = util.promisify(fs.stat);
+    const [err, stat] = await promiseExecution(promise(file));
+    return !err && stat.isDirectory();
+}
+
+/**
+ * Check if specified file exists.
+ *
+ * @param {*} filePath Name of file.
+ * @returns Promise that resolves to true if file exists and false if file does not exist.
+ */
+async function fileExists(filePath) {
+    const promise = util.promisify(fs.access)(filePath, fs.constants.F_OK);
+    const response = await promiseExecution(promise);
+    return !response[0];
+}
+
+/**
+ * Filter specified files (string) array using given filtering conditions.
+ */
+async function getFilteredFiles(files, pathPrefix, { postfix, basename, onlydir }) {
+    // Is base path actually a directory
+    let isDir = await isDirectory(pathPrefix);
+
+    // If directory, then what is the file path separator used by the platform
+    const subPrefix = isDir && !pathPrefix.endsWith(path.sep) ? path.sep : '';
+
+    // Filter files
+    const data = await asyncFilter(files, async file => {
+        // Include only directories
+        if (onlydir) {
+            isDir = await isDirectory(`${pathPrefix}${subPrefix}${file}`);
+            return isDir;
+        }
+
+        // Include if file ends with one of the specified patterns
+        const isExt = postfix.some(item => file.endsWith(item));
+        if (isExt) {
+            return true;
+        }
+
+        // Include if file basename starts with specified pattern
+        if (basename.length) {
+            const filename = path.basename(file);
+            const isBase = basename.some(item => filename.startsWith(item));
+            if (isBase) {
+                return true;
+            }
+        }
+
+        // Include directories
+        isDir = await isDirectory(`${pathPrefix}${subPrefix}${file}`);
+        if (isDir) {
+            return true;
+        }
+
+        return !postfix;
+    });
+
+    // Add the base path to each file
+    return data.map(file => `${pathPrefix}${subPrefix}${file}`);
+}
+
+/**
+ * Get files listing from specified base path, subdir content is not included.
+ */
+async function getNonRecursiveFileListing(pathPrefix, options) {
+    let prefix = pathPrefix;
+    const promise = util.promisify(fs.readdir);
+    let [err, files] = await promiseExecution(promise(pathPrefix));
+
+    if (err !== null) {
+        const pathPrefixUpper = path.dirname(pathPrefix);
+
+        [err, files] = await promiseExecution(promise(pathPrefixUpper));
+        if (err === null) {
+            prefix = `${pathPrefixUpper}${path.sep}`;
+            files = files.filter(file => `${prefix}${file}`.indexOf(pathPrefix) > -1);
+        }
+    }
+
+    return (err === null) ? getFilteredFiles(files, prefix, options) : [];
+}
+
+/**
+ * Get files listing from specified base path, subdir content is included.
+ */
+async function getRecursiveFileListing(pathPrefix, { postfix, basename, basedir }) {
+    // Make sure path is valid
+    const exists = await fileExists(pathPrefix);
+    if (!exists) {
+        return [];
+    }
+
+    // Base path must be a directory
+    if (basedir) {
+        const isDir = await isDirectory(pathPrefix);
+        if (!isDir) {
+            return [];
+        }
+    }
+
+    let api = new Fdir();
+
+    if (postfix.length || basename.length) {
+        api = api.filter(file => {
+            // Include if file ends with one of the specified patterns
+            const isExt = postfix.some(item => file.endsWith(item));
+            if (isExt) {
+                return true;
+            }
+
+            // Include if file basename starts with specified pattern
+            if (basename.length) {
+                const filename = path.basename(file);
+                const isBase = basename.some(item => filename.startsWith(item));
+                if (isBase) {
+                    return true;
+                }
+            }
+
+            return false;
+        });
+    }
+
+    api = api.withFullPaths().crawl(pathPrefix);
+    const [err, data] = await promiseExecution(api.withPromise());
+    return (err === null) ? data : [];
+}
+
+/**
+ * Get file listing from base path using given filtering conditions.
+ *
+ * @param {*} files Files array
+ * @param {*} pathPrefix Base path of the files.
+ * @param {*} options.postfix File ending pattern.
+ * @param {*} options.basename File starting pattern.
+ * @param {*} options.basedir Base path must be path to a directory.
+ * @param {*} options.onlydir Include only directories in the results.
+ * @returns Promise that resolves to filtered files array.
+ */
+async function getFileListing(pathPrefix, options) {
+    // Full file content is requested
+    if (options && options.recursive) {
+        return getRecursiveFileListing(pathPrefix, options);
+    }
+
+    // Only first level listing required
+    return getNonRecursiveFileListing(pathPrefix, options);
 }
 
 module.exports = {
@@ -270,18 +445,7 @@ module.exports = {
         return JSON.parse(data.toString('utf-8'));
     },
 
-    /**
-     * Check if specified file exists.
-     *
-     * @param {*} filePath Name of file.
-     *
-     * @returns Promise that resolves to true if file exists and false if file does not exist.
-     */
-    async fileExists(filePath) {
-        const promise = util.promisify(fs.access)(filePath, fs.constants.F_OK);
-        const response = await promiseExecution(promise);
-        return !response[0];
-    },
+    fileExists,
 
     /**
      * Is specified parameter a string.
@@ -305,4 +469,9 @@ module.exports = {
      * Return name prefix for backend API calls.
      */
     getApiPrefix: () => process.env.APIPREFIX || '/api',
+
+    Wave,
+
+    getFilteredFiles,
+    getFileListing
 };
