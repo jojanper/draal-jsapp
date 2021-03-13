@@ -53,7 +53,7 @@ function appBusinessLogicSetup(app) {
         res.locals.error = utilsLib.isDevelopment(req.app) ? err : {};
 
         if (!err.status) {
-            logger.error(err);
+            logger.error(err || err.message);
             logger.error(console.trace());
         }
 

@@ -81,7 +81,9 @@ async function fileExists(filePath) {
 /**
  * Filter specified files (string) array using given filtering conditions.
  */
-async function getFilteredFiles(files, pathPrefix, { postfix, basename, onlydir }) {
+async function getFilteredFiles(files, pathPrefix, {
+    postfix, basename, onlydir, nodotdir
+}) {
     // Is base path actually a directory
     let isDir = await isDirectory(pathPrefix);
 
@@ -90,6 +92,13 @@ async function getFilteredFiles(files, pathPrefix, { postfix, basename, onlydir 
 
     // Filter files
     const data = await asyncFilter(files, async file => {
+        // Exclude dot files and directories
+        if (nodotdir) {
+            if (file.startsWith('.')) {
+                return false;
+            }
+        }
+
         // Include only directories
         if (onlydir) {
             isDir = await isDirectory(`${pathPrefix}${subPrefix}${file}`);

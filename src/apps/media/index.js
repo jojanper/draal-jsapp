@@ -61,6 +61,11 @@ class FileListing extends BaseCtrl {
     }
 
     async action() {
+        function param2Array(param) {
+            const data = this.getQueryParam(param);
+            return data ? data.split(',') : [];
+        }
+
         const files = await getFileListing(this.getQueryParam('path'), {
             // Base path must be a directory
             basedir: this.hasQueryParam('basedir'),
@@ -71,11 +76,14 @@ class FileListing extends BaseCtrl {
             // Include only directories
             onlydir: this.hasQueryParam('onlydir'),
 
+            // Exclude dot directories
+            nodotdir: this.hasQueryParam('nodotdir'),
+
             // Include files ending with pattern
-            postfix: this.hasQueryParam('ext') ? this.getQueryParam('ext').split(',') : [],
+            postfix: this.hasQueryParam('ext') ? param2Array.call(this, 'ext') : [],
 
             // Include files that start with pattern
-            basename: this.hasQueryParam('base') ? this.getQueryParam('base').split(',') : []
+            basename: this.hasQueryParam('base') ? param2Array.call(this, 'base') : []
         });
 
         return new ApiResponse({ data: files });
