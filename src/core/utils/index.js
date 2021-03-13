@@ -482,5 +482,6 @@ module.exports = {
     Wave,
 
     getFilteredFiles,
-    getFileListing
+    getFileListing,
+    isDirectory
 };
