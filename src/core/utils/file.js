@@ -34,7 +34,7 @@ async function fileExists(filePath) {
  * Filter specified files (string) array using given filtering conditions.
  */
 async function getFilteredFiles(files, pathPrefix, {
-    postfix, basename, onlydir, nodotdir
+    extensions, basename, onlydir, nodotdir
 }) {
     // Is base path actually a directory
     let isDir = await isDirectory(pathPrefix);
@@ -53,12 +53,12 @@ async function getFilteredFiles(files, pathPrefix, {
 
         // Include only directories
         if (onlydir) {
-            isDir = await file.isDirectory(`${pathPrefix}${subPrefix}${file}`);
+            isDir = await isDirectory(`${pathPrefix}${subPrefix}${file}`);
             return isDir;
         }
 
         // Include if file ends with one of the specified patterns
-        const isExt = postfix.some(item => file.endsWith(item));
+        const isExt = extensions.some(item => file.endsWith(item));
         if (isExt) {
             return true;
         }
@@ -73,12 +73,12 @@ async function getFilteredFiles(files, pathPrefix, {
         }
 
         // Include directories
-        isDir = await file.isDirectory(`${pathPrefix}${subPrefix}${file}`);
+        isDir = await isDirectory(`${pathPrefix}${subPrefix}${file}`);
         if (isDir) {
             return true;
         }
 
-        return !postfix;
+        return !extensions.length;
     });
 
     // Add the base path to each file
@@ -109,7 +109,7 @@ async function getNonRecursiveFileListing(pathPrefix, options) {
 /**
  * Get files listing from specified base path, subdir content is included.
  */
-async function getRecursiveFileListing(pathPrefix, { postfix, basename, basedir }) {
+async function getRecursiveFileListing(pathPrefix, { extensions, basename, basedir }) {
     // Make sure path is valid
     const exists = await fileExists(pathPrefix);
     if (!exists) {
@@ -126,10 +126,10 @@ async function getRecursiveFileListing(pathPrefix, { postfix, basename, basedir 
 
     let api = new Fdir();
 
-    if (postfix.length || basename.length) {
+    if (extensions.length || basename.length) {
         api = api.filter(file => {
             // Include if file ends with one of the specified patterns
-            const isExt = postfix.some(item => file.endsWith(item));
+            const isExt = extensions.some(item => file.endsWith(item));
             if (isExt) {
                 return true;
             }
@@ -164,13 +164,17 @@ async function getRecursiveFileListing(pathPrefix, { postfix, basename, basedir 
  * @returns Promise that resolves to filtered files array.
  */
 async function getFileListing(pathPrefix, options) {
+    const extensions = options ? options.postfix || [] : [];
+    const basename = options ? options.basename || [] : [];
+    const params = { ...options, extensions, basename };
+
     // Full file content is requested
     if (options && options.recursive) {
-        return getRecursiveFileListing(pathPrefix, options);
+        return getRecursiveFileListing(pathPrefix, params);
     }
 
     // Only first level listing required
-    return getNonRecursiveFileListing(pathPrefix, options);
+    return getNonRecursiveFileListing(pathPrefix, params);
 }
 
 /**

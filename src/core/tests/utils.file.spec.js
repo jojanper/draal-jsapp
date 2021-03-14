@@ -1,5 +1,7 @@
 /* eslint-disable no-unused-expressions */
-const { readJson, fileExists, isDirectory } = require('../utils');
+const {
+    readJson, fileExists, isDirectory, getFileListing
+} = require('../utils');
 
 const packageJson = `${__dirname}/../../../package.json`;
 
@@ -23,5 +25,17 @@ describe('utils.file', () => {
     it('isDirectory', async () => {
         const status = await isDirectory(packageJson);
         expect(status).to.be.false;
+    });
+
+    it('getFileListing', async () => {
+        const data = await getFileListing('test');
+        expect(data).to.eql([
+            'test/.mocharc.js',
+            'test/bootstrap.spec.js',
+            'test/helpers.js',
+            'test/sinon-mongoose',
+            'test/test.wav',
+            'test/wavetest.js'
+        ]);
     });
 });
