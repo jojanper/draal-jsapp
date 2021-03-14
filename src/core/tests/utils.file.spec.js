@@ -27,8 +27,11 @@ describe('utils.file', () => {
         expect(status).to.be.false;
     });
 
-    it('getFileListing', async () => {
-        const data = await getFileListing('test');
+    it('getFileListing (no recursion)', async () => {
+        let data;
+
+        // Get file listing from file path
+        data = await getFileListing('test');
         expect(data).to.eql([
             'test/.mocharc.js',
             'test/bootstrap.spec.js',
@@ -36,6 +39,14 @@ describe('utils.file', () => {
             'test/sinon-mongoose',
             'test/test.wav',
             'test/wavetest.js'
+        ]);
+
+        // Get only directories from file path
+        data = await getFileListing('tes', {
+            basedir: true
+        });
+        expect(data).to.eql([
+            './test'
         ]);
     });
 });

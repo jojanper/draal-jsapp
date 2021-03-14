@@ -99,7 +99,7 @@ async function getNonRecursiveFileListing(pathPrefix, options) {
         [err, files] = await promiseExecution(promise(pathPrefixUpper));
         if (err === null) {
             prefix = `${pathPrefixUpper}${path.sep}`;
-            files = files.filter(file => `${prefix}${file}`.indexOf(pathPrefix) > -1);
+            files = files.filter(file => file.startsWith(pathPrefix));
         }
     }
 
