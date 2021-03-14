@@ -1,20 +1,27 @@
 /* eslint-disable no-unused-expressions */
-const { readJson, fileExists } = require('../utils');
+const { readJson, fileExists, isDirectory } = require('../utils');
 
-describe('utilsLib', () => {
-    it('supports readJson', async () => {
-        let data = await readJson(`${__dirname}/../../../package.json`);
+const packageJson = `${__dirname}/../../../package.json`;
+
+describe('utils.file', () => {
+    it('readJson', async () => {
+        let data = await readJson(packageJson);
         expect(data.version.split('.').length).to.equal(3);
 
         data = await readJson('foo.bar');
         expect(data).to.equal(null);
     });
 
-    it('supports fileExist', async () => {
-        let status = await fileExists(`${__dirname}/../../../package.json`);
+    it('fileExist', async () => {
+        let status = await fileExists(packageJson);
         expect(status).to.be.true;
 
         status = await fileExists('foo.bar');
+        expect(status).to.be.false;
+    });
+
+    it('isDirectory', async () => {
+        const status = await isDirectory(packageJson);
         expect(status).to.be.false;
     });
 });
