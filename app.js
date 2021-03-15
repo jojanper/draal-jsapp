@@ -10,7 +10,7 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const session = require('express-session');
 const passport = require('passport');
-const MongoStore = require('connect-mongo')(session);
+const MongoStore = require('connect-mongo');
 const dotenv = require('dotenv');
 const chalk = require('chalk');
 const socketIo = require('socket.io');
@@ -147,9 +147,11 @@ class WebApplication {
             saveUninitialized: false,
             secret: process.env.SESSION_SECRET,
             cookie: { maxAge },
-            store: new MongoStore({
-                url: draaljsConfig.mongo.dbURI,
-                autoReconnect: true
+            store: MongoStore.create({
+                mongoUrl: draaljsConfig.mongo.dbURI,
+                mongoOptions: {
+                    autoReconnect: true
+                }
             })
         }));
     }
@@ -231,14 +233,14 @@ class WebApplication {
      * Create socket server for the application.
      */
     createSocket() {
-        this.io = socketIo.listen(this.server);
+        this.io = socketIo(this.server);
     }
 
     /**
      * Listen socket connections from clients.
      */
     listenSocket() {
-        this.io.sockets.on('connection', socket => {
+        this.io.on('connection', socket => {
             draaljs.logger.debug(`Connected client on port ${this.app.get('port')}`);
             draaljs.socket(this.io, socket);
         });
