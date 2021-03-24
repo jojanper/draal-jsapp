@@ -1,6 +1,6 @@
 const sinon = require('sinon');
 require('mongoose');
-require('../../../../test/sinon-mongoose');
+require('../../../../tests/sinon-mongoose');
 
 const { User, AccountProfile } = require('../models');
 

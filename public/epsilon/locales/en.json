@@ -35,7 +35,8 @@
         "text": "Extract media file info. Drop media file to icon"
     },
     "form": {
-        "remoteInputDropTitle": "Drop file here"
+        "remoteInputDropTitle": "Drop file here",
+        "fileInfoQuery": "Validating input..."
     },
     "timeline": {
         "unsaved": "Unsaved changes",
@@ -137,7 +138,7 @@
         "required": "Required",
         "size": "The {_field_} field size must be less than {size}KB",
         "wavaudio": "Not a valid WAV file",
-        "jsonfile": "Not a JSON file",
-        "filequery": "Fill all required information below"
+        "filequery": "Fill all required information below",
+        "fileext": "{ext} file extension required"
     }
 }

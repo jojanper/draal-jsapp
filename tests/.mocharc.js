@@ -1,8 +1,8 @@
 module.exports = {
-    spec: ['src/**/*.spec.js', 'test/bootstrap.spec.js'],
+    spec: ['src/**/*.spec.js', 'tests/bootstrap.spec.js'],
     reporter: 'spec',
     recursive: true,
-    require: ['test/helpers'],
+    require: ['tests/helpers'],
     timeout: 3000,
     ui: 'bdd',
     exit: true

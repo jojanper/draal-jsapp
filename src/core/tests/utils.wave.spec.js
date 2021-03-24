@@ -4,7 +4,7 @@ const { Wave } = require('../utils');
 
 describe('utils.Wave', () => {
     it('file info details', async () => {
-        const data = await Wave.WaveParser('test/test.wav');
+        const data = await Wave.WaveParser('tests/test.wav');
 
         expect(data.id).to.equal('RIFF');
         expect(data.nChannels).to.equal(1);
