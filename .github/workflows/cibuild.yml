@@ -40,7 +40,7 @@ jobs:
 
       - name: Prepare node-gyp for ubuntu
         if: ${{ matrix.os == 'ubuntu-latest' }}
-        run: sudo apt-get install g++ build-essential
+        run: sudo apt-get install g++ build-essential ffmpeg
 
       - name: npm install, build, and test
         run: |
