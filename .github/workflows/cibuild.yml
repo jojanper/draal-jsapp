@@ -42,7 +42,7 @@ jobs:
         if: ${{ matrix.os == 'ubuntu-latest' }}
         run: sudo apt-get install g++ build-essential ffmpeg
 
-      - name: npm install, build, and test
+      - name: npm install
         run: |
           npm i
           which python
@@ -50,6 +50,9 @@ jobs:
           python --version
           pip --version
           npm run pip-install
+
+      - name: npm build and test
+        run: |
           npm run cibuild
           npm run pylint
           npm run pytests
