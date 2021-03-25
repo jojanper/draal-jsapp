@@ -31,14 +31,15 @@ describe('utils.file', () => {
         let data;
 
         // Get file listing from file path
-        data = await getFileListing('test');
+        data = await getFileListing('tests');
         expect(data).to.eql([
-            'test/.mocharc.js',
-            'test/bootstrap.spec.js',
-            'test/helpers.js',
-            'test/sinon-mongoose',
-            'test/test.wav',
-            'test/wavetest.js'
+            'tests/.mocharc.js',
+            'tests/bootstrap.spec.js',
+            'tests/e2e',
+            'tests/helpers.js',
+            'tests/sinon-mongoose',
+            'tests/test.wav',
+            'tests/wavetest.js'
         ]);
 
         // Get only directories from file path
@@ -46,7 +47,7 @@ describe('utils.file', () => {
             basedir: true
         });
         expect(data).to.eql([
-            './test'
+            './tests'
         ]);
     });
 });

@@ -249,9 +249,7 @@ describe('API token', () => {
     let expiredToken;
 
     beforeEach(done => {
-        console.log('ACTIVATE');
         appTestHelper.activateUser(tokenCredentials.email, user => {
-            console.log(user);
             this.user = user;
             ({ token } = user.tokenResponse());
 

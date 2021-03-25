@@ -2,7 +2,7 @@ const { graphql } = require('graphql');
 const { makeExecutableSchema } = require('graphql-tools');
 const sinon = require('sinon');
 require('mongoose');
-require('../../../../../test/sinon-mongoose');
+require('../../../../../tests/sinon-mongoose');
 
 const {
     resolvers: UserResolvers,

@@ -121,7 +121,7 @@ class WebApplication {
         this.app.use(helmet());
 
         // Morgan logging
-        if (process.env.MORGAN_FORMAT) {
+        if (process.env.MORGAN_FORMAT && process.env.NODE_ENV !== 'test') {
             this.app.use(morgan(process.env.MORGAN_FORMAT || 'dev', {
                 stream: {
                     write: msg => draaljs.logger.info(msg.trim())
@@ -271,7 +271,7 @@ const celerySetup = () => {
 
         // Open browser for the user, otherwise user does not know the
         // port where the server is running.
-        if (process.pkg) {
+        if (process.pkg && !process.env.DISABLE_BROWSER_OPEN) {
             open(url);
         }
     });

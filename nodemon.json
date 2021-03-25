@@ -5,6 +5,7 @@
     "node_modules/**/node_modules",
     "virtualenv*",
     "*-logs/*.log",
-    "angular-app/node-modules"
+    "angular-app/node-modules",
+    "epsilon/node-modules"
   ]
 }
