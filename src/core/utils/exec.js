@@ -99,22 +99,14 @@ module.exports = {
      * @throws {APICmdError} Command execution failed.
      */
     async getExecData(cmd, options) {
-        let error = false;
         let cmdData = '';
         const errMsg = [];
 
         const execData = await promiseExecution(execute(cmd, data => {
             cmdData += data;
-        }, data => {
-            // Check if underlying command failed due to unhandled (node) promise rejection
-            if (data.indexOf('UnhandledPromise') > 0) {
-                error = true;
-            }
+        }, data => errMsg.push(data.trim())), options);
 
-            errMsg.push(data.trim());
-        }), options);
-
-        if (execData[0] || error) {
+        if (execData[0]) {
             // Collect enough error info for the user
             const messages = [
                 `Failed to execute: ${cmd}`,
