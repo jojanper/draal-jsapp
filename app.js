@@ -5,19 +5,20 @@ const express = require('express');
 const helmet = require('helmet');
 const path = require('path');
 const morgan = require('morgan');
-const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const session = require('express-session');
 const passport = require('passport');
-const MongoStore = require('connect-mongo');
 const dotenv = require('dotenv');
-const chalk = require('chalk');
 const socketIo = require('socket.io');
 const compression = require('compression');
 const open = require('open');
 
-let { SECRETS_PATH } = process.env;
+let { SECRETS_PATH, HOST } = process.env;
+
+if (!HOST) {
+    HOST = 'http://localhost';
+}
 
 // Set explicitly production mode if executed under pkg
 if (process.pkg) {
@@ -33,6 +34,9 @@ const secretsFilePath = path.join(__dirname, secretsFile);
 dotenv.config({ path: SECRETS_PATH || secretsFilePath });
 
 const draaljs = require('./src');
+const {
+    logger, colorize, success, COLORCODES
+} = require('./src/logger');
 const draaljsConfig = require('./config');
 const { retry } = require('./src/core').utils;
 
@@ -124,7 +128,7 @@ class WebApplication {
         if (process.env.MORGAN_FORMAT && process.env.NODE_ENV !== 'test') {
             this.app.use(morgan(process.env.MORGAN_FORMAT || 'dev', {
                 stream: {
-                    write: msg => draaljs.logger.info(msg.trim())
+                    write: msg => logger.info(msg.trim())
                 }
             }));
         }
@@ -147,12 +151,7 @@ class WebApplication {
             saveUninitialized: false,
             secret: process.env.SESSION_SECRET,
             cookie: { maxAge },
-            store: MongoStore.create({
-                mongoUrl: draaljsConfig.mongo.dbURI,
-                mongoOptions: {
-                    autoReconnect: true
-                }
-            })
+            store: draaljsConfig.mongo.mongoStore()
         }));
     }
 
@@ -162,7 +161,6 @@ class WebApplication {
     _setupParsers() {
         this.app.use(bodyParser.json());
         this.app.use(bodyParser.urlencoded({ extended: false }));
-        this.app.use(cookieParser());
     }
 
     /**
@@ -194,7 +192,7 @@ class WebApplication {
         const onListening = () => {
             const addr = this.server.address();
             const bind = typeof addr === 'string' ? `pipe ${addr}` : `port ${addr.port}`;
-            draaljs.logger.debug(`Listening on ${bind}`);
+            success(`Listening on ${bind}`);
         };
 
         /**
@@ -211,12 +209,12 @@ class WebApplication {
             // Handle specific listen errors with friendly messages
             switch (error.code) {
                 case 'EACCES':
-                    draaljs.logger.error(`${bind} requires elevated privileges`);
+                    logger.error(`${bind} requires elevated privileges`);
                     process.exit(1);
                     break;
 
                 case 'EADDRINUSE':
-                    draaljs.logger.error(`${bind} is already in use`);
+                    logger.error(`${bind} is already in use`);
                     process.exit(1);
                     break;
 
@@ -241,7 +239,7 @@ class WebApplication {
      */
     listenSocket() {
         this.io.on('connection', socket => {
-            draaljs.logger.debug(`Connected client on port ${this.app.get('port')}`);
+            logger.debug(`Connected client on port ${this.app.get('port')}`);
             draaljs.socket(this.io, socket);
         });
     }
@@ -259,12 +257,15 @@ const celerySetup = () => {
         // Start application
         app.listen();
 
-        const url = `http://localhost:${app.appPort}`;
-        console.log(
-            '%s App is running at %s in %s mode',
-            chalk.green('✓'), url, app.getParam('env')
-        );
-        console.log('  Press CTRL-C to stop\n');
+        const url = `${HOST}:${app.appPort}`;
+
+        if (!isProduction) {
+            const icon = colorize('✓', COLORCODES.FgGreen);
+            const msg = `${icon} App is running at ${url} in ${app.getParam('env')} mode`;
+
+            console.log(msg);
+            console.log('  Press CTRL-C to stop\n');
+        }
 
         app.createSocket();
         app.listenSocket();

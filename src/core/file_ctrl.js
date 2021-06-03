@@ -1,4 +1,6 @@
 /* eslint-disable no-restricted-syntax */
+const util = require('util');
+const fs = require('fs');
 const formidable = require('formidable');
 
 const BaseCtrl = require('./base_ctrl');
@@ -37,12 +39,27 @@ class BaseFileCtrl extends BaseCtrl {
                 this.files.push(files[key]);
             }
 
-            this.fileFields = fields;
+            // Map the associated data if any
+            for (const key of Object.keys(fields)) {
+                try {
+                    this.fileFields[key] = JSON.parse(fields[key]);
+                } catch (e) {
+                    this.fileFields[key] = fields[key];
+                }
+            }
 
             super.execute();
         });
 
         return this;
+    }
+
+    async destroy() {
+        if (this.files) {
+            const unlink = util.promisify(fs.unlink);
+            const promises = this.files.map(item => unlink(item.path));
+            Promise.all(promises).catch(() => { });
+        }
     }
 }
 

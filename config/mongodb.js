@@ -1,25 +1,31 @@
 /**
  * MongoDB startup.
  */
+const MongoStore = require('connect-mongo');
 
-const chalk = require('chalk');
+const { success, error } = require('../src/logger');
 
 const dbURI = process.env.MONGODB_URI || 'mongodb://localhost:27017/draaljs-app';
 
 const OPTIONS = {
-    auto_reconnect: true,
     useNewUrlParser: true,
-    useCreateIndex: true,
     useUnifiedTopology: true
 };
 
-function connect(mongoose, dbURI) {
+function connect(mongoose, uri, retry, waitDelay) {
+    let retryCount = 0;
+
     function connectWithRetry() {
-        return mongoose.connect(dbURI, OPTIONS, err => {
+        return mongoose.connect(uri, OPTIONS, err => {
             if (err) {
-                console.error(err);
-                console.error('Failed to connect to mongo on startup - retrying in 5 sec.');
-                setTimeout(connectWithRetry, 5000);
+                error(err);
+                error('Failed to connect to MongoDB on startup - retrying in 5 sec.');
+                if (retryCount < retry) {
+                    retryCount += 1;
+                    setTimeout(connectWithRetry, waitDelay);
+                } else {
+                    throw new Error('MongoDB connection failure, aborting.');
+                }
             }
         });
     }
@@ -27,42 +33,51 @@ function connect(mongoose, dbURI) {
     connectWithRetry();
 }
 
-function mongodbSetup(mongoose, done) {
+function mongodbSetup(mongoose, done, options = { retry: 5, waitDelay: 5000, uri: dbURI }) {
     mongoose.Promise = global.Promise;
 
-    connect(mongoose, dbURI);
+    mongoose.set('useCreateIndex', true);
+    connect(mongoose, options.uri || dbURI, options.retry, options.waitDelay);
 
     // CONNECTION EVENTS
 
     // When successfully connected
     mongoose.connection.on('connected', () => {
-        console.log('Mongoose default connection open to %s', dbURI);
+        success(`Mongoose default connection open to ${dbURI}`);
         done();
     });
 
     // If the connection throws an error
     mongoose.connection.on('error', err => {
-        console.error(err);
-        console.log('%s MongoDB connection error. Please make sure MongoDB is running.', chalk.red('✗'));
+        error(err);
+        error('✗ MongoDB connection error. Please make sure MongoDB is running.');
     });
 
     // When the connection is disconnected
     mongoose.connection.on('disconnected', () => {
-        console.log('Mongoose default connection disconnected');
+        success('Mongoose default connection disconnected');
     });
 }
 
 function mongoDbClose(mongoose) {
     return new Promise(resolve => {
         mongoose.connection.close(() => {
-            console.log('Mongoose default connection disconnected through app termination');
+            success('Mongoose default connection disconnected through app termination');
             resolve();
         });
+    });
+}
+
+function mongoStore() {
+    return MongoStore.create({
+        mongoUrl: dbURI,
+        mongoOptions: OPTIONS
     });
 }
 
 module.exports = {
     dbURI,
     config: mongodbSetup,
-    close: mongoDbClose
+    close: mongoDbClose,
+    mongoStore
 };

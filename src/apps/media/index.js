@@ -76,8 +76,11 @@ class FileListing extends BaseCtrl {
             // Include only directories
             onlydir: this.hasQueryParam('onlydir'),
 
+            // Include all directories
+            withdir: this.hasQueryParam('withdir'),
+
             // Exclude dot directories
-            nodotdir: this.hasQueryParam('nodotdir'),
+            nodot: this.hasQueryParam('nodotdir'),
 
             // Include files ending with pattern
             postfix: this.hasQueryParam('ext') ? param2Array.call(this, 'ext') : [],
