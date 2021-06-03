@@ -10,7 +10,10 @@ describe('App API', () => {
     const closeApi = '/api/app/close';
 
     it('media file upload is supported', done => {
-        const request = testrunner(testapp).post(uploadApi).attach('file', imgPath);
+        const request = testrunner(testapp).post(uploadApi)
+            .attach('file', imgPath)
+            .field('data', 'test-data')
+            .field('data2', JSON.stringify({ key: 'value' }));
 
         request.expect(200).end((err, res) => {
             expect(res.body.cmddata.length > 0).to.be.true;

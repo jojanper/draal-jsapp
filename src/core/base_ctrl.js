@@ -56,7 +56,12 @@ class BaseCtrl {
             // Execute the API action
             this.action()
                 .then(resolve)
-                .catch(reject);
+                .catch(reject)
+                .finally(() => {
+                    if (this.destroy) {
+                        this.destroy();
+                    }
+                });
         });
 
         // On success, render the action response
