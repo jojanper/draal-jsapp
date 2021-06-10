@@ -5,4 +5,4 @@ nose2
 mock
 
 celery==4.1.1
-django==1.11.29
+django==2.2.24
