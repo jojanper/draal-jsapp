@@ -1,8 +1,8 @@
-flake8==3.8.0
+flake8==3.9.2
 cov-core
 coverage
 nose2
 mock
 
-celery==4.1.1
-django==1.11.29
+celery==5.1.0
+django==3.2.4
