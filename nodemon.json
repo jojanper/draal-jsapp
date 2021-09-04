@@ -4,8 +4,8 @@
     ".git",
     "node_modules/**/node_modules",
     "virtualenv*",
-    "*-logs/*.log",
-    "angular-app/node-modules",
-    "epsilon/node-modules"
+    "**/*-logs/**",
+    "angular-app/node_modules/**",
+    "epsilon/node_modules/**"
   ]
 }
