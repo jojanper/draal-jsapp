@@ -11,7 +11,8 @@ describe('App API', () => {
 
     it('media file upload is supported', done => {
         const request = testrunner(testapp).post(uploadApi)
-            .attach('file', imgPath)
+            .attach('file0', imgPath)
+            .attach('file1', imgPath)
             .field('data', 'test-data')
             .field('data2', JSON.stringify({ key: 'value' }));
 

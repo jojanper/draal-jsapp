@@ -1,11 +1,12 @@
 /* eslint-disable no-restricted-syntax */
 const util = require('util');
 const fs = require('fs');
-const formidable = require('formidable');
 
 const BaseCtrl = require('./base_ctrl');
 const { APIError } = require('./error');
 const { logger } = require('../logger');
+
+let formidable;
 
 /**
  * Controller for actions requiring file uploads.
@@ -20,7 +21,11 @@ class BaseFileCtrl extends BaseCtrl {
     /**
      * Handle files upload and then call parent controller action.
      */
-    execute() {
+    async execute() {
+        if (!formidable) {
+            formidable = await import('formidable');
+        }
+
         const form = new formidable.IncomingForm();
 
         form.parse(this.req, (err, fields, files) => {
@@ -36,7 +41,7 @@ class BaseFileCtrl extends BaseCtrl {
             // Get the actual file, the file ID (key) is not of importance
             this.files = [];
             for (const key of Object.keys(files)) {
-                this.files.push(files[key]);
+                this.files.push(files[key][0]);
             }
 
             // Map the associated data if any
@@ -57,7 +62,7 @@ class BaseFileCtrl extends BaseCtrl {
     async destroy() {
         if (this.files) {
             const unlink = util.promisify(fs.unlink);
-            const promises = this.files.map(item => unlink(item.path));
+            const promises = this.files.map(item => unlink(item.filepath));
             Promise.all(promises).catch(() => { });
         }
     }

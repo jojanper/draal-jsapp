@@ -6,7 +6,7 @@ const UserAccount = require('../src/apps/user/models/accountprofile');
 const UserModel = User.model;
 
 global.chai = require('chai');
-global.testapp = require('../app.js').app;
+global.testapp = require('../app').app;
 global.testrunner = require('supertest');
 
 global.expect = chai.expect;
