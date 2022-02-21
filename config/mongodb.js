@@ -7,10 +7,7 @@ const { success, error } = require('../src/logger');
 
 const dbURI = process.env.MONGODB_URI || 'mongodb://localhost:27017/draaljs-app';
 
-const OPTIONS = {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-};
+const OPTIONS = {};
 
 function connect(mongoose, uri, retry, waitDelay) {
     let retryCount = 0;
@@ -36,7 +33,6 @@ function connect(mongoose, uri, retry, waitDelay) {
 function mongodbSetup(mongoose, done, options = { retry: 5, waitDelay: 5000, uri: dbURI }) {
     mongoose.Promise = global.Promise;
 
-    mongoose.set('useCreateIndex', true);
     connect(mongoose, options.uri || dbURI, options.retry, options.waitDelay);
 
     // CONNECTION EVENTS

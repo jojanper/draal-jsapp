@@ -12,3 +12,4 @@ logs
 *-logs
 *.tar
 builds
+.env-docker-aws

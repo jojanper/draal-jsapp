@@ -103,7 +103,7 @@ class MediaFileUpload extends BaseFileCtrl {
             return this.error(`Invalid command query: ${cmd}`);
         }
 
-        return CMDMAP[cmd].replace('$file', `${this.files[0].path}`);
+        return CMDMAP[cmd].replace('$file', `${this.files[0].filepath}`);
     }
 }
 
