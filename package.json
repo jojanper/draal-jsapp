@@ -101,7 +101,7 @@
     "passport-jwt": "^4.0.0",
     "passport-local": "^1.0.0",
     "socket.io": "^4.0.0",
-    "winston": "^3.6.0"
+    "winston": "^3.7.2"
   },
   "optionalDependencies": {
     "electron-store": "^8.0.0"
