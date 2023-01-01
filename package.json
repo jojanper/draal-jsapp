@@ -110,7 +110,7 @@
     "@babel/eslint-parser": "^7.17.0",
     "@babel/core": "^7.17.5",
     "adm-zip": "^0.5.3",
-    "axios": "^0.21.1",
+    "axios": "^1.2.2",
     "chai": "^4.3.6",
     "commander": "^9.0.0",
     "concurrently": "^6.0.0",
