@@ -93,7 +93,7 @@
     "graphql-tools": "^6.2.0",
     "helmet": "^5.0.2",
     "jsonwebtoken": "^8.5.1",
-    "mongoose": "^6.2.2",
+    "mongoose": "^7.0.0",
     "morgan": "^1.10.0",
     "node-celery": "^0.2.8",
     "open": "^8.0.2",
